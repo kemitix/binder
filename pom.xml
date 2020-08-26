@@ -17,6 +17,9 @@
 
     <modules>
         <module>binder-parent</module>
+        <module>binder-spi</module>
+        <module>binder-app</module>
+        <module>binder</module>
     </modules>
 
     <build>

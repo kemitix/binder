@@ -11,7 +11,7 @@ test:
 	mvn test ${RUN_PARAMS}
 
 dev:
-	mvn -pl runner quarkus:dev ${RUN_PARAMS}
+	mvn -pl binder quarkus:dev ${RUN_PARAMS}
 
 clean:
 	mvn clean
