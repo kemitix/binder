@@ -12,14 +12,15 @@ public class ScannerRoutes
         extends RouteBuilder {
 
     @Inject BinderConfig binderConfig;
+    @Inject ConfigFileFilter configFileFilter;
     @Inject SourceFileFilter sourceFileFilter;
 
     @Override
     public void configure() {
         fromF("file://%s?noop=true", binderConfig.getScanDirectory())
-                .routeId("Load Manuscript")
-                .filter(bean(sourceFileFilter, "test(${header.CamelFileName})"))
-                .log("File found: ${header.CamelFileName}")
+                .routeId("Load Manuscript configuration")
+                .filter(bean(configFileFilter, "test(${header.CamelFileName})"))
+                .log("Config file: ${header.CamelFileName}")
         ;
 
         fromF("file-watch://%s", binderConfig.getScanDirectory())

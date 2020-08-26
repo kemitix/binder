@@ -3,10 +3,10 @@ package net.kemitix.binder.app;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class SourceFileFilter {
+public class ConfigFileFilter {
 
     boolean test(String filename) {
-        return filename.endsWith(".md");
+        return filename.equals("binder.json");
     }
 
 }
