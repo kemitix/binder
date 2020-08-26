@@ -1,3 +1,9 @@
+/.idea
+*.iml
+target/
+nohup.out
+/.install
+
 # Compiled class file
 *.class
 
