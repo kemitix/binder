@@ -13,6 +13,10 @@ https://oss.sonatype.org/content/repositories/releases/net/kemitix/binder/binder
 https://img.shields.io/maven-central/v/net.kemitix.binder/binder.svg?style=for-the-badge)](
 https://search.maven.org/search?q=g:net.kemitix.binder%20a:binder)
 
+## Environment Variables
+
+* `BINDER_DIRECTORY` - the directory containing the manuscript
+
 ## Structure and Dependencies
 
 ![Reactor Graph](doc/images/reactor-graph.png)

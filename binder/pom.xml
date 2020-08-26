@@ -40,10 +40,6 @@
     <dependencies>
         <dependency>
             <groupId>net.kemitix.binder</groupId>
-            <artifactId>binder-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kemitix.binder</groupId>
             <artifactId>binder-app</artifactId>
         </dependency>
 
@@ -65,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-timer</artifactId>
+            <artifactId>camel-quarkus-file-watch</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>

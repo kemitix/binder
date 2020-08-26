@@ -40,11 +40,6 @@
             </dependency>
             <dependency>
                 <groupId>net.kemitix.binder</groupId>
-                <artifactId>binder-spi</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.kemitix.binder</groupId>
                 <artifactId>binder-app</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -17,7 +17,6 @@
 
     <modules>
         <module>binder-parent</module>
-        <module>binder-spi</module>
         <module>binder-app</module>
         <module>binder</module>
     </modules>
@@ -40,7 +39,7 @@
                     <direction>LR</direction>
                     <hideTransitive>true</hideTransitive>
                     <hideVersion>true</hideVersion>
-                    <hideScopes>test,provided</hideScopes>
+                    <hideScopes>test</hideScopes>
                     <hideGroupId>true</hideGroupId>
                     <hideOptional>true</hideOptional>
                     <target>${project.basedir}/doc/images/reactor-graph.png</target>
