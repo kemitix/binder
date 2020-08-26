@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.kemitix.binder</groupId>
+    <artifactId>binder-root</artifactId>
+    <name>binder-root</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.install.skip>true</maven.install.skip>
+        <maven-graph-plugin.version>1.45</maven-graph-plugin.version>
+    </properties>
+
+    <modules>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.fusesource.mvnplugins</groupId>
+                <artifactId>maven-graph-plugin</artifactId>
+                <version>${maven-graph-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>reactor</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <direction>LR</direction>
+                    <hideTransitive>true</hideTransitive>
+                    <hideVersion>true</hideVersion>
+                    <hideScopes>test,provided</hideScopes>
+                    <hideGroupId>true</hideGroupId>
+                    <hideOptional>true</hideOptional>
+                    <target>${project.basedir}/doc/images/reactor-graph.png</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
