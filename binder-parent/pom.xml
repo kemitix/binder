@@ -28,6 +28,7 @@
         <junit.version>5.6.2</junit.version>
         <mockito-junit-jupiter.version>3.5.7</mockito-junit-jupiter.version>
         <jakartaee-api.version>8.0.0</jakartaee-api.version>
+        <snakeyaml.version>1.26</snakeyaml.version>
     </properties>
 
     <dependencyManagement>
@@ -54,6 +55,12 @@
                 <artifactId>jakarta.jakartaee-api</artifactId>
                 <version>${jakartaee-api.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
             </dependency>
 
             <dependency>

@@ -1,17 +1,36 @@
 package net.kemitix.binder.app;
 
-import lombok.extern.java.Log;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 
-@Log
 @ApplicationScoped
 public class ManuscriptLoader {
 
     @Produces
-    Manuscript manuscript(BinderConfig binderConfig) {
-        log.info("Loading Manuscript from " + binderConfig.getScanDirectory());
+    ManuscriptConfig manuscriptConfig(BinderConfig binderConfig) throws IOException {
+        Yaml yaml = new Yaml(new Constructor(ManuscriptConfig.class));
+        File configFile = getConfigFile(binderConfig);
+        FileReader fileReader = new FileReader(configFile);
+        return yaml.load(fileReader);
+    }
+
+    private File getConfigFile(BinderConfig binderConfig) {
+        String scanDirectory = binderConfig.getScanDirectory();
+        String userHome = System.getProperty("user.home");
+        String fullPath = scanDirectory.replaceFirst("^~", userHome);
+        return Paths.get(fullPath).resolve("binder.yaml")
+                .toFile();
+    }
+
+    @Produces
+    Manuscript manuscript(ManuscriptConfig manuscriptConfig) {
         return new Manuscript();
     }
 
