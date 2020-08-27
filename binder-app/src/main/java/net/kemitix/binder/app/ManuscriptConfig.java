@@ -4,11 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
 
 @Setter
 @Getter
 @ToString
+@ApplicationScoped
 public class ManuscriptConfig {
 
     private String id;

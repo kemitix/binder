@@ -27,7 +27,6 @@
         <assertj.version>3.17.0</assertj.version>
         <junit.version>5.6.2</junit.version>
         <mockito-junit-jupiter.version>3.5.7</mockito-junit-jupiter.version>
-        <camel.version>3.4.3</camel.version>
         <jakartaee-api.version>8.0.0</jakartaee-api.version>
     </properties>
 
@@ -55,13 +54,6 @@
                 <artifactId>jakarta.jakartaee-api</artifactId>
                 <version>${jakartaee-api.version}</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-bom</artifactId>
-                <version>${camel.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
 
             <dependency>
