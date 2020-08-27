@@ -16,10 +16,10 @@ import java.util.Objects;
 public class QuarkusBinderConfig
         implements BinderConfig {
 
-    private static final String BINDER_DIRECTORY = "BINDER_DIRECTORY";
+    public static final String BINDER_DIRECTORY = "BINDER_DIRECTORY";
 
     private String scanDirectory = Objects.requireNonNull(
-            System.getenv(BINDER_DIRECTORY), BINDER_DIRECTORY);
+            System.getProperty(BINDER_DIRECTORY), BINDER_DIRECTORY);
 
     @PostConstruct
     void init() {

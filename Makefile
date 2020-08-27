@@ -11,7 +11,8 @@ test:
 	mvn test ${RUN_PARAMS}
 
 dev:
-	mvn -pl binder quarkus:dev ${RUN_PARAMS}
+	mvn -pl binder quarkus:dev \
+		-Dquarkus.args="~/cossmass/issues/004-2021-01-january/"
 
 clean:
 	mvn clean
