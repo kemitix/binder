@@ -7,6 +7,7 @@ import net.kemitix.binder.app.BinderConfig;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import java.util.Objects;
 
 @Log
 @Setter
@@ -15,7 +16,10 @@ import javax.enterprise.context.ApplicationScoped;
 public class QuarkusBinderConfig
         implements BinderConfig {
 
-    private String scanDirectory = System.getenv("BINDER_DIRECTORY");
+    private static final String BINDER_DIRECTORY = "BINDER_DIRECTORY";
+
+    private String scanDirectory = Objects.requireNonNull(
+            System.getenv(BINDER_DIRECTORY), BINDER_DIRECTORY);
 
     @PostConstruct
     void init() {

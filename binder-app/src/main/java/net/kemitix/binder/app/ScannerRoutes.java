@@ -21,6 +21,7 @@ public class ScannerRoutes
                 .routeId("Load Manuscript configuration")
                 .filter(bean(configFileFilter, "test(${header.CamelFileName})"))
                 .log("Config file: ${header.CamelFileName}")
+                .to("direct:Binder.ParseConfig")
         ;
 
         fromF("file-watch://%s", binderConfig.getScanDirectory())
