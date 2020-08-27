@@ -33,6 +33,9 @@ public class ManuscriptLoader {
     Manuscript manuscript(ManuscriptMetadata manuscriptMetaData) {
         Manuscript manuscript = new Manuscript();
         manuscript.setMetadata(manuscriptMetaData);
+        //TODO - load preludes
+        //TODO - load sections
+        //TODO - load codas
         return manuscript;
     }
 
