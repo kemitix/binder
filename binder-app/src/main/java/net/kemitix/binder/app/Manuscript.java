@@ -11,10 +11,7 @@ import java.util.List;
 
 @Setter
 @Getter
-@ApplicationScoped
 public class Manuscript {
-
-    @Inject ManuscriptConfig config;
 
     private List<Section> prelude = new ArrayList<>();
     private List<Section> contents = new ArrayList<>();
@@ -22,7 +19,7 @@ public class Manuscript {
 
     @Setter
     @Getter
-    private static class Section {
+    public static class Section {
 
         private String name; // the base filename
         private File filename; // the file loaded
@@ -32,7 +29,7 @@ public class Manuscript {
 
     @Setter
     @Getter
-    private static class ContentSection extends Section {
+    public static class ContentSection extends Section {
 
         private String title;
         private String author;
