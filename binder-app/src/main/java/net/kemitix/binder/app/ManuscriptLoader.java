@@ -14,8 +14,8 @@ import java.nio.file.Paths;
 public class ManuscriptLoader {
 
     @Produces
-    ManuscriptConfig manuscriptConfig(BinderConfig binderConfig) throws IOException {
-        Yaml yaml = new Yaml(new Constructor(ManuscriptConfig.class));
+    ManuscriptMetadata manuscriptMetadata(BinderConfig binderConfig) throws IOException {
+        Yaml yaml = new Yaml(new Constructor(ManuscriptMetadata.class));
         File configFile = getConfigFile(binderConfig);
         FileReader fileReader = new FileReader(configFile);
         return yaml.load(fileReader);
@@ -30,8 +30,10 @@ public class ManuscriptLoader {
     }
 
     @Produces
-    Manuscript manuscript(ManuscriptConfig manuscriptConfig) {
-        return new Manuscript();
+    Manuscript manuscript(ManuscriptMetadata manuscriptMetaData) {
+        Manuscript manuscript = new Manuscript();
+        manuscript.setMetadata(manuscriptMetaData);
+        return manuscript;
     }
 
 }

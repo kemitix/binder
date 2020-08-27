@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-public class ManuscriptConfig {
+public class ManuscriptMetadata {
 
     private String id;
     private int issue;

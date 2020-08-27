@@ -3,8 +3,6 @@ package net.kemitix.binder.app;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +10,8 @@ import java.util.List;
 @Setter
 @Getter
 public class Manuscript {
+
+    ManuscriptMetadata metadata;
 
     private List<Section> prelude = new ArrayList<>();
     private List<Section> contents = new ArrayList<>();
