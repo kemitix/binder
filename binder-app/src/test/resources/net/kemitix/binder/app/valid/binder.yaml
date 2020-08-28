@@ -1,0 +1,24 @@
+id: my-id
+issue: 999
+date: 2020-08-28
+title: my-title
+subtitle: my-subtitle
+kdpSubtitle: my-kdp-subtitle
+description: my-description
+isbn: my-isbn
+editor: my-editor
+cover: my-cover
+coverArtist: my-cover-artist
+
+preludes:
+  - prelude-1
+  - prelude-2
+
+contents:
+  - content-1
+  - content-3
+  - content-2
+
+codas:
+  - coda-1
+  - coda-2

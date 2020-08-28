@@ -7,6 +7,7 @@ import net.kemitix.binder.app.BinderConfig;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import java.io.File;
 import java.util.Objects;
 
 @Log
@@ -16,14 +17,29 @@ import java.util.Objects;
 public class QuarkusBinderConfig
         implements BinderConfig {
 
-    public static final String BINDER_DIRECTORY = "BINDER_DIRECTORY";
+    private File scanDirectory =
+            new File(binderDirectory());
 
-    private String scanDirectory = Objects.requireNonNull(
-            System.getProperty(BINDER_DIRECTORY), BINDER_DIRECTORY);
+    private String binderDirectory() {
+        return property("BINDER_DIRECTORY")
+                .replaceFirst("^~", property("user.home"));
+    }
+
+    private String property(String s) {
+        return Objects.requireNonNull(
+                System.getProperty(s),
+                "Undefined property: " + s);
+    }
 
     @PostConstruct
     void init() {
         log.info(String.format("BINDER_DIRECTORY: %s", scanDirectory));
     }
 
+    @Override
+    public File getFile(String name, String extension) {
+        return scanDirectory.toPath()
+                .resolve(String.format("%s.%s", name, extension))
+                .toFile();
+    }
 }

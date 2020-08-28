@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -23,7 +24,8 @@ public class ManuscriptMetadata {
     private String cover;
     private String coverArtist;
 
-    private List<String> prelude;
-    private List<String> contents;
-    private List<String> coda;
+    private List<String> preludes = new ArrayList<>();
+    private List<String> contents = new ArrayList<>();
+    private List<String> codas = new ArrayList<>();
+
 }

@@ -20,9 +20,9 @@ public class BinderApp {
 
     public void run(String[] args) {
         log.info("Binder - Starting");
-        manuscript.getPrelude().forEach(prelude -> log.info("Prelude: " + prelude.getName()));
-        manuscript.getContents().forEach(section -> log.info("Prelude: " + section.getName()));
-        manuscript.getCoda().forEach(coda -> log.info("Prelude: " + coda.getName()));
+        manuscript.getPreludes().forEach(prelude -> log.info("Prelude: " + prelude.getName()));
+        manuscript.getContents().forEach(section -> log.info("Content: " + section.getName()));
+        manuscript.getCodas().forEach(coda -> log.info("Coda   : " + coda.getName()));
         log.info("Binder - Done.");
     }
 
