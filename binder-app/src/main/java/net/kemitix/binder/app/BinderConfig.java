@@ -1,5 +1,9 @@
 package net.kemitix.binder.app;
 
+import java.io.File;
+
 public interface BinderConfig {
-    String getScanDirectory();
+    File getScanDirectory();
+
+    File getFile(String name, String extension);
 }
