@@ -5,25 +5,31 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static org.mockito.BDDMockito.given;
 
-@ExtendWith(MockitoExtension.class)
 public class ManuscriptLoaderTest
         implements WithAssertions {
 
-    @Mock
-    BinderConfig binderConfig;
+    AtomicReference<File> scanDirectory = new AtomicReference<>();
 
-    @Mock
+    BinderConfig binderConfig = new BinderConfig() {
+        @Override
+        public File getScanDirectory() {
+            return scanDirectory.get();
+        }
+    };
+
     SectionLoader sectionLoader;
+
+    private final YamlLoader yamlLoader = new YamlLoader();
 
     ManuscriptLoader manuscriptLoader;
 
@@ -33,9 +39,8 @@ public class ManuscriptLoaderTest
 
     @BeforeEach
     public void setUp() {
-        manuscriptLoader = new ManuscriptLoader(sectionLoader);
-        System.out.println("validDirectory = " + validDirectory);
-        System.out.println("invalidDirectory = " + invalidDirectory);
+        sectionLoader = new SectionLoader(binderConfig, yamlLoader);
+        manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
     }
 
     @Nested
@@ -46,8 +51,7 @@ public class ManuscriptLoaderTest
         @DisplayName("Load file successfully")
         public void loadFileOkay() throws IOException {
             //given
-            given(binderConfig.getScanDirectory())
-                    .willReturn(validDirectory);
+            scanDirectory.set(validDirectory);
             ManuscriptMetadata expected = new ManuscriptMetadata();
             expected.setId("my-id");
             expected.setIssue(999);
@@ -75,8 +79,7 @@ public class ManuscriptLoaderTest
         @DisplayName("When Binder directory is missing")
         public void whenBinderDirectoryIsMissing() {
             //given
-            given(binderConfig.getScanDirectory())
-                    .willReturn(missingDirectory);
+            scanDirectory.set(missingDirectory);
             //then
             assertThatExceptionOfType(MissingBinderDirectory.class)
                     .isThrownBy(() ->
@@ -87,13 +90,47 @@ public class ManuscriptLoaderTest
         @DisplayName("When Metadata file is missing")
         public void whenMetadataIsMissing() {
             //given
-            given(binderConfig.getScanDirectory())
-                    .willReturn(invalidDirectory);
+            scanDirectory.set(invalidDirectory);
             //then
-            assertThatExceptionOfType(MissingBinderYamlFile.class)
+            assertThatExceptionOfType(FileNotFoundException.class)
                     .isThrownBy(() ->
                             manuscriptLoader.manuscriptMetadata(binderConfig));
         }
     }
 
+    @Nested
+    @DisplayName("Manuscript contents")
+    public class ManuscriptContentsTests {
+
+        private ManuscriptMetadata metadata;
+
+        @BeforeEach
+        void setUp() throws IOException {
+            scanDirectory.set(validDirectory);
+            metadata = manuscriptLoader.manuscriptMetadata(binderConfig);
+        }
+
+        @Test
+        void loadAndParsePrelude1() {
+            //when
+            Manuscript manuscript = manuscriptLoader.manuscript(metadata);
+            //then
+            List<Section> prelude1s = manuscript.getContents()
+                    .stream()
+                    .filter(section -> "prelude-1".equals(section.getName()))
+                    .collect(Collectors.toList());
+            assertThat(prelude1s).hasSize(1);
+            assertThat(prelude1s).satisfies(preludes -> {
+                Section prelude = preludes.get(0);
+                assertThat(prelude.getType()).isEqualTo(Section.Type.PRELUDE.getSlug());
+                assertThat(prelude.getName()).isEqualTo("prelude-1");
+                assertThat(prelude.getFilename()).isEqualTo(
+                        validDirectory.toPath()
+                                .resolve("prelude-1.md").toFile());
+                assertThat(prelude.getTitle()).isEqualTo("test prelude 1 title");
+                assertThat(prelude.getMarkdown())
+                        .isEqualTo("# Document Title\n\ndocument body");
+            });
+        }
+    }
 }

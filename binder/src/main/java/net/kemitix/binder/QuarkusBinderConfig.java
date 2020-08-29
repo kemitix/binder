@@ -36,10 +36,4 @@ public class QuarkusBinderConfig
         log.info(String.format("BINDER_DIRECTORY: %s", scanDirectory));
     }
 
-    @Override
-    public File getFile(String name, String extension) {
-        return scanDirectory.toPath()
-                .resolve(String.format("%s.%s", name, extension))
-                .toFile();
-    }
 }

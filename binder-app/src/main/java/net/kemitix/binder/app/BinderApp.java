@@ -13,16 +13,15 @@ public class BinderApp {
 
     @Inject
     public BinderApp(
-            Manuscript manuscript
-    ) {
+            Manuscript manuscript) {
         this.manuscript = manuscript;
     }
 
     public void run(String[] args) {
         log.info("Binder - Starting");
-        manuscript.getPreludes().forEach(prelude -> log.info("Prelude: " + prelude.getName()));
-        manuscript.getContents().forEach(section -> log.info("Content: " + section.getName()));
-        manuscript.getCodas().forEach(coda -> log.info("Coda   : " + coda.getName()));
+        manuscript.getContents().forEach(section ->
+                log.info(String.format("%7s: %s", section.getType(), section.getName())));
+        System.out.println("contents = " + manuscript.getContents());
         log.info("Binder - Done.");
     }
 
