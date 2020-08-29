@@ -10,19 +10,22 @@ import javax.inject.Inject;
 public class BinderApp {
 
     private final Manuscript manuscript;
+    private final HtmlFactory htmlFactory;
 
     @Inject
     public BinderApp(
-            Manuscript manuscript
+            Manuscript manuscript,
+            HtmlFactory htmlFactory
     ) {
         this.manuscript = manuscript;
+        this.htmlFactory = htmlFactory;
     }
 
     public void run(String[] args) {
         log.info("Binder - Starting");
-        manuscript.getPreludes().forEach(prelude -> log.info("Prelude: " + prelude.getName()));
-        manuscript.getContents().forEach(section -> log.info("Content: " + section.getName()));
-        manuscript.getCodas().forEach(coda -> log.info("Coda   : " + coda.getName()));
+        manuscript.getContents().forEach(section ->
+                log.info(String.format("%7s: %s", section.getType(), section.getName())));
+        htmlFactory.createAll();
         log.info("Binder - Done.");
     }
 
