@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static org.mockito.BDDMockito.given;
-
 public class ManuscriptLoaderTest
         implements WithAssertions {
 
@@ -92,9 +90,10 @@ public class ManuscriptLoaderTest
             //given
             scanDirectory.set(invalidDirectory);
             //then
-            assertThatExceptionOfType(FileNotFoundException.class)
+            assertThatExceptionOfType(ManuscriptFormatException.class)
                     .isThrownBy(() ->
-                            manuscriptLoader.manuscriptMetadata(binderConfig));
+                            manuscriptLoader.manuscriptMetadata(binderConfig))
+                    .withCauseInstanceOf(FileNotFoundException.class);
         }
     }
 

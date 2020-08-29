@@ -16,6 +16,7 @@ public class Section {
     private String name; // the base filename
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
+    private String html;
 
     @Getter
     public enum Type {

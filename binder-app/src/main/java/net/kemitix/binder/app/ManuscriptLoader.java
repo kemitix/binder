@@ -1,5 +1,7 @@
 package net.kemitix.binder.app;
 
+import org.yaml.snakeyaml.error.YAMLException;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -26,13 +28,14 @@ public class ManuscriptLoader {
     }
 
     @Produces
-    ManuscriptMetadata manuscriptMetadata(BinderConfig binderConfig) throws IOException {
+    ManuscriptMetadata manuscriptMetadata(BinderConfig binderConfig) {
         File scanDirectory = binderConfig.getScanDirectory();
         if (!scanDirectory.exists()) {
             throw new MissingBinderDirectory(scanDirectory);
         }
         File file = scanDirectory.toPath().resolve("binder.yaml").toFile();
-        ManuscriptMetadata manuscriptMetadata = yamlLoader.loadFile(file, ManuscriptMetadata.class);
+        ManuscriptMetadata manuscriptMetadata =
+                yamlLoader.loadFile(file, ManuscriptMetadata.class);
         if (manuscriptMetadata.getContents() == null)
             manuscriptMetadata.setContents(Collections.emptyList());
         return manuscriptMetadata;
