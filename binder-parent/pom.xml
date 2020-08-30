@@ -29,6 +29,7 @@
         <mockito-junit-jupiter.version>3.5.7</mockito-junit-jupiter.version>
         <jakartaee-api.version>8.0.0</jakartaee-api.version>
         <snakeyaml.version>1.26</snakeyaml.version>
+        <flexmark.version>0.62.2</flexmark.version>
     </properties>
 
     <dependencyManagement>
@@ -66,7 +67,7 @@
             <dependency>
                 <groupId>com.vladsch.flexmark</groupId>
                 <artifactId>flexmark-all</artifactId>
-                <version>0.62.2</version>
+                <version>${flexmark.version}</version>
             </dependency>
 
             <dependency>
