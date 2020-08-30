@@ -28,6 +28,7 @@ public class ManuscriptLoader {
     }
 
     @Produces
+    @ApplicationScoped
     ManuscriptMetadata manuscriptMetadata(BinderConfig binderConfig) {
         File scanDirectory = binderConfig.getScanDirectory();
         if (!scanDirectory.exists()) {
@@ -42,6 +43,7 @@ public class ManuscriptLoader {
     }
 
     @Produces
+    @ApplicationScoped
     Manuscript manuscript(ManuscriptMetadata metadata) {
         Manuscript manuscript = new Manuscript();
         manuscript.setMetadata(metadata);
