@@ -36,8 +36,8 @@
         </dependency>
 
         <dependency>
-            <artifactId>org.eclipse.mylyn.docs.epub.core</artifactId>
-            <groupId>org.eclipse.mylyn.docs</groupId>
+            <groupId>net.kemitix</groupId>
+            <artifactId>epub-creator</artifactId>
         </dependency>
 
         <dependency>

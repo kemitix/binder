@@ -30,7 +30,7 @@
         <jakartaee-api.version>8.0.0</jakartaee-api.version>
         <snakeyaml.version>1.26</snakeyaml.version>
         <flexmark.version>0.62.2</flexmark.version>
-        <mylyn.docs.epub.version>4.0.6</mylyn.docs.epub.version>
+        <epub-creator.version>1.0.2</epub-creator.version>
     </properties>
 
     <dependencyManagement>
@@ -72,9 +72,9 @@
             </dependency>
 
             <dependency>
-                <artifactId>org.eclipse.mylyn.docs.epub.core</artifactId>
-                <groupId>org.eclipse.mylyn.docs</groupId>
-                <version>${mylyn.docs.epub.version}</version>
+                <groupId>net.kemitix</groupId>
+                <artifactId>epub-creator</artifactId>
+                <version>${epub-creator.version}</version>
             </dependency>
 
             <dependency>
