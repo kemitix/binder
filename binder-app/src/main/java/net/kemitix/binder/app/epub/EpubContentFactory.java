@@ -1,7 +1,8 @@
-package net.kemitix.binder.app;
+package net.kemitix.binder.app.epub;
 
 import coza.opencollab.epub.creator.model.Content;
 import lombok.extern.java.Log;
+import net.kemitix.binder.app.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.io.IOException;

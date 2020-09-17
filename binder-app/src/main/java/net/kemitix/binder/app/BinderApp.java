@@ -1,6 +1,7 @@
 package net.kemitix.binder.app;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.app.epub.EpubFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

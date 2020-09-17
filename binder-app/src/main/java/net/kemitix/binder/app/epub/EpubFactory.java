@@ -1,7 +1,10 @@
-package net.kemitix.binder.app;
+package net.kemitix.binder.app.epub;
 
 import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
+import net.kemitix.binder.app.BinderConfig;
+import net.kemitix.binder.app.Manuscript;
+import net.kemitix.binder.app.ManuscriptMetadata;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
