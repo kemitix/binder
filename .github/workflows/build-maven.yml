@@ -21,17 +21,3 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: build-jar
         run: mvn -B install
-
-  native-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: kamiazya/setup-graphviz@v1
-      - uses: actions/checkout@v2
-      - name: setup-graalvm-ce
-        uses: rinx/setup-graalvm-ce@v0.0.3
-        with:
-          graalvm-version: "20.2.0"
-          java-version: "java15"
-          native-image: true
-      - name: build-native-image
-        run: mvn -V verify -Pnative -DskipTests -DskipITs -Dpitest.skip
