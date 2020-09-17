@@ -14,7 +14,7 @@ public class EpubContentFactory {
     public Content create(Section section) {
         byte[] bytes = readFile(section);
         String mediaType = "application/xhtml+xml";
-        String href = "content/" + section.getName();
+        String href = "content/%s.html".formatted(section.getName());
         log.info(String.format("Created Content: %s (%s) [%d bytes] %s",
                 href, mediaType, bytes.length, section.getHtmlFile().getName()));
         return new Content(mediaType, href, bytes);
