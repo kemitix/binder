@@ -12,5 +12,5 @@ import lombok.ToString;
 @ToString(callSuper = true)
 class Content extends Section {
     private String author;
-    private int page;
+    private int pageNumber;
 }
