@@ -61,7 +61,7 @@ public class ManuscriptLoaderTest
             expected.setDescription("my-description");
             expected.setIsbn("my-isbn");
             expected.setEditor("my-editor");
-            expected.setCover("my-cover");
+            expected.setCover("cover.jpg");
             expected.setCoverArtist("my-cover-artist");
             expected.setPreludes(List.of("prelude-1", "prelude-2"));
             expected.setContents(List.of("content-1", "content-3", "content-2"));
