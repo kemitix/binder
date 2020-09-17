@@ -6,6 +6,11 @@ import lombok.ToString;
 
 import java.io.File;
 
+/**
+ * A general section of the document. Sourced from a single Markdown file.
+ *
+ * <p>All preludes, contents and codas are sections.</p>
+ */
 @Setter
 @Getter
 @ToString
