@@ -16,19 +16,15 @@
     <packaging>pom</packaging>
 
     <properties>
-        <java-version>11</java-version>
-
-        <maven-graph-plugin.version>1.45</maven-graph-plugin.version>
-
         <tiles-maven-plugin.version>2.17</tiles-maven-plugin.version>
-        <kemitix-tiles.version>2.8.0</kemitix-tiles.version>
+        <kemitix-tiles.version>2.11.0</kemitix-tiles.version>
 
         <lombok.version>1.18.12</lombok.version>
-        <assertj.version>3.17.0</assertj.version>
-        <junit.version>5.6.2</junit.version>
-        <mockito-junit-jupiter.version>3.5.7</mockito-junit-jupiter.version>
+        <assertj.version>3.17.2</assertj.version>
+        <junit.version>5.7.0</junit.version>
+        <mockito-junit-jupiter.version>3.5.10</mockito-junit-jupiter.version>
         <jakartaee-api.version>8.0.0</jakartaee-api.version>
-        <snakeyaml.version>1.26</snakeyaml.version>
+        <snakeyaml.version>1.27</snakeyaml.version>
         <flexmark.version>0.62.2</flexmark.version>
         <epub-creator.version>1.0.2</epub-creator.version>
     </properties>
@@ -107,7 +103,7 @@
                     <tiles>
                         <tile>net.kemitix.tiles:maven-plugins:${kemitix-tiles.version}</tile>
 <!--                        <tile>net.kemitix.tiles:enforcer:${kemitix-tiles.version}</tile>-->
-                        <tile>net.kemitix.tiles:compiler-jdk-11:${kemitix-tiles.version}</tile>
+                        <tile>net.kemitix.tiles:compiler-jdk-next:${kemitix-tiles.version}</tile>
 <!--                        <tile>net.kemitix.tiles:huntbugs:${kemitix-tiles.version}</tile>-->
 <!--                        <tile>net.kemitix.tiles:pmd:${kemitix-tiles.version}</tile>-->
                         <tile>net.kemitix.tiles:testing:${kemitix-tiles.version}</tile>
