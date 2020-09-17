@@ -2,8 +2,6 @@ package net.kemitix.binder.app;
 
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.constructor.ConstructorException;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.io.File;

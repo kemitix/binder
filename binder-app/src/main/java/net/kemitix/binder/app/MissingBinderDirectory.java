@@ -8,12 +8,10 @@ import java.io.File;
  * Thrown when the BINDER_DIRECTORY is missing.
  */
 @Getter
-public class MissingBinderDirectory extends RuntimeException {
-
-    private final File directory;
+public class MissingBinderDirectory extends IllegalArgumentException {
 
     public MissingBinderDirectory(File directory) {
-        this.directory = directory;
+        super("The binder directory, %s, is missing".formatted(directory));
     }
 
 }

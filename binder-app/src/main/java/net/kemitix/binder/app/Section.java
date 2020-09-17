@@ -2,7 +2,6 @@ package net.kemitix.binder.app;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.io.File;
 
@@ -13,7 +12,6 @@ import java.io.File;
  */
 @Setter
 @Getter
-@ToString
 public class Section {
 
     private String type; // prelude, content or coda
@@ -21,7 +19,6 @@ public class Section {
     private String name; // the base filename
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
-    private String html;
     private File htmlFile;
 
     @Getter

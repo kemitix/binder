@@ -1,15 +1,11 @@
 package net.kemitix.binder.app;
 
-import org.yaml.snakeyaml.error.YAMLException;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @ApplicationScoped

@@ -40,7 +40,6 @@ public class HtmlFactory {
     private void createHtmlForSection(Section section) {
         String markdown = section.getMarkdown();
         String html = markdownToHtml.apply(markdown);
-        section.setHtml(html);
         Path binder = binderConfig.getBinderOutputDirectory().toPath();
         Path filename = binder
                 .resolve(String.format("%s.%s", section.getName(), "html"));

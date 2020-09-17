@@ -1,6 +1,5 @@
 package net.kemitix.binder.app;
 
-import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.epub.EpubFactory;
 

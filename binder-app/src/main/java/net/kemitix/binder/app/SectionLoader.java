@@ -1,14 +1,10 @@
 package net.kemitix.binder.app;
 
-import lombok.SneakyThrows;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Optional;
 
 @ApplicationScoped
 public class SectionLoader {
@@ -35,9 +31,11 @@ public class SectionLoader {
                 .peek(s -> s.setFilename(filename))
                 .findFirst()
                 .orElseThrow(() ->
-                        new ManuscriptFormatException((String.format(
-                                "Unknown section type %s: %s",
-                                section.getType(), filename))));
+                        new ManuscriptFormatException(
+                                "Unknown section type %s: %s"
+                                        .formatted(
+                                                section.getType(),
+                                                filename)));
     }
 
     private Section getSection(File filename, Section.Type type) {
