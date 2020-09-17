@@ -32,7 +32,7 @@ public class EpubFactory {
         this.epubContentFactory = epubContentFactory;
     }
 
-    public void create() {
+    public EpubBook create() {
         ManuscriptMetadata metadata = manuscript.getMetadata();
         EpubBook epub = createEpub(metadata);
         epub.addCoverImage(coverImage(metadata.getCover()),
@@ -41,14 +41,7 @@ public class EpubFactory {
         manuscript.getContents().stream()
                 .map(epubContentFactory::create)
                 .forEach(epub::addContent);
-        String epubFile = binderConfig.getEpubFile().getAbsolutePath();
-        try {
-            epub.writeToFile(epubFile);
-        } catch (Exception e) {
-            throw new RuntimeException(String.format(
-                    "Error creating epub file %s: %s",
-                    epubFile, e.getMessage()), e);
-        }
+        return epub;
     }
 
     private byte[] coverImage(String cover) {
