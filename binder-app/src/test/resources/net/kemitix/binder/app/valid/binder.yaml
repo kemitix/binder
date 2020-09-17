@@ -1,13 +1,14 @@
 id: my-id
 issue: 999
 date: 2020-08-28
+language: en
 title: my-title
 subtitle: my-subtitle
 kdpSubtitle: my-kdp-subtitle
 description: my-description
 isbn: my-isbn
 editor: my-editor
-cover: my-cover
+cover: cover.jpg
 coverArtist: my-cover-artist
 
 preludes:

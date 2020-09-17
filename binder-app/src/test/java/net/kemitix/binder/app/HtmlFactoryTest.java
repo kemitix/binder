@@ -1,18 +1,14 @@
 package net.kemitix.binder.app;
 
 import org.assertj.core.api.WithAssertions;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class HtmlFactoryTest
@@ -35,7 +31,7 @@ public class HtmlFactoryTest
         scanDirectory.set(validDirectory);
         metadata = manuscriptLoader.manuscriptMetadata(binderConfig);
         manuscript = manuscriptLoader.manuscript(metadata);
-        htmlFactory = new HtmlFactory(manuscript, markdownToHtml);
+        htmlFactory = new HtmlFactory(binderConfig, manuscript, markdownToHtml);
     }
 
     @Test

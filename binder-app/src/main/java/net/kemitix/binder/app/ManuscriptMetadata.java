@@ -2,19 +2,18 @@ package net.kemitix.binder.app;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Setter
 @Getter
-@ToString
 public class ManuscriptMetadata {
 
     private String id;
     private int issue;
     private String date;
+    private String language;
     private String title;
     private String subtitle;
     private String kdpSubtitle;
@@ -35,4 +34,5 @@ public class ManuscriptMetadata {
         sections.addAll(codas);
         return sections;
     }
+
 }
