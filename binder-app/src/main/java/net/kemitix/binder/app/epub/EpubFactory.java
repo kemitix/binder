@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Log
 @ApplicationScoped
@@ -32,8 +35,9 @@ public class EpubFactory {
     public void create() {
         ManuscriptMetadata metadata = manuscript.getMetadata();
         EpubBook epub = createEpub(metadata);
-        //TODO epub.addCoverImage(coverImageBytes, mediaType, href);
-        epub.addTextContent("", "", "");
+        epub.addCoverImage(coverImage(metadata.getCover()),
+                "image/jpeg", "cover.jpg");
+        epub.addTextContent("Cover", "cover.html", "<img src=\"cover.jpg\" style=\"height:100%\"/>");
         manuscript.getContents().stream()
                 .map(epubContentFactory::create)
                 .forEach(epub::addContent);
@@ -44,6 +48,18 @@ public class EpubFactory {
             throw new RuntimeException(String.format(
                     "Error creating epub file %s: %s",
                     epubFile, e.getMessage()), e);
+        }
+    }
+
+    private byte[] coverImage(String cover) {
+        Path coverPath = binderConfig.getScanDirectory().toPath()
+                .resolve(cover);
+        try {
+            return Files.readAllBytes(coverPath);
+        } catch (IOException e) {
+            throw new RuntimeException(String.format(
+                    "Error loading Cover image: %s", coverPath),
+                    e);
         }
     }
 
