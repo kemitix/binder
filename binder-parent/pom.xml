@@ -103,7 +103,7 @@
                     <tiles>
                         <tile>net.kemitix.tiles:maven-plugins:${kemitix-tiles.version}</tile>
 <!--                        <tile>net.kemitix.tiles:enforcer:${kemitix-tiles.version}</tile>-->
-                        <tile>net.kemitix.tiles:compiler-jdk-next:${kemitix-tiles.version}</tile>
+                        <tile>net.kemitix.tiles:compiler-jdk-latest:${kemitix-tiles.version}</tile>
 <!--                        <tile>net.kemitix.tiles:huntbugs:${kemitix-tiles.version}</tile>-->
 <!--                        <tile>net.kemitix.tiles:pmd:${kemitix-tiles.version}</tile>-->
                         <tile>net.kemitix.tiles:testing:${kemitix-tiles.version}</tile>
