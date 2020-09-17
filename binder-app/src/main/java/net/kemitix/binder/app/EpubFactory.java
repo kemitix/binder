@@ -1,28 +1,59 @@
 package net.kemitix.binder.app;
 
+import coza.opencollab.epub.creator.model.EpubBook;
+import lombok.extern.java.Log;
+import org.jetbrains.annotations.NotNull;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.stream.Collectors;
 
+@Log
 @ApplicationScoped
 public class EpubFactory {
 
+    private final BinderConfig binderConfig;
     private final Manuscript manuscript;
-    private final HtmlToEpub htmlToEpub;
+    private final EpubContentFactory epubContentFactory;
 
     @Inject
     public EpubFactory(
+            BinderConfig binderConfig,
             Manuscript manuscript,
-            HtmlToEpub htmlToEpub
+            EpubContentFactory epubContentFactory
     ) {
+        this.binderConfig = binderConfig;
         this.manuscript = manuscript;
-        this.htmlToEpub = htmlToEpub;
+        this.epubContentFactory = epubContentFactory;
     }
 
     public void create() {
-        htmlToEpub.accept(
-                manuscript.getContents().stream()
-                        .map(Section::getHtmlFile)
-                        .collect(Collectors.toList()));
+        ManuscriptMetadata metadata = manuscript.getMetadata();
+        EpubBook epub = createEpub(metadata);
+        //TODO epub.addCoverImage(coverImageBytes, mediaType, href);
+        epub.addTextContent("", "", "");
+        manuscript.getContents().stream()
+                .map(epubContentFactory::create)
+                .forEach(epub::addContent);
+        String epubFile = binderConfig.getEpubFile().getAbsolutePath();
+        try {
+            epub.writeToFile(epubFile);
+        } catch (Exception e) {
+            throw new RuntimeException(String.format(
+                    "Error creating epub file %s: %s",
+                    epubFile, e.getMessage()), e);
+        }
+    }
+
+    @NotNull
+    private EpubBook createEpub(ManuscriptMetadata metadata) {
+        String language = metadata.getLanguage();
+        log.info("Language: " + language);
+        String id = metadata.getId();
+        log.info("Id: " + id);
+        String title = metadata.getTitle();
+        log.info("Title: " + title);
+        String editor = metadata.getEditor();
+        log.info("Editor: " + editor);
+        return new EpubBook(language, id, title, editor);
     }
 }

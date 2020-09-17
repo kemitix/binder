@@ -53,6 +53,7 @@ public class ManuscriptLoaderTest
             ManuscriptMetadata expected = new ManuscriptMetadata();
             expected.setId("my-id");
             expected.setIssue(999);
+            expected.setLanguage("en");
             expected.setDate("2020-08-28");
             expected.setTitle("my-title");
             expected.setSubtitle("my-subtitle");
