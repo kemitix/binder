@@ -30,6 +30,7 @@ public class DocxBook {
     public void writeToFile(String file) {
         //TODO write self to file
         log.info("TODO - write " + title + " to: " + file);
+        content.forEach(docxContent -> docxContent.save(file));
     }
 
     public void addContent(DocxContent content) {

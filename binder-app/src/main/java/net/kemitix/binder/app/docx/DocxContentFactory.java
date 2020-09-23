@@ -40,7 +40,7 @@ public class DocxContentFactory {
             XHTMLImporter.setHyperlinkStyle("Hyperlink");
             wordMLPackage.getMainDocumentPart().getContent().addAll(
                     XHTMLImporter.convert(unescaped, baseURL));
-            return new DocxContent();
+            return new DocxContent(wordMLPackage);
         } catch (Docx4JException | IOException | JAXBException e) {
             try {
                 log.severe(Files.readString(section.getHtmlFile().toPath()));
