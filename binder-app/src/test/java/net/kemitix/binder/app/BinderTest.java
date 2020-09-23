@@ -4,6 +4,7 @@ import coza.opencollab.epub.creator.model.Content;
 import coza.opencollab.epub.creator.model.EpubBook;
 import net.kemitix.binder.app.epub.EpubContentFactory;
 import net.kemitix.binder.app.epub.EpubFactory;
+import net.kemitix.binder.app.epub.EpubWriter;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
