@@ -48,7 +48,7 @@ public class BinderTest
     EpubContentFactory epubContentFactory = new EpubContentFactory();
     EpubFactory epubFactory = new EpubFactory(binderConfig, manuscript, epubContentFactory);
 
-    DocxContentFactory docxContextFactory;
+    DocxContentFactory docxContextFactory = new DocxContentFactory();
     DocxFactory docxFactory = new DocxFactory(binderConfig, manuscript, docxContextFactory);
 
     @Mock EpubWriter epubWriter;
