@@ -41,10 +41,9 @@ public class ManuscriptLoader {
     @Produces
     @ApplicationScoped
     Manuscript manuscript(ManuscriptMetadata metadata) {
-        Manuscript manuscript = new Manuscript();
-        manuscript.setMetadata(metadata);
-        manuscript.setContents(loadSections(metadata.getContents()));
-        return manuscript;
+        return Manuscript.builder()
+                .metadata(metadata)
+                .contents(loadSections(metadata.getContents()));
     }
 
     private List<Section> loadSections(
