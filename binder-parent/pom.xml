@@ -27,6 +27,9 @@
         <snakeyaml.version>1.27</snakeyaml.version>
         <flexmark.version>0.62.2</flexmark.version>
         <epub-creator.version>1.0.2</epub-creator.version>
+        <docx4j-ImportXHTML.version>8.0.0</docx4j-ImportXHTML.version>
+        <docx4j-JAXB-ReferenceImpl.version>8.2.3
+        </docx4j-JAXB-ReferenceImpl.version>
     </properties>
 
     <dependencyManagement>
@@ -71,6 +74,17 @@
                 <groupId>net.kemitix</groupId>
                 <artifactId>epub-creator</artifactId>
                 <version>${epub-creator.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.docx4j</groupId>
+                <artifactId>docx4j-ImportXHTML</artifactId>
+                <version>${docx4j-ImportXHTML.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.docx4j</groupId>
+                <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
+                <version>${docx4j-JAXB-ReferenceImpl.version}</version>
             </dependency>
 
             <dependency>

@@ -63,9 +63,10 @@ public class ManuscriptLoaderTest
             expected.setEditor("my-editor");
             expected.setCover("cover.jpg");
             expected.setCoverArtist("my-cover-artist");
-            expected.setPreludes(List.of("prelude-1", "prelude-2"));
-            expected.setContents(List.of("content-1", "content-3", "content-2"));
-            expected.setCodas(List.of("coda-1", "coda-2"));
+            expected.setContents(List.of(
+                    "prelude-1", "prelude-2",
+                    "content-1", "content-3", "content-2",
+                    "coda-1", "coda-2"));
             //when
             ManuscriptMetadata metadata = manuscriptLoader.manuscriptMetadata(binderConfig);
             //then
@@ -122,7 +123,6 @@ public class ManuscriptLoaderTest
             assertThat(prelude1s).hasSize(1);
             assertThat(prelude1s).satisfies(preludes -> {
                 Section prelude = preludes.get(0);
-                assertThat(prelude.getType()).isEqualTo(Section.Type.PRELUDE.getSlug());
                 assertThat(prelude.getName()).isEqualTo("prelude-1");
                 assertThat(prelude.getFilename()).isEqualTo(
                         validDirectory.toPath()
@@ -130,6 +130,30 @@ public class ManuscriptLoaderTest
                 assertThat(prelude.getTitle()).isEqualTo("test prelude 1 title");
                 assertThat(prelude.getMarkdown())
                         .isEqualTo("# Document Title\n\ndocument body");
+                assertThat(prelude.isToc()).isFalse();
+            });
+        }
+
+        @Test
+        void loadAndParsePrelude2() {
+            //when
+            Manuscript manuscript = manuscriptLoader.manuscript(metadata);
+            //then
+            List<Section> prelude1s = manuscript.getContents()
+                    .stream()
+                    .filter(section -> "prelude-2".equals(section.getName()))
+                    .collect(Collectors.toList());
+            assertThat(prelude1s).hasSize(1);
+            assertThat(prelude1s).satisfies(preludes -> {
+                Section prelude = preludes.get(0);
+                assertThat(prelude.getName()).isEqualTo("prelude-2");
+                assertThat(prelude.getFilename()).isEqualTo(
+                        validDirectory.toPath()
+                                .resolve("prelude-2.md").toFile());
+                assertThat(prelude.getTitle()).isEqualTo("test prelude 2 title");
+                assertThat(prelude.getMarkdown())
+                        .isEqualTo("# Document Title 2\n\ndocument body");
+                assertThat(prelude.isToc()).isTrue();
             });
         }
     }

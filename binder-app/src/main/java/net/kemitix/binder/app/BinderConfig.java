@@ -45,4 +45,10 @@ public interface BinderConfig {
                 .toFile();
     }
 
+    default File getDocxFile() {
+        return getBinderOutputDirectory().toPath()
+                .resolve("binder.docx")
+                .toFile();
+    }
+
 }

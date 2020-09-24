@@ -43,7 +43,7 @@ public class ManuscriptLoader {
     Manuscript manuscript(ManuscriptMetadata metadata) {
         Manuscript manuscript = new Manuscript();
         manuscript.setMetadata(metadata);
-        manuscript.setContents(loadSections(metadata.getSections()));
+        manuscript.setContents(loadSections(metadata.getContents()));
         return manuscript;
     }
 

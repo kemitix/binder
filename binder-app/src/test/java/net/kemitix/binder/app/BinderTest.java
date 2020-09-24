@@ -2,8 +2,12 @@ package net.kemitix.binder.app;
 
 import coza.opencollab.epub.creator.model.Content;
 import coza.opencollab.epub.creator.model.EpubBook;
+import net.kemitix.binder.app.docx.DocxContentFactory;
+import net.kemitix.binder.app.docx.DocxFactory;
+import net.kemitix.binder.app.docx.DocxWriter;
 import net.kemitix.binder.app.epub.EpubContentFactory;
 import net.kemitix.binder.app.epub.EpubFactory;
+import net.kemitix.binder.app.epub.EpubWriter;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,19 +47,26 @@ public class BinderTest
     );
     EpubContentFactory epubContentFactory = new EpubContentFactory();
     EpubFactory epubFactory = new EpubFactory(binderConfig, manuscript, epubContentFactory);
-    @Mock
-    EpubWriter epubWriter;
+
+    DocxContentFactory docxContextFactory = new DocxContentFactory();
+    DocxFactory docxFactory = new DocxFactory(binderConfig, manuscript, docxContextFactory);
+
+    @Mock EpubWriter epubWriter;
+    @Mock DocxWriter docxWriter;
+
     BinderApp app;
 
     EpubBook epubBook;
+
 
     @BeforeEach
     void setUp() {
         app = new BinderApp(
                 htmlFactory,
                 epubFactory,
-                epubWriter
-        );
+                epubWriter,
+                docxWriter,
+                docxFactory);
         //when
         app.run(new String[] {});
         //then

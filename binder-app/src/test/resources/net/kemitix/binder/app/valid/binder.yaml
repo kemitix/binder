@@ -11,15 +11,11 @@ editor: my-editor
 cover: cover.jpg
 coverArtist: my-cover-artist
 
-preludes:
+contents:
   - prelude-1
   - prelude-2
-
-contents:
   - content-1
   - content-3
   - content-2
-
-codas:
   - coda-1
   - coda-2

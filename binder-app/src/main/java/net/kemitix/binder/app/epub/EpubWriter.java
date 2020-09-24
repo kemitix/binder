@@ -1,6 +1,7 @@
-package net.kemitix.binder.app;
+package net.kemitix.binder.app.epub;
 
 import coza.opencollab.epub.creator.model.EpubBook;
+import net.kemitix.binder.app.BinderConfig;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
