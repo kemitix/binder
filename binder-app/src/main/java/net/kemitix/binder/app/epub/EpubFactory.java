@@ -4,7 +4,7 @@ import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.BinderConfig;
 import net.kemitix.binder.app.Manuscript;
-import net.kemitix.binder.app.ManuscriptMetadata;
+import net.kemitix.binder.app.Metadata;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -33,7 +33,7 @@ public class EpubFactory {
     }
 
     public EpubBook create() {
-        ManuscriptMetadata metadata = manuscript.getMetadata();
+        Metadata metadata = manuscript.getMetadata();
         EpubBook epub = createEpub(metadata);
         epub.addCoverImage(coverImage(metadata.getCover()),
                 "image/jpeg", "cover.jpg");
@@ -57,7 +57,7 @@ public class EpubFactory {
     }
 
     @NotNull
-    private EpubBook createEpub(ManuscriptMetadata metadata) {
+    private EpubBook createEpub(Metadata metadata) {
         String language = metadata.getLanguage();
         log.info("Language: " + language);
         String id = metadata.getId();

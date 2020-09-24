@@ -20,7 +20,7 @@ public class HtmlFactoryTest
     YamlLoader yamlLoader = new YamlLoader();
     SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
     ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
-    ManuscriptMetadata metadata;
+    Metadata metadata;
     Manuscript manuscript;
     MarkdownToHtml markdownToHtml = new MarkdownToHtmlProducer().markdownToHtml();
 
@@ -29,7 +29,7 @@ public class HtmlFactoryTest
     @BeforeEach
     void setUp() {
         scanDirectory.set(validDirectory);
-        metadata = manuscriptLoader.manuscriptMetadata(binderConfig);
+        metadata = manuscriptLoader.metadata(binderConfig);
         manuscript = manuscriptLoader.manuscript(metadata);
         htmlFactory = new HtmlFactory(binderConfig, manuscript, markdownToHtml);
     }

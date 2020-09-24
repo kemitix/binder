@@ -3,7 +3,7 @@ package net.kemitix.binder.app.docx;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.BinderConfig;
 import net.kemitix.binder.app.Manuscript;
-import net.kemitix.binder.app.ManuscriptMetadata;
+import net.kemitix.binder.app.Metadata;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -28,7 +28,7 @@ public class DocxFactory {
     }
 
     public DocxBook create() {
-        ManuscriptMetadata metadata = manuscript.getMetadata();
+        Metadata metadata = manuscript.getMetadata();
         DocxBook docx = createDocxBook(metadata);
         manuscript.getContents().stream()
                 .map(docxContextFactory::create)
@@ -36,7 +36,7 @@ public class DocxFactory {
         return docx;
     }
 
-    private DocxBook createDocxBook(ManuscriptMetadata metadata) {
+    private DocxBook createDocxBook(Metadata metadata) {
         String language = metadata.getLanguage();
         log.info("Language: " + language);
         String id = metadata.getId();

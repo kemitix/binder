@@ -1,19 +1,31 @@
 package net.kemitix.binder.app;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import javax.enterprise.inject.Vetoed;
-import java.util.ArrayList;
 import java.util.List;
 
-@Setter
 @Getter
 @Vetoed
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Manuscript {
 
-    ManuscriptMetadata metadata;
+    private Metadata metadata;
 
-    private List<Section> contents = new ArrayList<>();
+    private List<Section> contents;
 
+    static Builder builder() {
+        return metadata -> contents -> new Manuscript(metadata, contents);
+    }
+
+    public interface Builder {
+        Stage1 metadata(Metadata metadata);
+        interface Stage1 {
+            Manuscript contents(List<Section> sections);
+        }
+    }
 }
