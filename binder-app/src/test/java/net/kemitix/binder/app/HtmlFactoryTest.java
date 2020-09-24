@@ -17,7 +17,8 @@ public class HtmlFactoryTest
     File validDirectory = new File(getClass().getResource("valid").getPath());
     AtomicReference<File> scanDirectory = new AtomicReference<>();
     BinderConfig binderConfig = () -> scanDirectory.get();
-    YamlLoader yamlLoader = new YamlLoader();
+    TemplateEngine templateEngine = new TemplateEngine();
+    YamlLoader yamlLoader = new YamlLoader(templateEngine);
     SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
     ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
     Metadata metadata;

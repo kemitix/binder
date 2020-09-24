@@ -31,7 +31,8 @@ public class BinderTest
             return new File(getClass().getResource("valid").getPath());
         }
     };
-    YamlLoader yamlLoader = new YamlLoader();
+    TemplateEngine templateEngine = new TemplateEngine();
+    YamlLoader yamlLoader = new YamlLoader(templateEngine);
     private final SectionLoader sectionLoader =
             new SectionLoader(binderConfig, yamlLoader);
     private final ManuscriptLoader manuscriptLoader =

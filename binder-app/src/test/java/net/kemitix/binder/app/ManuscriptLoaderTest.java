@@ -27,7 +27,8 @@ public class ManuscriptLoaderTest
 
     SectionLoader sectionLoader;
 
-    private final YamlLoader yamlLoader = new YamlLoader();
+    TemplateEngine templateEngine = new TemplateEngine();
+    private final YamlLoader yamlLoader = new YamlLoader(templateEngine);
 
     ManuscriptLoader manuscriptLoader;
 

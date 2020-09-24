@@ -4,6 +4,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,6 +14,13 @@ import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class YamlLoader {
+
+    private final TemplateEngine templateEngine;
+
+    @Inject
+    public YamlLoader(TemplateEngine templateEngine) {
+        this.templateEngine = templateEngine;
+    }
 
     public  <T> T loadFile(
             File file,
@@ -28,9 +36,8 @@ public class YamlLoader {
         }
     }
 
-    public  <T extends Section> T loadSectionFile(
-            File file,
-            Class<T> theRoot
+    public  Section loadSectionFile(
+            File file
     ) throws IOException {
         requireFileExists(file);
         List<String> lines = Files.readAllLines(file.toPath());
@@ -41,9 +48,13 @@ public class YamlLoader {
                 .collect(Collectors.toList());
         String body = lines.stream().skip(header.size() + 2)
                 .collect(Collectors.joining(System.lineSeparator()));
-        T section = parseYamlFromFile(file, theRoot,
+        Section section = parseYamlFromFile(file, Section.class,
                 String.join(System.lineSeparator(), header));
-        section.setMarkdown(body);
+        if (section.isTemplate()) {
+            section.setMarkdown(templateEngine.resolve(body, section));
+        } else {
+            section.setMarkdown(body);
+        }
         return section;
     }
 
