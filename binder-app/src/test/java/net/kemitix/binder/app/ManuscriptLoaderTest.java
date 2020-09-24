@@ -130,6 +130,30 @@ public class ManuscriptLoaderTest
                 assertThat(prelude.getTitle()).isEqualTo("test prelude 1 title");
                 assertThat(prelude.getMarkdown())
                         .isEqualTo("# Document Title\n\ndocument body");
+                assertThat(prelude.isToc()).isFalse();
+            });
+        }
+
+        @Test
+        void loadAndParsePrelude2() {
+            //when
+            Manuscript manuscript = manuscriptLoader.manuscript(metadata);
+            //then
+            List<Section> prelude1s = manuscript.getContents()
+                    .stream()
+                    .filter(section -> "prelude-2".equals(section.getName()))
+                    .collect(Collectors.toList());
+            assertThat(prelude1s).hasSize(1);
+            assertThat(prelude1s).satisfies(preludes -> {
+                Section prelude = preludes.get(0);
+                assertThat(prelude.getName()).isEqualTo("prelude-2");
+                assertThat(prelude.getFilename()).isEqualTo(
+                        validDirectory.toPath()
+                                .resolve("prelude-2.md").toFile());
+                assertThat(prelude.getTitle()).isEqualTo("test prelude 2 title");
+                assertThat(prelude.getMarkdown())
+                        .isEqualTo("# Document Title 2\n\ndocument body");
+                assertThat(prelude.isToc()).isTrue();
             });
         }
     }
