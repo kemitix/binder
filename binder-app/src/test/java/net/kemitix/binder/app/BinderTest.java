@@ -36,7 +36,7 @@ public class BinderTest
             new SectionLoader(binderConfig, yamlLoader);
     private final ManuscriptLoader manuscriptLoader =
             new ManuscriptLoader(sectionLoader, yamlLoader);
-    ManuscriptMetadata metadata = manuscriptLoader.manuscriptMetadata(binderConfig);
+    Metadata metadata = manuscriptLoader.metadata(binderConfig);
     Manuscript manuscript = manuscriptLoader.manuscript(metadata);
     MarkdownToHtml markdownToHtml = new MarkdownToHtmlProducer()
             .markdownToHtml();

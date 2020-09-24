@@ -25,22 +25,22 @@ public class ManuscriptLoader {
 
     @Produces
     @ApplicationScoped
-    ManuscriptMetadata manuscriptMetadata(BinderConfig binderConfig) {
+    Metadata metadata(BinderConfig binderConfig) {
         File scanDirectory = binderConfig.getScanDirectory();
         if (!scanDirectory.exists()) {
             throw new MissingBinderDirectory(scanDirectory);
         }
         File file = scanDirectory.toPath().resolve("binder.yaml").toFile();
-        ManuscriptMetadata manuscriptMetadata =
-                yamlLoader.loadFile(file, ManuscriptMetadata.class);
-        if (manuscriptMetadata.getContents() == null)
-            manuscriptMetadata.setContents(Collections.emptyList());
-        return manuscriptMetadata;
+        Metadata metadata =
+                yamlLoader.loadFile(file, Metadata.class);
+        if (metadata.getContents() == null)
+            metadata.setContents(Collections.emptyList());
+        return metadata;
     }
 
     @Produces
     @ApplicationScoped
-    Manuscript manuscript(ManuscriptMetadata metadata) {
+    Manuscript manuscript(Metadata metadata) {
         return Manuscript.builder()
                 .metadata(metadata)
                 .contents(loadSections(metadata.getContents()));

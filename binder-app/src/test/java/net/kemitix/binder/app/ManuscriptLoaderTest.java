@@ -43,14 +43,14 @@ public class ManuscriptLoaderTest
 
     @Nested
     @DisplayName("ManuscriptMetadata")
-    public class ManuscriptMetadataTests {
+    public class MetadataTests {
 
         @Test
         @DisplayName("Load file successfully")
         public void loadFileOkay() throws IOException {
             //given
             scanDirectory.set(validDirectory);
-            ManuscriptMetadata expected = new ManuscriptMetadata();
+            Metadata expected = new Metadata();
             expected.setId("my-id");
             expected.setIssue(999);
             expected.setLanguage("en");
@@ -68,7 +68,7 @@ public class ManuscriptLoaderTest
                     "content-1", "content-3", "content-2",
                     "coda-1", "coda-2"));
             //when
-            ManuscriptMetadata metadata = manuscriptLoader.manuscriptMetadata(binderConfig);
+            Metadata metadata = manuscriptLoader.metadata(binderConfig);
             //then
             assertThat(metadata)
                     .usingRecursiveComparison()
@@ -83,7 +83,7 @@ public class ManuscriptLoaderTest
             //then
             assertThatExceptionOfType(MissingBinderDirectory.class)
                     .isThrownBy(() ->
-                            manuscriptLoader.manuscriptMetadata(binderConfig));
+                            manuscriptLoader.metadata(binderConfig));
         }
 
         @Test
@@ -94,7 +94,7 @@ public class ManuscriptLoaderTest
             //then
             assertThatExceptionOfType(ManuscriptFormatException.class)
                     .isThrownBy(() ->
-                            manuscriptLoader.manuscriptMetadata(binderConfig))
+                            manuscriptLoader.metadata(binderConfig))
                     .withCauseInstanceOf(FileNotFoundException.class);
         }
     }
@@ -103,12 +103,12 @@ public class ManuscriptLoaderTest
     @DisplayName("Manuscript contents")
     public class ManuscriptContentsTests {
 
-        private ManuscriptMetadata metadata;
+        private Metadata metadata;
 
         @BeforeEach
         void setUp() throws IOException {
             scanDirectory.set(validDirectory);
-            metadata = manuscriptLoader.manuscriptMetadata(binderConfig);
+            metadata = manuscriptLoader.metadata(binderConfig);
         }
 
         @Test

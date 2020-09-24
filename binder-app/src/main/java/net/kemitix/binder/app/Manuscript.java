@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Manuscript {
 
-    private ManuscriptMetadata metadata;
+    private Metadata metadata;
 
     private List<Section> contents;
 
@@ -23,7 +23,7 @@ public class Manuscript {
     }
 
     public interface Builder {
-        Stage1 metadata(ManuscriptMetadata metadata);
+        Stage1 metadata(Metadata metadata);
         interface Stage1 {
             Manuscript contents(List<Section> sections);
         }
