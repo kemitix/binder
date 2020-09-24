@@ -1,7 +1,11 @@
 package net.kemitix.binder.app;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.With;
 
 import java.io.File;
 
@@ -12,6 +16,9 @@ import java.io.File;
  */
 @Setter
 @Getter
+@With
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Section {
 
     private String type; // prelude, content or coda
@@ -20,24 +27,5 @@ public class Section {
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
     private File htmlFile;
-
-    @Getter
-    public enum Type {
-        PRELUDE("prelude", Prelude.class),
-        CONTENT("content", Content.class),
-        CODA("coda", Coda.class)
-        ;
-
-        private final String slug;
-        private final Class<? extends Section> aClass;
-
-        Type(
-                String slug,
-                Class<? extends Section> aClass
-        ) {
-            this.slug = slug;
-            this.aClass = aClass;
-        }
-    }
 
 }

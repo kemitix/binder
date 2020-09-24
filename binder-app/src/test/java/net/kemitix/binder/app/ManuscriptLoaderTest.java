@@ -122,7 +122,6 @@ public class ManuscriptLoaderTest
             assertThat(prelude1s).hasSize(1);
             assertThat(prelude1s).satisfies(preludes -> {
                 Section prelude = preludes.get(0);
-                assertThat(prelude.getType()).isEqualTo(Section.Type.PRELUDE.getSlug());
                 assertThat(prelude.getName()).isEqualTo("prelude-1");
                 assertThat(prelude.getFilename()).isEqualTo(
                         validDirectory.toPath()
