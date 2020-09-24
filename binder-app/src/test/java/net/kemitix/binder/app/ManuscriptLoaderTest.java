@@ -63,9 +63,10 @@ public class ManuscriptLoaderTest
             expected.setEditor("my-editor");
             expected.setCover("cover.jpg");
             expected.setCoverArtist("my-cover-artist");
-            expected.setPreludes(List.of("prelude-1", "prelude-2"));
-            expected.setContents(List.of("content-1", "content-3", "content-2"));
-            expected.setCodas(List.of("coda-1", "coda-2"));
+            expected.setContents(List.of(
+                    "prelude-1", "prelude-2",
+                    "content-1", "content-3", "content-2",
+                    "coda-1", "coda-2"));
             //when
             ManuscriptMetadata metadata = manuscriptLoader.manuscriptMetadata(binderConfig);
             //then

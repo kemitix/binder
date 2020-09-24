@@ -22,17 +22,6 @@ public class ManuscriptMetadata {
     private String editor;
     private String cover;
     private String coverArtist;
-
-    private List<String> preludes = new ArrayList<>();
     private List<String> contents = new ArrayList<>();
-    private List<String> codas = new ArrayList<>();
-
-    public List<String> getSections() {
-        List<String> sections = new ArrayList<>();
-        sections.addAll(preludes);
-        sections.addAll(contents);
-        sections.addAll(codas);
-        return sections;
-    }
 
 }
