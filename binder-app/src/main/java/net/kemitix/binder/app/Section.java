@@ -29,5 +29,6 @@ public class Section {
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
     private File htmlFile;
+    private String html;
 
 }

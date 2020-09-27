@@ -15,13 +15,6 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class YamlLoader {
 
-    private final TemplateEngine templateEngine;
-
-    @Inject
-    public YamlLoader(TemplateEngine templateEngine) {
-        this.templateEngine = templateEngine;
-    }
-
     public  <T> T loadFile(
             File file,
             Class<T> theRoot
@@ -50,11 +43,7 @@ public class YamlLoader {
                 .collect(Collectors.joining(System.lineSeparator()));
         Section section = parseYamlFromFile(file, Section.class,
                 String.join(System.lineSeparator(), header));
-        if (section.isTemplate()) {
-            section.setMarkdown(templateEngine.resolve(body, section));
-        } else {
-            section.setMarkdown(body);
-        }
+        section.setMarkdown(body);
         return section;
     }
 

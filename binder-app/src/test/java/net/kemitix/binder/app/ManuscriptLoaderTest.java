@@ -27,19 +27,19 @@ public class ManuscriptLoaderTest
 
     SectionLoader sectionLoader;
 
-    TemplateEngine templateEngine = new TemplateEngine();
-    private final YamlLoader yamlLoader = new YamlLoader(templateEngine);
+    private final YamlLoader yamlLoader = new YamlLoader();
 
     ManuscriptLoader manuscriptLoader;
 
     private File validDirectory = new File(getClass().getResource("valid").getPath());
     private File missingDirectory = new File("missing");
     private File invalidDirectory = new File(getClass().getResource("invalid").getPath());
+    private TemplateEngine templateEngine = new TemplateEngine();
 
     @BeforeEach
     public void setUp() {
         sectionLoader = new SectionLoader(binderConfig, yamlLoader);
-        manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
+        manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
     }
 
     @Nested

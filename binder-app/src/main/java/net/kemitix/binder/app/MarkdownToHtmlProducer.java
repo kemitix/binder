@@ -11,11 +11,30 @@ import javax.enterprise.inject.Produces;
 public class MarkdownToHtmlProducer {
 
     @Produces
-    MarkdownToHtml markdownToHtml() {
+    MarkdownToHtml markdownToHtml(
+            TemplateEngine templateEngine,
+            Manuscript manuscript
+    ) {
         MutableDataSet dataSet = new MutableDataSet();
         Parser parser = Parser.builder(dataSet).build();
         HtmlRenderer renderer = HtmlRenderer.builder().build();
-        return markdown -> renderer.render(parser.parse(markdown));
+        return section ->
+                renderTemplate(
+                        renderer.render(parser.parse(section.getMarkdown())),
+                        section,
+                        manuscript,
+                        templateEngine);
+    }
+
+    private String renderTemplate(
+            String rawHtml,
+            Section section,
+            Manuscript manuscript,
+            TemplateEngine templateEngine) {
+        return "<html><head><title>%s</title></head><body>%s</body></html>"
+                .formatted(
+                        section.getTitle(),
+                        templateEngine.resolve(rawHtml, section, manuscript));
     }
 
 }

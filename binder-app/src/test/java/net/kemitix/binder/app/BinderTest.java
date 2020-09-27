@@ -32,15 +32,15 @@ public class BinderTest
         }
     };
     TemplateEngine templateEngine = new TemplateEngine();
-    YamlLoader yamlLoader = new YamlLoader(templateEngine);
+    YamlLoader yamlLoader = new YamlLoader();
     private final SectionLoader sectionLoader =
             new SectionLoader(binderConfig, yamlLoader);
     private final ManuscriptLoader manuscriptLoader =
-            new ManuscriptLoader(sectionLoader, yamlLoader);
+            new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
     Metadata metadata = manuscriptLoader.metadata(binderConfig);
     Manuscript manuscript = manuscriptLoader.manuscript(metadata);
     MarkdownToHtml markdownToHtml = new MarkdownToHtmlProducer()
-            .markdownToHtml();
+            .markdownToHtml(templateEngine, manuscript);
     HtmlFactory htmlFactory = new HtmlFactory(
             binderConfig,
             manuscript,
@@ -121,8 +121,10 @@ public class BinderTest
         assertThat(content.getHref()).isEqualTo("content/prelude-1.html");
         assertThat(content.getProperties()).isNull();
         assertThat(content.getContent()).asString()
+                .startsWith("<html><head><title>test prelude 1 title</title></head><body>")
                 .contains("<h1>Document Title</h1>")
-                .contains("<p>document body</p>");
+                .contains("<p>document body</p>")
+                .endsWith("</body></html>");
         assertThat(content.isLinear()).isTrue();
         assertThat(content.isSpine()).isTrue();
         assertThat(content.isToc()).isFalse();

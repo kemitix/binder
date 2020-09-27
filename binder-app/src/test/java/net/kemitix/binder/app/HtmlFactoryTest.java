@@ -18,13 +18,12 @@ public class HtmlFactoryTest
     AtomicReference<File> scanDirectory = new AtomicReference<>();
     BinderConfig binderConfig = () -> scanDirectory.get();
     TemplateEngine templateEngine = new TemplateEngine();
-    YamlLoader yamlLoader = new YamlLoader(templateEngine);
+    YamlLoader yamlLoader = new YamlLoader();
     SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
-    ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
+    ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
     Metadata metadata;
     Manuscript manuscript;
-    MarkdownToHtml markdownToHtml = new MarkdownToHtmlProducer().markdownToHtml();
-
+    MarkdownToHtml markdownToHtml;
     HtmlFactory htmlFactory;
 
     @BeforeEach
@@ -32,6 +31,8 @@ public class HtmlFactoryTest
         scanDirectory.set(validDirectory);
         metadata = manuscriptLoader.metadata(binderConfig);
         manuscript = manuscriptLoader.manuscript(metadata);
+        markdownToHtml = new MarkdownToHtmlProducer()
+                .markdownToHtml(templateEngine, manuscript);
         htmlFactory = new HtmlFactory(binderConfig, manuscript, markdownToHtml);
     }
 
