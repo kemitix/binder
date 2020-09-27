@@ -123,10 +123,10 @@ public class BinderTest
         assertThat(content.getHref()).isEqualTo("content/prelude-1.html");
         assertThat(content.getProperties()).isNull();
         assertThat(content.getContent()).asString()
-                .startsWith("<html><head><title>test prelude 1 title</title></head><body>")
+                .startsWith("<html><head><title>test prelude 1 title</title></head>\n<body>")
                 .contains("<h1>Document Title</h1>")
                 .contains("<p>document body</p>")
-                .endsWith("</body></html>");
+                .endsWith("\n</body>\n</html>");
         assertThat(content.isLinear()).isTrue();
         assertThat(content.isSpine()).isTrue();
         assertThat(content.isToc()).isFalse();
