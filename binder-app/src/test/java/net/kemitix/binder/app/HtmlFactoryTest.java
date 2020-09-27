@@ -1,5 +1,6 @@
 package net.kemitix.binder.app;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,13 +18,14 @@ public class HtmlFactoryTest
     File validDirectory = new File(getClass().getResource("valid").getPath());
     AtomicReference<File> scanDirectory = new AtomicReference<>();
     BinderConfig binderConfig = () -> scanDirectory.get();
+    VelocityEngine velocityEngine = new VelocityProvider().velocityEngine();
+    TemplateEngine templateEngine = new TemplateEngine(velocityEngine);
     YamlLoader yamlLoader = new YamlLoader();
     SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
-    ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
+    ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
     Metadata metadata;
     Manuscript manuscript;
-    MarkdownToHtml markdownToHtml = new MarkdownToHtmlProducer().markdownToHtml();
-
+    MarkdownToHtml markdownToHtml;
     HtmlFactory htmlFactory;
 
     @BeforeEach
@@ -31,6 +33,8 @@ public class HtmlFactoryTest
         scanDirectory.set(validDirectory);
         metadata = manuscriptLoader.metadata(binderConfig);
         manuscript = manuscriptLoader.manuscript(metadata);
+        markdownToHtml = new MarkdownToHtmlProducer()
+                .markdownToHtml(templateEngine, manuscript);
         htmlFactory = new HtmlFactory(binderConfig, manuscript, markdownToHtml);
     }
 

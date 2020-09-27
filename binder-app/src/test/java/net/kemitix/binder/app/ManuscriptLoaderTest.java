@@ -1,5 +1,6 @@
 package net.kemitix.binder.app;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,11 +35,13 @@ public class ManuscriptLoaderTest
     private File validDirectory = new File(getClass().getResource("valid").getPath());
     private File missingDirectory = new File("missing");
     private File invalidDirectory = new File(getClass().getResource("invalid").getPath());
+    VelocityEngine velocityEngine = new VelocityProvider().velocityEngine();
+    TemplateEngine templateEngine = new TemplateEngine(velocityEngine);
 
     @BeforeEach
     public void setUp() {
         sectionLoader = new SectionLoader(binderConfig, yamlLoader);
-        manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
+        manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
     }
 
     @Nested

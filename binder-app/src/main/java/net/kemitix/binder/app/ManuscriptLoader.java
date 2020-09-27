@@ -13,14 +13,17 @@ public class ManuscriptLoader {
 
     private final SectionLoader sectionLoader;
     private final YamlLoader yamlLoader;
+    private final TemplateEngine templateEngine;
 
     @Inject
     public ManuscriptLoader(
             SectionLoader sectionLoader,
-            YamlLoader yamlLoader
+            YamlLoader yamlLoader,
+            TemplateEngine templateEngine
     ) {
         this.sectionLoader = sectionLoader;
         this.yamlLoader = yamlLoader;
+        this.templateEngine = templateEngine;
     }
 
     @Produces
@@ -51,14 +54,8 @@ public class ManuscriptLoader {
     ) {
         if (filenames == null) return Collections.emptyList();
         return filenames.stream()
-                .map(this::loadFile)
+                .map(sectionLoader::load)
                 .collect(Collectors.toList());
-    }
-
-    private Section loadFile(
-            String filename
-    ) {
-        return sectionLoader.load(filename);
     }
 
 }

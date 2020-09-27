@@ -30,6 +30,7 @@
         <docx4j-ImportXHTML.version>8.0.0</docx4j-ImportXHTML.version>
         <docx4j-JAXB-ReferenceImpl.version>8.2.3
         </docx4j-JAXB-ReferenceImpl.version>
+        <velocity-engine.version>2.2</velocity-engine.version>
     </properties>
 
     <dependencyManagement>
@@ -85,6 +86,12 @@
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
                 <version>${docx4j-JAXB-ReferenceImpl.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity-engine.version}</version>
             </dependency>
 
             <dependency>

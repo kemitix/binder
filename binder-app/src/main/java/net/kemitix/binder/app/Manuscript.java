@@ -4,11 +4,13 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.With;
 
 import javax.enterprise.inject.Vetoed;
 import java.util.List;
 
 @Getter
+@With
 @Vetoed
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

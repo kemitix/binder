@@ -30,7 +30,7 @@ public class SectionLoader {
 
     private Section loadSection(File filename) {
         try {
-            return yamlLoader.loadSectionFile(filename, Section.class);
+            return yamlLoader.loadSectionFile(filename);
         } catch (IOException e) {
             throw new ManuscriptFormatException(String.format(
                     "Error loading section: %s", filename), e);

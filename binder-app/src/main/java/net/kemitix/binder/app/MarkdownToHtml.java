@@ -2,5 +2,5 @@ package net.kemitix.binder.app;
 
 import java.util.function.Function;
 
-interface MarkdownToHtml extends Function<String, String> {
+interface MarkdownToHtml extends Function<Section, String> {
 }
