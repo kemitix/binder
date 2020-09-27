@@ -28,8 +28,7 @@
         <flexmark.version>0.62.2</flexmark.version>
         <epub-creator.version>1.0.2</epub-creator.version>
         <docx4j-ImportXHTML.version>8.0.0</docx4j-ImportXHTML.version>
-        <docx4j-JAXB-ReferenceImpl.version>8.2.3
-        </docx4j-JAXB-ReferenceImpl.version>
+        <docx4j-JAXB-ReferenceImpl.version>11.1.8</docx4j-JAXB-ReferenceImpl.version>
         <velocity-engine.version>2.2</velocity-engine.version>
     </properties>
 
