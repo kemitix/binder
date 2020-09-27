@@ -26,6 +26,7 @@ public class Section {
     private boolean template = false; // should expand template variables
     private String title; // the title, taken from the yaml header
     private String name; // the base filename
+    private String author;
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
     private File htmlFile;
