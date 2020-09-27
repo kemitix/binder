@@ -8,6 +8,7 @@ import net.kemitix.binder.app.docx.DocxWriter;
 import net.kemitix.binder.app.epub.EpubContentFactory;
 import net.kemitix.binder.app.epub.EpubFactory;
 import net.kemitix.binder.app.epub.EpubWriter;
+import org.apache.velocity.app.VelocityEngine;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,8 @@ public class BinderTest
             return new File(getClass().getResource("valid").getPath());
         }
     };
-    TemplateEngine templateEngine = new TemplateEngine();
+    VelocityEngine velocityEngine = new VelocityProvider().velocityEngine();
+    TemplateEngine templateEngine = new TemplateEngine(velocityEngine);
     YamlLoader yamlLoader = new YamlLoader();
     private final SectionLoader sectionLoader =
             new SectionLoader(binderConfig, yamlLoader);

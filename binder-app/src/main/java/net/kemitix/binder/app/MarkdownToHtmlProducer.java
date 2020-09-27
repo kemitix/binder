@@ -31,7 +31,7 @@ public class MarkdownToHtmlProducer {
             Section section,
             Manuscript manuscript,
             TemplateEngine templateEngine) {
-        return "<html><head><title>%s</title></head><body>%s</body></html>"
+        return "<html><head><title>%s</title></head>\n<body>\n\n%s\n</body>\n</html>"
                 .formatted(
                         section.getTitle(),
                         templateEngine.resolve(rawHtml, section, manuscript));
