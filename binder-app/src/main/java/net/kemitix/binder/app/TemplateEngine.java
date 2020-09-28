@@ -24,20 +24,20 @@ public class TemplateEngine {
     public String resolve(
             String templateBody,
             Section section,
-            Manuscript manuscript
+            MdManuscript mdManuscript
     ) {
         Context context = new VelocityContext();
-        context.put("m", manuscript.getMetadata());
-        context.put("c", manuscript.getContents());
+        context.put("m", mdManuscript.getMetadata());
+        context.put("c", mdManuscript.getContents());
         context.put("s", section);
-        context.put("copyrights", copyrights(manuscript));
+        context.put("copyrights", copyrights(mdManuscript));
         Writer writer = new StringWriter();
         velocityEngine.evaluate(context, writer, "", templateBody);
         return writer.toString();
     }
 
-    private String copyrights(Manuscript manuscript) {
-        return manuscript.getContents().stream()
+    private String copyrights(MdManuscript mdManuscript) {
+        return mdManuscript.getContents().stream()
                 .filter(section -> "story".equals(section.getType()))
                 .map(section -> "%s ©%s by%s%s".formatted(
                         section.getTitle(),

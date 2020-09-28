@@ -3,7 +3,7 @@ package net.kemitix.binder.app.epub;
 import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.BinderConfig;
-import net.kemitix.binder.app.Manuscript;
+import net.kemitix.binder.app.MdManuscript;
 import net.kemitix.binder.app.Metadata;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,27 +18,27 @@ import java.nio.file.Path;
 public class EpubFactory {
 
     private final BinderConfig binderConfig;
-    private final Manuscript manuscript;
+    private final MdManuscript mdManuscript;
     private final EpubContentFactory epubContentFactory;
 
     @Inject
     public EpubFactory(
             BinderConfig binderConfig,
-            Manuscript manuscript,
+            MdManuscript mdManuscript,
             EpubContentFactory epubContentFactory
     ) {
         this.binderConfig = binderConfig;
-        this.manuscript = manuscript;
+        this.mdManuscript = mdManuscript;
         this.epubContentFactory = epubContentFactory;
     }
 
     public EpubBook create() {
-        Metadata metadata = manuscript.getMetadata();
+        Metadata metadata = mdManuscript.getMetadata();
         EpubBook epub = createEpub(metadata);
         epub.addCoverImage(coverImage(metadata.getCover()),
                 "image/jpeg", "cover.jpg");
         epub.addTextContent("Cover", "cover.html", "<img src=\"cover.jpg\" style=\"height:100%\"/>");
-        manuscript.getContents().stream()
+        mdManuscript.getContents().stream()
                 .map(epubContentFactory::create)
                 .forEach(epub::addContent);
         return epub;

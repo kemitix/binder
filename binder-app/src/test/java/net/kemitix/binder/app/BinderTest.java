@@ -40,19 +40,19 @@ public class BinderTest
     private final ManuscriptLoader manuscriptLoader =
             new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
     Metadata metadata = manuscriptLoader.metadata(binderConfig);
-    Manuscript manuscript = manuscriptLoader.manuscript(metadata);
+    MdManuscript mdManuscript = manuscriptLoader.manuscript(metadata);
     MarkdownToHtml markdownToHtml = new MarkdownToHtmlProducer()
-            .markdownToHtml(templateEngine, manuscript);
+            .markdownToHtml(templateEngine, mdManuscript);
     HtmlFactory htmlFactory = new HtmlFactory(
             binderConfig,
-            manuscript,
+            mdManuscript,
             markdownToHtml
     );
     EpubContentFactory epubContentFactory = new EpubContentFactory();
-    EpubFactory epubFactory = new EpubFactory(binderConfig, manuscript, epubContentFactory);
+    EpubFactory epubFactory = new EpubFactory(binderConfig, mdManuscript, epubContentFactory);
 
     DocxContentFactory docxContextFactory = new DocxContentFactory();
-    DocxFactory docxFactory = new DocxFactory(binderConfig, manuscript, docxContextFactory);
+    DocxFactory docxFactory = new DocxFactory(binderConfig, mdManuscript, docxContextFactory);
 
     @Mock EpubWriter epubWriter;
     @Mock DocxWriter docxWriter;

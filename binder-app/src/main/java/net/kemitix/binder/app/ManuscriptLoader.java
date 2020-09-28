@@ -43,8 +43,8 @@ public class ManuscriptLoader {
 
     @Produces
     @ApplicationScoped
-    Manuscript manuscript(Metadata metadata) {
-        return Manuscript.builder()
+    MdManuscript manuscript(Metadata metadata) {
+        return MdManuscript.builder()
                 .metadata(metadata)
                 .contents(loadSections(metadata.getContents()));
     }

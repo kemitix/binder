@@ -14,20 +14,20 @@ import java.util.List;
 @Vetoed
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Manuscript {
+public class MdManuscript {
 
     private Metadata metadata;
 
     private List<Section> contents;
 
     static Builder builder() {
-        return metadata -> contents -> new Manuscript(metadata, contents);
+        return metadata -> contents -> new MdManuscript(metadata, contents);
     }
 
     public interface Builder {
         Stage1 metadata(Metadata metadata);
         interface Stage1 {
-            Manuscript contents(List<Section> sections);
+            MdManuscript contents(List<Section> sections);
         }
     }
 }

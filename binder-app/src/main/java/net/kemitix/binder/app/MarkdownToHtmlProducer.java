@@ -13,7 +13,7 @@ public class MarkdownToHtmlProducer {
     @Produces
     MarkdownToHtml markdownToHtml(
             TemplateEngine templateEngine,
-            Manuscript manuscript
+            MdManuscript mdManuscript
     ) {
         MutableDataSet dataSet = new MutableDataSet();
         Parser parser = Parser.builder(dataSet).build();
@@ -22,19 +22,19 @@ public class MarkdownToHtmlProducer {
                 renderTemplate(
                         renderer.render(parser.parse(section.getMarkdown())),
                         section,
-                        manuscript,
+                        mdManuscript,
                         templateEngine);
     }
 
     private String renderTemplate(
             String rawHtml,
             Section section,
-            Manuscript manuscript,
+            MdManuscript mdManuscript,
             TemplateEngine templateEngine) {
         return "<html><head><title>%s</title></head>\n<body>\n\n%s\n</body>\n</html>"
                 .formatted(
                         section.getTitle(),
-                        templateEngine.resolve(rawHtml, section, manuscript));
+                        templateEngine.resolve(rawHtml, section, mdManuscript));
     }
 
 }
