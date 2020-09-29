@@ -75,10 +75,9 @@ public class BinderTest
                 docxFactory);
         //when
         app.run(new String[] {});
+        epubBook = epubFactory.create();
         //then
-        verify(epubWriter).write(writerCaptor.capture());
-        epubBook = writerCaptor.getValue();
-    }
+        verify(epubWriter).write();    }
 
     @Captor
     ArgumentCaptor<EpubBook> writerCaptor;

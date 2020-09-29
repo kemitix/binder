@@ -13,13 +13,17 @@ import javax.inject.Inject;
 public class EpubWriter {
 
     private final BinderConfig binderConfig;
+    private final EpubBook epubBook;
 
     @Inject
-    public EpubWriter(BinderConfig binderConfig) {
+    public EpubWriter(
+            BinderConfig binderConfig,
+            EpubBook epubBook) {
         this.binderConfig = binderConfig;
+        this.epubBook = epubBook;
     }
 
-    public void write(EpubBook epubBook) {
+    public void write() {
         String epubFile = binderConfig.getEpubFile().getAbsolutePath();
         try {
             epubBook.writeToFile(epubFile);

@@ -37,7 +37,7 @@ public class BinderApp {
 
     public void run(String[] args) {
         log.info("Binder - Starting");
-        epubWriter.write(epubFactory.create());
+        epubWriter.write();
         docxWriter.write(docxFactory.create());
         log.info("Binder - Done.");
     }
