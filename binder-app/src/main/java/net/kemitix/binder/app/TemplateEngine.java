@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.time.Instant;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -27,6 +28,7 @@ public class TemplateEngine {
             MdManuscript mdManuscript
     ) {
         Context context = new VelocityContext();
+        context.put("timestamp", Instant.now().toString());
         context.put("m", mdManuscript.getMetadata());
         context.put("c", mdManuscript.getContents());
         context.put("s", section);
