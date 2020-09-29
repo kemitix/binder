@@ -38,19 +38,14 @@ public class BinderTest
     VelocityEngine velocityEngine = new VelocityProvider().velocityEngine();
     TemplateEngine templateEngine = new TemplateEngine(velocityEngine);
     YamlLoader yamlLoader = new YamlLoader();
-    private final SectionLoader sectionLoader =
+    SectionLoader sectionLoader =
             new SectionLoader(binderConfig, yamlLoader);
-    private final ManuscriptLoader manuscriptLoader =
+    ManuscriptLoader manuscriptLoader =
             new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
     Metadata metadata = manuscriptLoader.metadata(binderConfig);
     MdManuscript mdManuscript = manuscriptLoader.mdManuscript(metadata);
     MarkdownToHtml markdownToHtml = new MarkdownToHtmlProducer()
             .markdownToHtml(templateEngine, mdManuscript);
-    HtmlFactory htmlFactory = new HtmlFactory(
-            binderConfig,
-            mdManuscript,
-            markdownToHtml
-    );
     EpubContentFactory epubContentFactory = new EpubContentFactory();
     EpubFactory epubFactory;
 
@@ -59,13 +54,10 @@ public class BinderTest
 
     @Mock EpubWriter epubWriter;
     @Mock DocxWriter docxWriter;
+    @Mock Instance<ManuscriptWriter> writers;
 
     BinderApp app;
-
     EpubBook epubBook;
-    @Mock
-    private Instance<ManuscriptWriter> writers;
-
 
     @BeforeEach
     void setUp() {
@@ -73,23 +65,13 @@ public class BinderTest
         epubFactory = new EpubFactory(binderConfig, htmlManuscript, epubContentFactory);
         docxFactory = new DocxFactory(binderConfig, htmlManuscript, docxContextFactory);
         given(writers.stream()).willReturn(Stream.of(epubWriter, docxWriter));
-        app = new BinderApp(
-                writers,
-                htmlFactory,
-                epubFactory,
-                epubWriter,
-                docxWriter,
-                docxFactory);
+        app = new BinderApp(writers);
         //when
         app.run(new String[] {});
         epubBook = epubFactory.create();
         //then
         verify(epubWriter).write();
     }
-
-
-    @Captor
-    ArgumentCaptor<EpubBook> writerCaptor;
 
     @Test
     void metadata() {
