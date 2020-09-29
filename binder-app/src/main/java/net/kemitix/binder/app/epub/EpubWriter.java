@@ -2,6 +2,7 @@ package net.kemitix.binder.app.epub;
 
 import coza.opencollab.epub.creator.model.EpubBook;
 import net.kemitix.binder.app.BinderConfig;
+import net.kemitix.binder.app.ManuscriptWriter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,7 +11,7 @@ import javax.inject.Inject;
  * Writes the Epub file to disk
  */
 @ApplicationScoped
-public class EpubWriter {
+public class EpubWriter implements ManuscriptWriter {
 
     private final BinderConfig binderConfig;
     private final EpubBook epubBook;
