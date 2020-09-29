@@ -19,22 +19,20 @@ public class MarkdownToHtmlProducer {
         Parser parser = Parser.builder(dataSet).build();
         HtmlRenderer renderer = HtmlRenderer.builder().build();
         return section ->
-                renderTemplate(
-                        renderer.render(parser.parse(section.getMarkdown())),
-                        section,
-                        mdManuscript,
-                        templateEngine);
-    }
-
-    private String renderTemplate(
-            String rawHtml,
-            Section section,
-            MdManuscript mdManuscript,
-            TemplateEngine templateEngine) {
-        return "<html><head><title>%s</title></head>\n<body>\n\n%s\n</body>\n</html>"
-                .formatted(
-                        section.getTitle(),
-                        templateEngine.resolve(rawHtml, section, mdManuscript));
+        {
+            String markdown = section.getMarkdown();
+            String htmlBodyTemplate = renderer.render(parser.parse(markdown));
+            String htmlBody =
+                    templateEngine.resolve(
+                            htmlBodyTemplate, section, mdManuscript);
+            return ("<html><head><title>%s</title></head>\n" +
+                    "<body>\n" +
+                    "\n" +
+                    "%s\n" +
+                    "</body>\n" +
+                    "</html>")
+                    .formatted(section.getTitle(), htmlBody);
+        };
     }
 
 }

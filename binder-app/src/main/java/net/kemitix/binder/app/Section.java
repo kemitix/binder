@@ -30,7 +30,9 @@ public class Section {
     private int copyright; // the year the story was copyrighted
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
+    @Deprecated
     private File htmlFile;
+    @Deprecated
     private String html;
 
 }

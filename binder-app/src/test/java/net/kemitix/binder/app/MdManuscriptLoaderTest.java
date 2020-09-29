@@ -117,7 +117,7 @@ public class MdManuscriptLoaderTest
         @Test
         void loadAndParsePrelude1() {
             //when
-            MdManuscript mdManuscript = manuscriptLoader.manuscript(metadata);
+            MdManuscript mdManuscript = manuscriptLoader.mdManuscript(metadata);
             //then
             List<Section> prelude1s = mdManuscript.getContents()
                     .stream()
@@ -140,7 +140,7 @@ public class MdManuscriptLoaderTest
         @Test
         void loadAndParsePrelude2() {
             //when
-            MdManuscript mdManuscript = manuscriptLoader.manuscript(metadata);
+            MdManuscript mdManuscript = manuscriptLoader.mdManuscript(metadata);
             //then
             List<Section> prelude1s = mdManuscript.getContents()
                     .stream()

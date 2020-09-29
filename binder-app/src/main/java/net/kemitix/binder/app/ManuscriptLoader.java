@@ -5,7 +5,11 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -43,7 +47,7 @@ public class ManuscriptLoader {
 
     @Produces
     @ApplicationScoped
-    MdManuscript manuscript(Metadata metadata) {
+    MdManuscript mdManuscript(Metadata metadata) {
         return MdManuscript.builder()
                 .metadata(metadata)
                 .contents(loadSections(metadata.getContents()));
@@ -56,6 +60,23 @@ public class ManuscriptLoader {
         return filenames.stream()
                 .map(sectionLoader::load)
                 .collect(Collectors.toList());
+    }
+
+    @Produces
+    @ApplicationScoped
+    HtmlManuscript htmlManuscript(
+            MdManuscript mdManuscript,
+            MarkdownToHtml markdownToHtml
+    ) {
+        Map<String, String> htmlSections = new LinkedHashMap<>();
+        mdManuscript.getContents()
+                .forEach(section ->
+                        htmlSections.put(
+                                section.getName(),
+                                markdownToHtml.apply(section)));
+        return HtmlManuscript.htmlBuilder()
+                .metadata(mdManuscript)
+                .htmlSections(htmlSections);
     }
 
 }

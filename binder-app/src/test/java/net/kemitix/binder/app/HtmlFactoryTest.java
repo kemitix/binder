@@ -32,7 +32,7 @@ public class HtmlFactoryTest
     void setUp() {
         scanDirectory.set(validDirectory);
         metadata = manuscriptLoader.metadata(binderConfig);
-        mdManuscript = manuscriptLoader.manuscript(metadata);
+        mdManuscript = manuscriptLoader.mdManuscript(metadata);
         markdownToHtml = new MarkdownToHtmlProducer()
                 .markdownToHtml(templateEngine, mdManuscript);
         htmlFactory = new HtmlFactory(binderConfig, mdManuscript, markdownToHtml);

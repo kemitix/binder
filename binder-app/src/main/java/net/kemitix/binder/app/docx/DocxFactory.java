@@ -2,6 +2,7 @@ package net.kemitix.binder.app.docx;
 
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.BinderConfig;
+import net.kemitix.binder.app.HtmlManuscript;
 import net.kemitix.binder.app.MdManuscript;
 import net.kemitix.binder.app.Metadata;
 
@@ -13,25 +14,25 @@ import javax.inject.Inject;
 public class DocxFactory {
 
     private final BinderConfig binderConfig;
-    private final MdManuscript mdManuscript;
+    private final HtmlManuscript htmlManuscript;
     private final DocxContentFactory docxContextFactory;
 
     @Inject
     public DocxFactory(
             BinderConfig binderConfig,
-            MdManuscript mdManuscript,
+            HtmlManuscript htmlManuscript,
             DocxContentFactory docxContextFactory
     ) {
         this.binderConfig = binderConfig;
-        this.mdManuscript = mdManuscript;
+        this.htmlManuscript = htmlManuscript;
         this.docxContextFactory = docxContextFactory;
     }
 
     public DocxBook create() {
-        Metadata metadata = mdManuscript.getMetadata();
+        Metadata metadata = htmlManuscript.getMetadata();
         DocxBook docx = createDocxBook(metadata);
-        mdManuscript.getContents().stream()
-                .map(docxContextFactory::create)
+        htmlManuscript.getHtmlSections().entrySet().stream()
+                .map(e -> docxContextFactory.create(e.getKey(), e.getValue()))
                 .forEach(docx::addContent);
         return docx;
     }
