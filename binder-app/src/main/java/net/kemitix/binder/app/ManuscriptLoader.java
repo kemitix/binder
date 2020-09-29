@@ -17,17 +17,14 @@ public class ManuscriptLoader {
 
     private final SectionLoader sectionLoader;
     private final YamlLoader yamlLoader;
-    private final TemplateEngine templateEngine;
 
     @Inject
     public ManuscriptLoader(
             SectionLoader sectionLoader,
-            YamlLoader yamlLoader,
-            TemplateEngine templateEngine
+            YamlLoader yamlLoader
     ) {
         this.sectionLoader = sectionLoader;
         this.yamlLoader = yamlLoader;
-        this.templateEngine = templateEngine;
     }
 
     @Produces

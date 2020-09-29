@@ -29,6 +29,7 @@ public class Section {
     private String title; // the title, taken from the yaml header
     private String name; // the base filename
     private String author;
+    private int page = 0; // page in paperback to toc
     private int copyright; // the year the story was copyrighted
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header

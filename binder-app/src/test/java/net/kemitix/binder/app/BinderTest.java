@@ -8,13 +8,14 @@ import net.kemitix.binder.app.docx.DocxWriter;
 import net.kemitix.binder.app.epub.EpubContentFactory;
 import net.kemitix.binder.app.epub.EpubFactory;
 import net.kemitix.binder.app.epub.EpubWriter;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.context.Context;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -35,15 +36,20 @@ public class BinderTest
             return new File(getClass().getResource("valid").getPath());
         }
     };
-    VelocityEngine velocityEngine = new VelocityProvider().velocityEngine();
-    TemplateEngine templateEngine = new TemplateEngine(velocityEngine);
+
     YamlLoader yamlLoader = new YamlLoader();
     SectionLoader sectionLoader =
             new SectionLoader(binderConfig, yamlLoader);
     ManuscriptLoader manuscriptLoader =
-            new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
+            new ManuscriptLoader(sectionLoader, yamlLoader);
     Metadata metadata = manuscriptLoader.metadata(binderConfig);
     MdManuscript mdManuscript = manuscriptLoader.mdManuscript(metadata);
+
+    VelocityProvider velocityProvider = new VelocityProvider();
+    VelocityEngine velocityEngine = velocityProvider.velocityEngine();
+    Context context = velocityProvider.context(mdManuscript);
+
+    TemplateEngine templateEngine = new TemplateEngine(velocityEngine, context);
     MarkdownToHtml markdownToHtml = new MarkdownToHtmlProducer()
             .markdownToHtml(templateEngine, mdManuscript);
     EpubContentFactory epubContentFactory = new EpubContentFactory();
