@@ -24,7 +24,7 @@ public class HtmlFactoryTest
     SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
     ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
     Metadata metadata;
-    Manuscript manuscript;
+    MdManuscript mdManuscript;
     MarkdownToHtml markdownToHtml;
     HtmlFactory htmlFactory;
 
@@ -32,10 +32,10 @@ public class HtmlFactoryTest
     void setUp() {
         scanDirectory.set(validDirectory);
         metadata = manuscriptLoader.metadata(binderConfig);
-        manuscript = manuscriptLoader.manuscript(metadata);
+        mdManuscript = manuscriptLoader.mdManuscript(metadata);
         markdownToHtml = new MarkdownToHtmlProducer()
-                .markdownToHtml(templateEngine, manuscript);
-        htmlFactory = new HtmlFactory(binderConfig, manuscript, markdownToHtml);
+                .markdownToHtml(templateEngine, mdManuscript);
+        htmlFactory = new HtmlFactory(binderConfig, mdManuscript, markdownToHtml);
     }
 
     @Test

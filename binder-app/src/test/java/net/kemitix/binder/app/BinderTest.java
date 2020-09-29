@@ -18,8 +18,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.enterprise.inject.Instance;
 import java.io.File;
+import java.util.stream.Stream;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,50 +38,40 @@ public class BinderTest
     VelocityEngine velocityEngine = new VelocityProvider().velocityEngine();
     TemplateEngine templateEngine = new TemplateEngine(velocityEngine);
     YamlLoader yamlLoader = new YamlLoader();
-    private final SectionLoader sectionLoader =
+    SectionLoader sectionLoader =
             new SectionLoader(binderConfig, yamlLoader);
-    private final ManuscriptLoader manuscriptLoader =
+    ManuscriptLoader manuscriptLoader =
             new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
     Metadata metadata = manuscriptLoader.metadata(binderConfig);
-    Manuscript manuscript = manuscriptLoader.manuscript(metadata);
+    MdManuscript mdManuscript = manuscriptLoader.mdManuscript(metadata);
     MarkdownToHtml markdownToHtml = new MarkdownToHtmlProducer()
-            .markdownToHtml(templateEngine, manuscript);
-    HtmlFactory htmlFactory = new HtmlFactory(
-            binderConfig,
-            manuscript,
-            markdownToHtml
-    );
+            .markdownToHtml(templateEngine, mdManuscript);
     EpubContentFactory epubContentFactory = new EpubContentFactory();
-    EpubFactory epubFactory = new EpubFactory(binderConfig, manuscript, epubContentFactory);
+    EpubFactory epubFactory;
 
     DocxContentFactory docxContextFactory = new DocxContentFactory();
-    DocxFactory docxFactory = new DocxFactory(binderConfig, manuscript, docxContextFactory);
+    DocxFactory docxFactory;
 
     @Mock EpubWriter epubWriter;
     @Mock DocxWriter docxWriter;
+    @Mock Instance<ManuscriptWriter> writers;
 
     BinderApp app;
-
     EpubBook epubBook;
-
 
     @BeforeEach
     void setUp() {
-        app = new BinderApp(
-                htmlFactory,
-                epubFactory,
-                epubWriter,
-                docxWriter,
-                docxFactory);
+        HtmlManuscript htmlManuscript = manuscriptLoader.htmlManuscript(mdManuscript, markdownToHtml);
+        epubFactory = new EpubFactory(binderConfig, htmlManuscript, epubContentFactory);
+        docxFactory = new DocxFactory(binderConfig, htmlManuscript, docxContextFactory);
+        given(writers.stream()).willReturn(Stream.of(epubWriter, docxWriter));
+        app = new BinderApp(writers);
         //when
         app.run(new String[] {});
+        epubBook = epubFactory.create();
         //then
-        verify(epubWriter).write(writerCaptor.capture());
-        epubBook = writerCaptor.getValue();
+        verify(epubWriter).write();
     }
-
-    @Captor
-    ArgumentCaptor<EpubBook> writerCaptor;
 
     @Test
     void metadata() {

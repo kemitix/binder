@@ -3,11 +3,12 @@ package net.kemitix.binder.app.epub;
 import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.BinderConfig;
-import net.kemitix.binder.app.Manuscript;
+import net.kemitix.binder.app.HtmlManuscript;
 import net.kemitix.binder.app.Metadata;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,28 +19,32 @@ import java.nio.file.Path;
 public class EpubFactory {
 
     private final BinderConfig binderConfig;
-    private final Manuscript manuscript;
+    private final HtmlManuscript htmlManuscript;
     private final EpubContentFactory epubContentFactory;
 
     @Inject
     public EpubFactory(
             BinderConfig binderConfig,
-            Manuscript manuscript,
+            HtmlManuscript htmlManuscript,
             EpubContentFactory epubContentFactory
     ) {
         this.binderConfig = binderConfig;
-        this.manuscript = manuscript;
+        this.htmlManuscript = htmlManuscript;
         this.epubContentFactory = epubContentFactory;
     }
 
+    @Produces
+    @ApplicationScoped
     public EpubBook create() {
-        Metadata metadata = manuscript.getMetadata();
+        Metadata metadata = htmlManuscript.getMetadata();
         EpubBook epub = createEpub(metadata);
         epub.addCoverImage(coverImage(metadata.getCover()),
                 "image/jpeg", "cover.jpg");
         epub.addTextContent("Cover", "cover.html", "<img src=\"cover.jpg\" style=\"height:100%\"/>");
-        manuscript.getContents().stream()
-                .map(epubContentFactory::create)
+        htmlManuscript.getHtmlSections()
+                .entrySet()
+                .stream()
+                .map(e -> epubContentFactory.create(e.getKey(), e.getValue()))
                 .forEach(epub::addContent);
         return epub;
     }

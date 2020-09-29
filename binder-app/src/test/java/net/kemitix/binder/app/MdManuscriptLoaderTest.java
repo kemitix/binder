@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public class ManuscriptLoaderTest
+public class MdManuscriptLoaderTest
         implements WithAssertions {
 
     AtomicReference<File> scanDirectory = new AtomicReference<>();
@@ -104,7 +104,7 @@ public class ManuscriptLoaderTest
 
     @Nested
     @DisplayName("Manuscript contents")
-    public class ManuscriptContentsTests {
+    public class MdManuscriptContentsTests {
 
         private Metadata metadata;
 
@@ -117,9 +117,9 @@ public class ManuscriptLoaderTest
         @Test
         void loadAndParsePrelude1() {
             //when
-            Manuscript manuscript = manuscriptLoader.manuscript(metadata);
+            MdManuscript mdManuscript = manuscriptLoader.mdManuscript(metadata);
             //then
-            List<Section> prelude1s = manuscript.getContents()
+            List<Section> prelude1s = mdManuscript.getContents()
                     .stream()
                     .filter(section -> "prelude-1".equals(section.getName()))
                     .collect(Collectors.toList());
@@ -140,9 +140,9 @@ public class ManuscriptLoaderTest
         @Test
         void loadAndParsePrelude2() {
             //when
-            Manuscript manuscript = manuscriptLoader.manuscript(metadata);
+            MdManuscript mdManuscript = manuscriptLoader.mdManuscript(metadata);
             //then
-            List<Section> prelude1s = manuscript.getContents()
+            List<Section> prelude1s = mdManuscript.getContents()
                     .stream()
                     .filter(section -> "prelude-2".equals(section.getName()))
                     .collect(Collectors.toList());

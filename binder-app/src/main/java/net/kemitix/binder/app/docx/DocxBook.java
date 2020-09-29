@@ -1,31 +1,24 @@
 package net.kemitix.binder.app.docx;
 
-import com.fasterxml.jackson.databind.deser.std.CollectionDeserializer;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 
+import javax.enterprise.inject.Vetoed;
 import java.util.ArrayList;
 import java.util.List;
 
 @Log
+@Vetoed
+@NoArgsConstructor
+@AllArgsConstructor
 public class DocxBook {
 
-    private final String language;
-    private final String id;
-    private final String title;
-    private final String editor;
+    private String language;
+    private String id;
+    private String title;
+    private String editor;
     private final List<DocxContent> content = new ArrayList<>();
-
-    public DocxBook(
-            String language,
-            String id,
-            String title,
-            String editor
-    ) {
-        this.language = language;
-        this.id = id;
-        this.title = title;
-        this.editor = editor;
-    }
 
     public void writeToFile(String file) {
         //TODO write self to file

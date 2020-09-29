@@ -1,21 +1,27 @@
 package net.kemitix.binder.app.docx;
 
 import net.kemitix.binder.app.BinderConfig;
+import net.kemitix.binder.app.ManuscriptWriter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class DocxWriter {
+public class DocxWriter implements ManuscriptWriter {
 
     private final BinderConfig binderConfig;
+    private final DocxBook docxBook;
 
     @Inject
-    public DocxWriter(BinderConfig binderConfig) {
+    public DocxWriter(
+            BinderConfig binderConfig,
+            DocxBook docxBook
+    ) {
         this.binderConfig = binderConfig;
+        this.docxBook = docxBook;
     }
 
-    public void write(DocxBook docxBook) {
+    public void write() {
         String docxFile = binderConfig.getDocxFile().getAbsolutePath();
         try {
             docxBook.writeToFile(docxFile);
