@@ -18,8 +18,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.enterprise.inject.Instance;
 import java.io.File;
+import java.util.stream.Stream;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,6 +63,8 @@ public class BinderTest
     BinderApp app;
 
     EpubBook epubBook;
+    @Mock
+    private Instance<ManuscriptWriter> writers;
 
 
     @BeforeEach
@@ -67,7 +72,9 @@ public class BinderTest
         HtmlManuscript htmlManuscript = manuscriptLoader.htmlManuscript(mdManuscript, markdownToHtml);
         epubFactory = new EpubFactory(binderConfig, htmlManuscript, epubContentFactory);
         docxFactory = new DocxFactory(binderConfig, htmlManuscript, docxContextFactory);
+        given(writers.stream()).willReturn(Stream.of(epubWriter, docxWriter));
         app = new BinderApp(
+                writers,
                 htmlFactory,
                 epubFactory,
                 epubWriter,
@@ -77,7 +84,9 @@ public class BinderTest
         app.run(new String[] {});
         epubBook = epubFactory.create();
         //then
-        verify(epubWriter).write();    }
+        verify(epubWriter).write();
+    }
+
 
     @Captor
     ArgumentCaptor<EpubBook> writerCaptor;

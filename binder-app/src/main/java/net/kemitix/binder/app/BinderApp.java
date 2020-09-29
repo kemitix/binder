@@ -8,11 +8,14 @@ import net.kemitix.binder.app.epub.EpubFactory;
 import net.kemitix.binder.app.epub.EpubWriter;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 @Log
 @ApplicationScoped
 public class BinderApp {
+
+    private final Instance<ManuscriptWriter> writers;
 
     private final HtmlFactory htmlFactory;
     private final EpubFactory epubFactory;
@@ -22,12 +25,14 @@ public class BinderApp {
 
     @Inject
     public BinderApp(
+            Instance<ManuscriptWriter> writers,
             HtmlFactory htmlFactory,
             EpubFactory epubFactory,
             EpubWriter epubWriter,
             DocxWriter docxWriter,
             DocxFactory docxFactory
     ) {
+        this.writers = writers;
         this.htmlFactory = htmlFactory;
         this.epubFactory = epubFactory;
         this.epubWriter = epubWriter;
@@ -37,8 +42,8 @@ public class BinderApp {
 
     public void run(String[] args) {
         log.info("Binder - Starting");
-        epubWriter.write();
-        docxWriter.write();
+        writers.stream()
+                .forEach(ManuscriptWriter::write);
         log.info("Binder - Done.");
     }
 
