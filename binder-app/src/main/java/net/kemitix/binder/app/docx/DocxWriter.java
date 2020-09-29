@@ -9,13 +9,18 @@ import javax.inject.Inject;
 public class DocxWriter {
 
     private final BinderConfig binderConfig;
+    private final DocxBook docxBook;
 
     @Inject
-    public DocxWriter(BinderConfig binderConfig) {
+    public DocxWriter(
+            BinderConfig binderConfig,
+            DocxBook docxBook
+    ) {
         this.binderConfig = binderConfig;
+        this.docxBook = docxBook;
     }
 
-    public void write(DocxBook docxBook) {
+    public void write() {
         String docxFile = binderConfig.getDocxFile().getAbsolutePath();
         try {
             docxBook.writeToFile(docxFile);

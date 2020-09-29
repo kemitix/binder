@@ -7,6 +7,7 @@ import net.kemitix.binder.app.MdManuscript;
 import net.kemitix.binder.app.Metadata;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 @Log
@@ -28,6 +29,8 @@ public class DocxFactory {
         this.docxContextFactory = docxContextFactory;
     }
 
+    @Produces
+    @ApplicationScoped
     public DocxBook create() {
         Metadata metadata = htmlManuscript.getMetadata();
         DocxBook docx = createDocxBook(metadata);
