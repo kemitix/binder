@@ -3,12 +3,15 @@ package net.kemitix.binder.app.docx;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.BinderConfig;
 import net.kemitix.binder.app.HtmlManuscript;
-import net.kemitix.binder.app.MdManuscript;
 import net.kemitix.binder.app.Metadata;
+import net.kemitix.binder.app.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 @Log
 @ApplicationScoped
@@ -35,9 +38,17 @@ public class DocxFactory {
         Metadata metadata = htmlManuscript.getMetadata();
         DocxBook docx = createDocxBook(metadata);
         htmlManuscript.getHtmlSections().entrySet().stream()
+                .filter(includeInDocx(htmlManuscript.getContents()))
                 .map(e -> docxContextFactory.create(e.getKey(), e.getValue()))
                 .forEach(docx::addContent);
         return docx;
+    }
+
+    private Predicate<Map.Entry<String, String>> includeInDocx(List<Section> contents) {
+        return entry -> contents.stream()
+                .filter(Section::isDocx)
+                .map(Section::getName)
+                .anyMatch(name -> name.equals(entry.getKey()));
     }
 
     private DocxBook createDocxBook(Metadata metadata) {

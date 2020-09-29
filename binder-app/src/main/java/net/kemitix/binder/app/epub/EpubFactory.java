@@ -5,6 +5,7 @@ import lombok.extern.java.Log;
 import net.kemitix.binder.app.BinderConfig;
 import net.kemitix.binder.app.HtmlManuscript;
 import net.kemitix.binder.app.Metadata;
+import net.kemitix.binder.app.Section;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -13,6 +14,9 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 @Log
 @ApplicationScoped
@@ -44,9 +48,17 @@ public class EpubFactory {
         htmlManuscript.getHtmlSections()
                 .entrySet()
                 .stream()
+                .filter(includeInEpub(htmlManuscript.getContents()))
                 .map(e -> epubContentFactory.create(e.getKey(), e.getValue()))
                 .forEach(epub::addContent);
         return epub;
+    }
+
+    private Predicate<Map.Entry<String, String>> includeInEpub(List<Section> contents) {
+        return entry -> contents.stream()
+                .filter(Section::isEpub)
+                .map(Section::getName)
+                .anyMatch(name -> name.equals(entry.getKey()));
     }
 
     private byte[] coverImage(String cover) {
