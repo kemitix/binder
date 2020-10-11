@@ -11,11 +11,13 @@ import org.jetbrains.annotations.NotNull;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 @Log
@@ -62,8 +64,7 @@ public class EpubFactory {
     }
 
     private byte[] coverImage(String cover) {
-        Path coverPath = binderConfig.getScanDirectory().toPath()
-                .resolve(cover);
+        Path coverPath = binderConfig.getScanDirectory().toPath().resolve(cover);
         try {
             return Files.readAllBytes(coverPath);
         } catch (IOException e) {
@@ -77,7 +78,7 @@ public class EpubFactory {
     private EpubBook createEpub(Metadata metadata) {
         String language = metadata.getLanguage();
         log.info("Language: " + language);
-        String id = metadata.getId();
+        String id = Objects.requireNonNull(metadata.getId(), "metadata id");
         log.info("Id: " + id);
         String title = metadata.getTitle();
         log.info("Title: " + title);

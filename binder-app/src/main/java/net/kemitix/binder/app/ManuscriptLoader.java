@@ -29,7 +29,7 @@ public class ManuscriptLoader {
 
     @Produces
     @ApplicationScoped
-    Metadata metadata(BinderConfig binderConfig) {
+    public Metadata metadata(BinderConfig binderConfig) {
         File scanDirectory = binderConfig.getScanDirectory();
         if (!scanDirectory.exists()) {
             throw new MissingBinderDirectory(scanDirectory);
@@ -44,7 +44,7 @@ public class ManuscriptLoader {
 
     @Produces
     @ApplicationScoped
-    MdManuscript mdManuscript(Metadata metadata) {
+    public MdManuscript mdManuscript(Metadata metadata) {
         return MdManuscript.builder()
                 .metadata(metadata)
                 .contents(loadSections(metadata.getContents()));
@@ -61,7 +61,7 @@ public class ManuscriptLoader {
 
     @Produces
     @ApplicationScoped
-    HtmlManuscript htmlManuscript(
+    public HtmlManuscript htmlManuscript(
             MdManuscript mdManuscript,
             MarkdownToHtml markdownToHtml
     ) {
