@@ -13,7 +13,8 @@ public class HtmlContentSectionRenderer
 
     @Override
     public boolean canHandle(String type) {
-        return "html".equals(type);
+        return "html".equals(type)
+                || "story".equals(type);
     }
 
     @Override
