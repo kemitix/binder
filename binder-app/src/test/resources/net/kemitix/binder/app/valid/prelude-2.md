@@ -1,7 +1,3 @@
 ---
-type: prelude
-title: test prelude 2 title
+type: toc
 ---
-# Document Title 2
-
-document body

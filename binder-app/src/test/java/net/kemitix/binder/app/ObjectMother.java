@@ -1,24 +1,16 @@
 package net.kemitix.binder.app;
 
-import coza.opencollab.epub.creator.model.EpubBook;
-import net.kemitix.binder.app.BinderConfig;
-import net.kemitix.binder.app.HtmlManuscript;
-import net.kemitix.binder.app.ManuscriptLoader;
-import net.kemitix.binder.app.MarkdownToHtml;
-import net.kemitix.binder.app.MdManuscript;
-import net.kemitix.binder.app.Metadata;
-import net.kemitix.binder.app.SectionLoader;
-import net.kemitix.binder.app.YamlLoader;
-import net.kemitix.binder.app.docx.DocxBook;
+import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.app.docx.DocxContentFactory;
 import net.kemitix.binder.app.docx.DocxFactory;
-import net.kemitix.binder.app.docx.DocxWriter;
-import net.kemitix.binder.app.epub.EpubContentFactory;
 import net.kemitix.binder.app.epub.EpubFactory;
-import net.kemitix.binder.app.epub.EpubWriter;
-import org.apache.velocity.VelocityContext;
+import net.kemitix.binder.app.epub.EpubHtmlSectionRenderer;
+import net.kemitix.binder.app.epub.HtmlContentSectionRenderer;
+import net.kemitix.binder.app.epub.TocContentSectionRenderer;
 import org.docx4j.convert.in.xhtml.XHTMLImporter;
-import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -34,7 +26,10 @@ public class ObjectMother {
     private final ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
     private final DocxContentFactory docxContentFactory = new DocxContentFactory(xhtmlImporter);
     private final Section section = mock(Section.class);
-    private final EpubContentFactory epubContentFactory = new EpubContentFactory();
+    private final SectionRenderer<HtmlSection, Content> htmlContentSectionRenderer =
+            new HtmlContentSectionRenderer();
+    private final SectionRenderer<HtmlSection, Content> tocContentSectionRenderer =
+            new TocContentSectionRenderer();
 
     public DocxFactory docxFactory() {
         return  new DocxFactory(binderConfig, htmlManuscript(), docxContentFactory);
@@ -95,6 +90,14 @@ public class ObjectMother {
     }
 
     public EpubFactory epubFactory() {
-        return new EpubFactory(binderConfig, htmlManuscript(), epubContentFactory);
+        return new EpubFactory(binderConfig, htmlManuscript(),
+                epubHtmlSectionRenderer());
+    }
+
+    private EpubHtmlSectionRenderer epubHtmlSectionRenderer() {
+        List<SectionRenderer<HtmlSection, Content>> htmlSectionRenderers = new ArrayList<>();
+        htmlSectionRenderers.add(htmlContentSectionRenderer);
+        htmlSectionRenderers.add(tocContentSectionRenderer);
+        return new EpubHtmlSectionRenderer(new InstanceStream<>(htmlSectionRenderers));
     }
 }

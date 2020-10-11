@@ -4,21 +4,17 @@ import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.BinderConfig;
 import net.kemitix.binder.app.HtmlManuscript;
+import net.kemitix.binder.app.HtmlSection;
 import net.kemitix.binder.app.Metadata;
-import net.kemitix.binder.app.Section;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 @Log
 @ApplicationScoped
@@ -26,17 +22,17 @@ public class EpubFactory {
 
     private final BinderConfig binderConfig;
     private final HtmlManuscript htmlManuscript;
-    private final EpubContentFactory epubContentFactory;
+    private final EpubHtmlSectionRenderer epubHtmlSectionRenderer;
 
     @Inject
     public EpubFactory(
             BinderConfig binderConfig,
             HtmlManuscript htmlManuscript,
-            EpubContentFactory epubContentFactory
+            EpubHtmlSectionRenderer epubHtmlSectionRenderer
     ) {
         this.binderConfig = binderConfig;
         this.htmlManuscript = htmlManuscript;
-        this.epubContentFactory = epubContentFactory;
+        this.epubHtmlSectionRenderer = epubHtmlSectionRenderer;
     }
 
     @Produces
@@ -46,21 +42,13 @@ public class EpubFactory {
         EpubBook epub = createEpub(metadata);
         epub.addCoverImage(coverImage(metadata.getCover()),
                 "image/jpeg", "cover.jpg");
-        epub.addTextContent("Cover", "cover.html", "<img src=\"cover.jpg\" style=\"height:100%\"/>");
-        htmlManuscript.getHtmlSections()
-                .entrySet()
-                .stream()
-                .filter(includeInEpub(htmlManuscript.getContents()))
-                .map(e -> epubContentFactory.create(e.getKey(), e.getValue()))
+        epub.addTextContent("Cover", "cover.html",
+                "<img src=\"cover.jpg\" style=\"height:100%\"/>");
+        htmlManuscript.sections()
+                .filter(HtmlSection::isEpub)
+                .map(epubHtmlSectionRenderer::renderContent)
                 .forEach(epub::addContent);
         return epub;
-    }
-
-    private Predicate<Map.Entry<String, String>> includeInEpub(List<Section> contents) {
-        return entry -> contents.stream()
-                .filter(Section::isEpub)
-                .map(Section::getName)
-                .anyMatch(name -> name.equals(entry.getKey()));
     }
 
     private byte[] coverImage(String cover) {

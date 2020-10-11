@@ -9,6 +9,7 @@ import lombok.With;
 import javax.enterprise.inject.Vetoed;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Getter
 @With
@@ -31,6 +32,11 @@ public class HtmlManuscript {
 
     public List<Section> getContents() {
         return getMdManuscript().getContents();
+    }
+
+    public Stream<HtmlSection> sections() {
+        return mdManuscript.getContents().stream()
+                .map(section -> HtmlSection.create(section, htmlSections.get(section.getName())));
     }
 
     public interface HtmlBuilder {

@@ -152,9 +152,9 @@ public class MdManuscriptLoaderTest
                 assertThat(prelude.getFilename()).isEqualTo(
                         validDirectory.toPath()
                                 .resolve("prelude-2.md").toFile());
-                assertThat(prelude.getTitle()).isEqualTo("test prelude 2 title");
+                assertThat(prelude.getTitle()).isNullOrEmpty();
                 assertThat(prelude.getMarkdown())
-                        .isEqualTo("# Document Title 2\n\ndocument body");
+                        .isEqualTo("");
                 assertThat(prelude.isToc()).isTrue();
             });
         }
