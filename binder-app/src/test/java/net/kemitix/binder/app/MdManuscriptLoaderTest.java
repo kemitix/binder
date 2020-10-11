@@ -66,7 +66,7 @@ public class MdManuscriptLoaderTest
             expected.setCover("cover.jpg");
             expected.setCoverArtist("my-cover-artist");
             expected.setContents(List.of(
-                    "prelude-1", "prelude-2",
+                    "prelude-1", "toc",
                     "content-1", "content-3", "content-2",
                     "coda-1", "coda-2"));
             //when
@@ -143,15 +143,15 @@ public class MdManuscriptLoaderTest
             //then
             List<Section> prelude1s = mdManuscript.getContents()
                     .stream()
-                    .filter(section -> "prelude-2".equals(section.getName()))
+                    .filter(section -> "toc".equals(section.getName()))
                     .collect(Collectors.toList());
             assertThat(prelude1s).hasSize(1);
             assertThat(prelude1s).satisfies(preludes -> {
                 Section prelude = preludes.get(0);
-                assertThat(prelude.getName()).isEqualTo("prelude-2");
+                assertThat(prelude.getName()).isEqualTo("toc");
                 assertThat(prelude.getFilename()).isEqualTo(
                         validDirectory.toPath()
-                                .resolve("prelude-2.md").toFile());
+                                .resolve("toc.md").toFile());
                 assertThat(prelude.getTitle()).isNullOrEmpty();
                 assertThat(prelude.getMarkdown())
                         .isEqualTo("");
