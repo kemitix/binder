@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 @Log
 @ApplicationScoped
-public class PlateDocxContentSectionRenderer
+public class PlateDocxRenderer
         implements DocxRenderer {
 
     @Override
