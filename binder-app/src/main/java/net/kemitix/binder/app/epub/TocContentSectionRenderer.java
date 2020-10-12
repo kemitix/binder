@@ -35,9 +35,9 @@ public class TocContentSectionRenderer
                 .filter(HtmlSection::isEpub)
                 .filter(HtmlSection::isToc)
                 .forEach(section -> {
-                        html.append("<li><a href=\"../%s\">%s</a></li>".formatted(
-                                section.getHref(),
-                                section.getTitle()));
+                    html.append("<li><a href=\"../%s\">%s</a></li>".formatted(
+                            section.getHref(),
+                            section.getTitle()));
                 });
         html.append("</ul>");
         String name = htmlSection.getName();
