@@ -14,6 +14,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,17 +27,20 @@ public class DocxBook {
 
     @Inject
     public DocxBook(List<DocxContent> contents) {
+        log.info("Content items: %d".formatted(contents.size()));
         this.contents = contents;
     }
 
-    public void writeToFile(String file) {
-        log.info("Write: " + file);
+    public void writeToFile(String fileName) {
+        log.info("Write: " + fileName);
         configureFontMapping();
         try {
-            createMainDocument().save(new File(file));
-        } catch (Docx4JException | JAXBException e) {
+            File file = new File(fileName);
+            Files.deleteIfExists(file.toPath());
+            createMainDocument().save(file);
+        } catch (Docx4JException | JAXBException | IOException e) {
             throw new RuntimeException(
-                    "Error saving file: %s".formatted(file), e);
+                    "Error saving file: %s".formatted(fileName), e);
         }
     }
 

@@ -5,11 +5,9 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @ApplicationScoped

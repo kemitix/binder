@@ -1,16 +1,17 @@
 package net.kemitix.binder.app.docx;
 
+import lombok.extern.java.Log;
 import net.kemitix.binder.app.HtmlSection;
-import net.kemitix.binder.app.SectionRenderer;
 import org.docx4j.convert.in.xhtml.XHTMLImporter;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+@Log
 @ApplicationScoped
 public class HtmlDocxContentSectionRenderer
-        implements SectionRenderer<HtmlSection, DocxContent> {
+        implements DocxSectionRenderer {
 
     private final XHTMLImporter xhtmlImporter;
 
@@ -27,6 +28,7 @@ public class HtmlDocxContentSectionRenderer
 
     @Override
     public DocxContent render(HtmlSection htmlSection) {
+        log.info("HTML: %s".formatted(htmlSection.getName()));
         try {
             return new DocxContent(
                     xhtmlImporter.convert(htmlSection.getHtml(),

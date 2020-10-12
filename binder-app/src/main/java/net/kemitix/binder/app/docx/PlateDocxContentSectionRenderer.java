@@ -1,14 +1,15 @@
 package net.kemitix.binder.app.docx;
 
+import lombok.extern.java.Log;
 import net.kemitix.binder.app.HtmlSection;
-import net.kemitix.binder.app.SectionRenderer;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 
+@Log
 @ApplicationScoped
 public class PlateDocxContentSectionRenderer
-        implements SectionRenderer<HtmlSection, DocxContent> {
+        implements DocxSectionRenderer {
 
     @Override
     public boolean canHandle(String type) {
@@ -17,6 +18,7 @@ public class PlateDocxContentSectionRenderer
 
     @Override
     public DocxContent render(HtmlSection htmlSection) {
+        log.info("PLATE: %s".formatted(htmlSection.getName()));
         //TODO: implement properly
         return new DocxContent(new ArrayList<>());
     }

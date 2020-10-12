@@ -10,10 +10,10 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class DocxHtmlSectionRenderer {
 
-    private final Instance<SectionRenderer<HtmlSection, DocxContent>> htmlSectionRenderers;
+    private final Instance<DocxSectionRenderer> htmlSectionRenderers;
 
     @Inject
-    public DocxHtmlSectionRenderer(Instance<SectionRenderer<HtmlSection, DocxContent>> htmlSectionRenderers) {
+    public DocxHtmlSectionRenderer(Instance<DocxSectionRenderer> htmlSectionRenderers) {
         this.htmlSectionRenderers = htmlSectionRenderers;
     }
 
@@ -28,8 +28,8 @@ public class DocxHtmlSectionRenderer {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Unsupported docx section type: %s in %s"
-                        .formatted(
-                                htmlSection.getType(),
-                                htmlSection.getName())));
+                                .formatted(
+                                        htmlSection.getType(),
+                                        htmlSection.getName())));
     }
 }

@@ -1,9 +1,9 @@
 package net.kemitix.binder.app;
 
 import coza.opencollab.epub.creator.model.Content;
-import net.kemitix.binder.app.docx.DocxContent;
 import net.kemitix.binder.app.docx.DocxFactory;
 import net.kemitix.binder.app.docx.DocxHtmlSectionRenderer;
+import net.kemitix.binder.app.docx.DocxSectionRenderer;
 import net.kemitix.binder.app.docx.HtmlDocxContentSectionRenderer;
 import net.kemitix.binder.app.docx.PlateDocxContentSectionRenderer;
 import net.kemitix.binder.app.docx.TocDocxContentSectionRenderer;
@@ -31,8 +31,7 @@ public class ObjectMother {
     private final Section section = mock(Section.class);
 
     public DocxFactory docxFactory() {
-        return  new DocxFactory(binderConfig, htmlManuscript(),
-                docxHtmlSectionRenderer());
+        return new DocxFactory();
     }
 
     public XHTMLImporter xhtmlImporter() {
@@ -98,7 +97,7 @@ public class ObjectMother {
     }
 
     private DocxHtmlSectionRenderer docxHtmlSectionRenderer() {
-        List<SectionRenderer<HtmlSection, DocxContent>> renderers = new ArrayList<>();
+        List<DocxSectionRenderer> renderers = new ArrayList<>();
         renderers.add(new HtmlDocxContentSectionRenderer(xhtmlImporter));
         renderers.add(new PlateDocxContentSectionRenderer());
         renderers.add(new TocDocxContentSectionRenderer(htmlManuscript()));
