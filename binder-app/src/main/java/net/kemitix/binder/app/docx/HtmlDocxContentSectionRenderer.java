@@ -11,7 +11,7 @@ import javax.inject.Inject;
 @Log
 @ApplicationScoped
 public class HtmlDocxContentSectionRenderer
-        implements DocxSectionRenderer {
+        implements DocxRenderer {
 
     private final XHTMLImporter xhtmlImporter;
 

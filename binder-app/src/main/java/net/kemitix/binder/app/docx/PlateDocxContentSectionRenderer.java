@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Log
 @ApplicationScoped
 public class PlateDocxContentSectionRenderer
-        implements DocxSectionRenderer {
+        implements DocxRenderer {
 
     @Override
     public boolean canHandle(String type) {

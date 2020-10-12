@@ -3,14 +3,14 @@ package net.kemitix.binder.app;
 import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.app.docx.DocxFactory;
 import net.kemitix.binder.app.docx.DocxHtmlSectionRenderer;
-import net.kemitix.binder.app.docx.DocxSectionRenderer;
+import net.kemitix.binder.app.docx.DocxRenderer;
 import net.kemitix.binder.app.docx.HtmlDocxContentSectionRenderer;
 import net.kemitix.binder.app.docx.PlateDocxContentSectionRenderer;
 import net.kemitix.binder.app.docx.TocDocxContentSectionRenderer;
 import net.kemitix.binder.app.epub.EpubFactory;
 import net.kemitix.binder.app.epub.EpubHtmlSectionRenderer;
-import net.kemitix.binder.app.epub.HtmlEpubSectionRenderer;
-import net.kemitix.binder.app.epub.TocEpubSectionRenderer;
+import net.kemitix.binder.app.epub.HtmlEpubRenderer;
+import net.kemitix.binder.app.epub.TocEpubRenderer;
 import org.docx4j.convert.in.xhtml.XHTMLImporter;
 
 import java.util.ArrayList;
@@ -90,14 +90,14 @@ public class ObjectMother {
     }
 
     private EpubHtmlSectionRenderer epubHtmlSectionRenderer() {
-        List<SectionRenderer<HtmlSection, Content>> renderers = new ArrayList<>();
-        renderers.add(new HtmlEpubSectionRenderer());
-        renderers.add(new TocEpubSectionRenderer(htmlManuscript()));
+        List<Renderer<HtmlSection, Content>> renderers = new ArrayList<>();
+        renderers.add(new HtmlEpubRenderer());
+        renderers.add(new TocEpubRenderer(htmlManuscript()));
         return new EpubHtmlSectionRenderer(new InstanceStream<>(renderers));
     }
 
     private DocxHtmlSectionRenderer docxHtmlSectionRenderer() {
-        List<DocxSectionRenderer> renderers = new ArrayList<>();
+        List<DocxRenderer> renderers = new ArrayList<>();
         renderers.add(new HtmlDocxContentSectionRenderer(xhtmlImporter));
         renderers.add(new PlateDocxContentSectionRenderer());
         renderers.add(new TocDocxContentSectionRenderer(htmlManuscript()));

@@ -1,7 +1,7 @@
 package net.kemitix.binder.app;
 
-public interface SectionRenderer<T, O> {
+public interface Renderer<T, O> {
     boolean canHandle(String type);
 
-    O render(T htmlSection);
+    O render(T source);
 }

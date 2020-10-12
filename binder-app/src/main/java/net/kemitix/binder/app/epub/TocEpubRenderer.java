@@ -10,13 +10,13 @@ import javax.inject.Inject;
 
 @Log
 @ApplicationScoped
-public class TocEpubSectionRenderer
-        implements EpubSectionRenderer<HtmlSection> {
+public class TocEpubRenderer
+        implements EpubRenderer<HtmlSection> {
 
     private final HtmlManuscript htmlManuscript;
 
     @Inject
-    public TocEpubSectionRenderer(HtmlManuscript htmlManuscript) {
+    public TocEpubRenderer(HtmlManuscript htmlManuscript) {
         this.htmlManuscript = htmlManuscript;
     }
 

@@ -1,7 +1,7 @@
 package net.kemitix.binder.app.docx;
 
 import net.kemitix.binder.app.HtmlSection;
-import net.kemitix.binder.app.SectionRenderer;
+import net.kemitix.binder.app.Renderer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -10,10 +10,10 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class DocxHtmlSectionRenderer {
 
-    private final Instance<DocxSectionRenderer> htmlSectionRenderers;
+    private final Instance<DocxRenderer> htmlSectionRenderers;
 
     @Inject
-    public DocxHtmlSectionRenderer(Instance<DocxSectionRenderer> htmlSectionRenderers) {
+    public DocxHtmlSectionRenderer(Instance<DocxRenderer> htmlSectionRenderers) {
         this.htmlSectionRenderers = htmlSectionRenderers;
     }
 
@@ -22,7 +22,7 @@ public class DocxHtmlSectionRenderer {
                 .render(htmlSection);
     }
 
-    private SectionRenderer<HtmlSection, DocxContent> findRenderer(HtmlSection htmlSection) {
+    private Renderer<HtmlSection, DocxContent> findRenderer(HtmlSection htmlSection) {
         return htmlSectionRenderers.stream()
                 .filter(renderer -> renderer.canHandle(htmlSection.getType()))
                 .findFirst()

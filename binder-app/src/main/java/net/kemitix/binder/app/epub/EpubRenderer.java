@@ -1,12 +1,12 @@
 package net.kemitix.binder.app.epub;
 
 import coza.opencollab.epub.creator.model.Content;
-import net.kemitix.binder.app.SectionRenderer;
+import net.kemitix.binder.app.Renderer;
 
 import java.nio.charset.StandardCharsets;
 
-public interface EpubSectionRenderer<T>
-        extends SectionRenderer<T, Content> {
+public interface EpubRenderer<T>
+        extends Renderer<T, Content> {
 
     default Content htmlContent(
             String href,

@@ -14,7 +14,7 @@ import java.util.List;
 @Log
 @ApplicationScoped
 public class TocDocxContentSectionRenderer
-        implements DocxSectionRenderer {
+        implements DocxRenderer {
 
     private final HtmlManuscript htmlManuscript;
 

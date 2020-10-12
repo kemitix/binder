@@ -8,8 +8,8 @@ import javax.enterprise.context.ApplicationScoped;
 
 @Log
 @ApplicationScoped
-public class HtmlEpubSectionRenderer
-        implements EpubSectionRenderer<HtmlSection> {
+public class HtmlEpubRenderer
+        implements EpubRenderer<HtmlSection> {
 
     @Override
     public boolean canHandle(String type) {

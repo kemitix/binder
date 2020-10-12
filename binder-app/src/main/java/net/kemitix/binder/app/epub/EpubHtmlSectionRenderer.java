@@ -3,7 +3,7 @@ package net.kemitix.binder.app.epub;
 import coza.opencollab.epub.creator.model.Content;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.HtmlSection;
-import net.kemitix.binder.app.SectionRenderer;
+import net.kemitix.binder.app.Renderer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -13,11 +13,11 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class EpubHtmlSectionRenderer {
 
-    private final Instance<SectionRenderer<HtmlSection, Content>> htmlSectionRenderers;
+    private final Instance<Renderer<HtmlSection, Content>> htmlSectionRenderers;
 
     @Inject
     public EpubHtmlSectionRenderer(
-            Instance<SectionRenderer<HtmlSection, Content>> htmlSectionRenderers
+            Instance<Renderer<HtmlSection, Content>> htmlSectionRenderers
     ) {
         this.htmlSectionRenderers = htmlSectionRenderers;
     }
@@ -27,7 +27,7 @@ public class EpubHtmlSectionRenderer {
                 .render(htmlSection);
     }
 
-    SectionRenderer<HtmlSection, Content> findRenderer(HtmlSection htmlSection) {
+    Renderer<HtmlSection, Content> findRenderer(HtmlSection htmlSection) {
         return htmlSectionRenderers.stream()
                 .filter(renderer -> renderer.canHandle(htmlSection.getType()))
                 .findFirst()
