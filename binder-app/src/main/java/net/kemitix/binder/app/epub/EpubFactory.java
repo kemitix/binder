@@ -22,17 +22,17 @@ public class EpubFactory {
 
     private final BinderConfig binderConfig;
     private final HtmlManuscript htmlManuscript;
-    private final EpubHtmlSectionRenderer epubHtmlSectionRenderer;
+    private final EpubSectionRenderer epubSectionRenderer;
 
     @Inject
     public EpubFactory(
             BinderConfig binderConfig,
             HtmlManuscript htmlManuscript,
-            EpubHtmlSectionRenderer epubHtmlSectionRenderer
+            EpubSectionRenderer epubSectionRenderer
     ) {
         this.binderConfig = binderConfig;
         this.htmlManuscript = htmlManuscript;
-        this.epubHtmlSectionRenderer = epubHtmlSectionRenderer;
+        this.epubSectionRenderer = epubSectionRenderer;
     }
 
     @Produces
@@ -46,7 +46,7 @@ public class EpubFactory {
                 "<img src=\"cover.jpg\" style=\"height:100%\"/>");
         htmlManuscript.sections()
                 .filter(HtmlSection::isEpub)
-                .map(epubHtmlSectionRenderer::renderContent)
+                .map(epubSectionRenderer::render)
                 .forEach(epub::addContent);
         return epub;
     }

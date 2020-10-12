@@ -11,23 +11,23 @@ import javax.inject.Inject;
 
 @Log
 @ApplicationScoped
-public class EpubHtmlSectionRenderer {
+public class EpubSectionRenderer {
 
     private final Instance<Renderer<HtmlSection, Content>> htmlSectionRenderers;
 
     @Inject
-    public EpubHtmlSectionRenderer(
+    public EpubSectionRenderer(
             Instance<Renderer<HtmlSection, Content>> htmlSectionRenderers
     ) {
         this.htmlSectionRenderers = htmlSectionRenderers;
     }
 
-    public Content renderContent(HtmlSection htmlSection) {
+    public Content render(HtmlSection htmlSection) {
         return findRenderer(htmlSection)
                 .render(htmlSection);
     }
 
-    Renderer<HtmlSection, Content> findRenderer(HtmlSection htmlSection) {
+    private Renderer<HtmlSection, Content> findRenderer(HtmlSection htmlSection) {
         return htmlSectionRenderers.stream()
                 .filter(renderer -> renderer.canHandle(htmlSection.getType()))
                 .findFirst()
