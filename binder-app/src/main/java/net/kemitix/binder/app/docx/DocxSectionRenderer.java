@@ -8,12 +8,12 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class DocxHtmlSectionRenderer {
+public class DocxSectionRenderer {
 
     private final Instance<DocxRenderer> htmlSectionRenderers;
 
     @Inject
-    public DocxHtmlSectionRenderer(Instance<DocxRenderer> htmlSectionRenderers) {
+    public DocxSectionRenderer(Instance<DocxRenderer> htmlSectionRenderers) {
         this.htmlSectionRenderers = htmlSectionRenderers;
     }
 

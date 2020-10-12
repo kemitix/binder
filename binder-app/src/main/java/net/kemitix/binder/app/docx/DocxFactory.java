@@ -17,7 +17,7 @@ public class DocxFactory {
     @ApplicationScoped
     public List<DocxContent> create(
             HtmlManuscript htmlManuscript,
-            DocxHtmlSectionRenderer docxHtmlSectionRenderer
+            DocxSectionRenderer docxHtmlSectionRenderer
     ) {
         return htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
