@@ -3,43 +3,18 @@ package net.kemitix.binder.app;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.Delegate;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class HtmlSection {
+public class HtmlSection extends Section {
+
+    @Delegate
     private final Section section;
     private final String html;
 
     public static HtmlSection create(Section section, String html) {
         return new HtmlSection(section, html);
-    }
-
-    public boolean isEpub() {
-        return section.isEpub();
-    }
-
-    public boolean isDocx() {
-        return section.isDocx();
-    }
-
-    public boolean isToc() {
-        return section.isToc();
-    }
-
-    public String getType() {
-        return section.getType();
-    }
-
-    public String getName() {
-        return section.getName();
-    }
-
-    public int getPage() {
-        return section.getPage();
-    }
-
-    public String getTitle() {
-        return section.getTitle();
     }
 
     public String getHref() {
