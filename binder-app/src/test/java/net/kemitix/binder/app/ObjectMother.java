@@ -1,8 +1,12 @@
 package net.kemitix.binder.app;
 
 import coza.opencollab.epub.creator.model.Content;
-import net.kemitix.binder.app.docx.DocxContentFactory;
+import net.kemitix.binder.app.docx.DocxContent;
 import net.kemitix.binder.app.docx.DocxFactory;
+import net.kemitix.binder.app.docx.DocxHtmlSectionRenderer;
+import net.kemitix.binder.app.docx.HtmlDocxContentSectionRenderer;
+import net.kemitix.binder.app.docx.PlateDocxContentSectionRenderer;
+import net.kemitix.binder.app.docx.TocDocxContentSectionRenderer;
 import net.kemitix.binder.app.epub.EpubFactory;
 import net.kemitix.binder.app.epub.EpubHtmlSectionRenderer;
 import net.kemitix.binder.app.epub.HtmlContentSectionRenderer;
@@ -24,15 +28,11 @@ public class ObjectMother {
     private final YamlLoader yamlLoader = new YamlLoader();
     private final SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
     private final ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
-    private final DocxContentFactory docxContentFactory = new DocxContentFactory(xhtmlImporter);
     private final Section section = mock(Section.class);
 
     public DocxFactory docxFactory() {
-        return  new DocxFactory(binderConfig, htmlManuscript(), docxContentFactory);
-    }
-
-    public DocxContentFactory docxContentFactory() {
-        return docxContentFactory;
+        return  new DocxFactory(binderConfig, htmlManuscript(),
+                docxHtmlSectionRenderer());
     }
 
     public XHTMLImporter xhtmlImporter() {
@@ -91,9 +91,18 @@ public class ObjectMother {
     }
 
     private EpubHtmlSectionRenderer epubHtmlSectionRenderer() {
-        List<SectionRenderer<HtmlSection, Content>> htmlSectionRenderers = new ArrayList<>();
-        htmlSectionRenderers.add(new HtmlContentSectionRenderer());
-        htmlSectionRenderers.add(new TocContentSectionRenderer(htmlManuscript()));
-        return new EpubHtmlSectionRenderer(new InstanceStream<>(htmlSectionRenderers));
+        List<SectionRenderer<HtmlSection, Content>> renderers = new ArrayList<>();
+        renderers.add(new HtmlContentSectionRenderer());
+        renderers.add(new TocContentSectionRenderer(htmlManuscript()));
+        return new EpubHtmlSectionRenderer(new InstanceStream<>(renderers));
     }
+
+    private DocxHtmlSectionRenderer docxHtmlSectionRenderer() {
+        List<SectionRenderer<HtmlSection, DocxContent>> renderers = new ArrayList<>();
+        renderers.add(new HtmlDocxContentSectionRenderer(xhtmlImporter));
+        renderers.add(new PlateDocxContentSectionRenderer());
+        renderers.add(new TocDocxContentSectionRenderer(htmlManuscript()));
+        return new DocxHtmlSectionRenderer(new InstanceStream<>(renderers));
+    }
+
 }

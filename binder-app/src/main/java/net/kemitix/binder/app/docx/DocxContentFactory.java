@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @Log
+@Deprecated
 @ApplicationScoped
 public class DocxContentFactory {
 

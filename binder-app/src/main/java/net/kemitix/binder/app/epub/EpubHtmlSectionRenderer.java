@@ -32,7 +32,7 @@ public class EpubHtmlSectionRenderer {
                 .filter(renderer -> renderer.canHandle(htmlSection.getType()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Unsupported Section type: %s in %s"
+                        "Unsupported epub section type: %s in %s"
                                 .formatted(
                                         htmlSection.getType(),
                                         htmlSection.getName())));

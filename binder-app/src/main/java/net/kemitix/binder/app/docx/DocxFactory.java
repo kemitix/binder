@@ -3,11 +3,13 @@ package net.kemitix.binder.app.docx;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.BinderConfig;
 import net.kemitix.binder.app.HtmlManuscript;
+import net.kemitix.binder.app.HtmlSection;
 import net.kemitix.binder.app.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -19,33 +21,26 @@ public class DocxFactory {
 
     private final BinderConfig binderConfig;
     private final HtmlManuscript htmlManuscript;
-    private final DocxContentFactory docxContentFactory;
+    private final DocxHtmlSectionRenderer docxHtmlSectionRenderer;
 
     @Inject
     public DocxFactory(
             BinderConfig binderConfig,
             HtmlManuscript htmlManuscript,
-            DocxContentFactory docxContentFactory
+            DocxHtmlSectionRenderer docxHtmlSectionRenderer
     ) {
         this.binderConfig = binderConfig;
         this.htmlManuscript = htmlManuscript;
-        this.docxContentFactory = docxContentFactory;
+        this.docxHtmlSectionRenderer = docxHtmlSectionRenderer;
     }
 
     @Produces
     @ApplicationScoped
     public List<DocxContent> create() {
-        return htmlManuscript.getHtmlSections().entrySet().stream()
-                .filter(includeInDocx(htmlManuscript.getContents()))
-                .map(e -> docxContentFactory.create(e.getKey(), e.getValue()))
+        return htmlManuscript.sections()
+                .filter(HtmlSection::isDocx)
+                .map(docxHtmlSectionRenderer::renderContent)
                 .collect(Collectors.toList());
-    }
-
-    private Predicate<Map.Entry<String, String>> includeInDocx(List<Section> contents) {
-        return entry -> contents.stream()
-                .filter(Section::isDocx)
-                .map(Section::getName)
-                .anyMatch(name -> name.equals(entry.getKey()));
     }
 
 }

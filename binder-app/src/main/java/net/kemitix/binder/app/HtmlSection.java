@@ -18,6 +18,10 @@ public class HtmlSection {
         return section.isEpub();
     }
 
+    public boolean isDocx() {
+        return section.isDocx();
+    }
+
     public boolean isToc() {
         return section.isToc();
     }
