@@ -13,13 +13,13 @@ import java.util.List;
 
 @Log
 @ApplicationScoped
-public class TocDocxContentSectionRenderer
+public class TocDocxRenderer
         implements DocxRenderer {
 
     private final HtmlManuscript htmlManuscript;
 
     @Inject
-    public TocDocxContentSectionRenderer(HtmlManuscript htmlManuscript) {
+    public TocDocxRenderer(HtmlManuscript htmlManuscript) {
         this.htmlManuscript = htmlManuscript;
     }
 

@@ -6,7 +6,7 @@ import net.kemitix.binder.app.docx.DocxSectionRenderer;
 import net.kemitix.binder.app.docx.DocxRenderer;
 import net.kemitix.binder.app.docx.HtmlDocxRenderer;
 import net.kemitix.binder.app.docx.PlateDocxRenderer;
-import net.kemitix.binder.app.docx.TocDocxContentSectionRenderer;
+import net.kemitix.binder.app.docx.TocDocxRenderer;
 import net.kemitix.binder.app.epub.EpubFactory;
 import net.kemitix.binder.app.epub.EpubSectionRenderer;
 import net.kemitix.binder.app.epub.HtmlEpubRenderer;
@@ -100,7 +100,7 @@ public class ObjectMother {
         List<DocxRenderer> renderers = new ArrayList<>();
         renderers.add(new HtmlDocxRenderer(xhtmlImporter));
         renderers.add(new PlateDocxRenderer());
-        renderers.add(new TocDocxContentSectionRenderer(htmlManuscript()));
+        renderers.add(new TocDocxRenderer(htmlManuscript()));
         return new DocxSectionRenderer(new InstanceStream<>(renderers));
     }
 
