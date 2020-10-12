@@ -10,13 +10,13 @@ import javax.inject.Inject;
 
 @Log
 @ApplicationScoped
-public class HtmlDocxContentSectionRenderer
+public class HtmlDocxRenderer
         implements DocxRenderer {
 
     private final XHTMLImporter xhtmlImporter;
 
     @Inject
-    public HtmlDocxContentSectionRenderer(XHTMLImporter xhtmlImporter) {
+    public HtmlDocxRenderer(XHTMLImporter xhtmlImporter) {
         this.xhtmlImporter = xhtmlImporter;
     }
 

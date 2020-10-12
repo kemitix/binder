@@ -4,7 +4,7 @@ import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.app.docx.DocxFactory;
 import net.kemitix.binder.app.docx.DocxSectionRenderer;
 import net.kemitix.binder.app.docx.DocxRenderer;
-import net.kemitix.binder.app.docx.HtmlDocxContentSectionRenderer;
+import net.kemitix.binder.app.docx.HtmlDocxRenderer;
 import net.kemitix.binder.app.docx.PlateDocxContentSectionRenderer;
 import net.kemitix.binder.app.docx.TocDocxContentSectionRenderer;
 import net.kemitix.binder.app.epub.EpubFactory;
@@ -98,7 +98,7 @@ public class ObjectMother {
 
     private DocxSectionRenderer docxHtmlSectionRenderer() {
         List<DocxRenderer> renderers = new ArrayList<>();
-        renderers.add(new HtmlDocxContentSectionRenderer(xhtmlImporter));
+        renderers.add(new HtmlDocxRenderer(xhtmlImporter));
         renderers.add(new PlateDocxContentSectionRenderer());
         renderers.add(new TocDocxContentSectionRenderer(htmlManuscript()));
         return new DocxSectionRenderer(new InstanceStream<>(renderers));
