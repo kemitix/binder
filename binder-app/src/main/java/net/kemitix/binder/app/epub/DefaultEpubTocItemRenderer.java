@@ -10,7 +10,8 @@ public class DefaultEpubTocItemRenderer
 
     @Override
     public boolean canHandle(String type) {
-        return true;
+        // anything except story
+        return !"story".equals(type);
     }
 
     @Override
