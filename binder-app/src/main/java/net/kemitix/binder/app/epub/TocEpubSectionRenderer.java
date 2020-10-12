@@ -4,21 +4,19 @@ import coza.opencollab.epub.creator.model.Content;
 import lombok.extern.java.Log;
 import net.kemitix.binder.app.HtmlManuscript;
 import net.kemitix.binder.app.HtmlSection;
-import net.kemitix.binder.app.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.List;
 
 @Log
 @ApplicationScoped
-public class TocContentSectionRenderer
-        extends ContentSectionRenderer<HtmlSection> {
+public class TocEpubSectionRenderer
+        extends EpubSectionRenderer<HtmlSection> {
 
     private final HtmlManuscript htmlManuscript;
 
     @Inject
-    public TocContentSectionRenderer(HtmlManuscript htmlManuscript) {
+    public TocEpubSectionRenderer(HtmlManuscript htmlManuscript) {
         this.htmlManuscript = htmlManuscript;
     }
 

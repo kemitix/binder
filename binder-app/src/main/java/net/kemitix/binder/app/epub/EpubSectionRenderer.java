@@ -7,7 +7,7 @@ import net.kemitix.binder.app.SectionRenderer;
 import java.nio.charset.StandardCharsets;
 
 @Log
-public abstract class ContentSectionRenderer<T>
+public abstract class EpubSectionRenderer<T>
         implements SectionRenderer<T, Content> {
 
     Content htmlContent(String name, String href, String html) {
