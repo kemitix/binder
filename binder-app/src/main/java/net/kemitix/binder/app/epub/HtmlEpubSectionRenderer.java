@@ -9,7 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 @Log
 @ApplicationScoped
 public class HtmlEpubSectionRenderer
-        extends EpubSectionRenderer<HtmlSection> {
+        implements EpubSectionRenderer<HtmlSection> {
 
     @Override
     public boolean canHandle(String type) {
@@ -22,6 +22,6 @@ public class HtmlEpubSectionRenderer
         String html = htmlSection.getHtml();
         String name = htmlSection.getName();
         String href = "content/%s.html".formatted(name);
-        return htmlContent(name, href, html);
+        return htmlContent(href, html);
     }
 }

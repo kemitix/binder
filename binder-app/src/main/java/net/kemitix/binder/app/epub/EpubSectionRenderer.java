@@ -1,23 +1,27 @@
 package net.kemitix.binder.app.epub;
 
 import coza.opencollab.epub.creator.model.Content;
-import lombok.extern.java.Log;
 import net.kemitix.binder.app.SectionRenderer;
 
 import java.nio.charset.StandardCharsets;
 
-@Log
-public abstract class EpubSectionRenderer<T>
-        implements SectionRenderer<T, Content> {
+public interface EpubSectionRenderer<T>
+        extends SectionRenderer<T, Content> {
 
-    Content htmlContent(String name, String href, String html) {
-        return content(name, href, "application/xhtml+xml", html);
+    default Content htmlContent(
+            String href,
+            String html
+    ) {
+        String mediaType = "application/xhtml+xml";
+        return content(href, mediaType, html);
     }
 
-    Content content(String name, String href, String mediaType, String body) {
+    default Content content(
+            String href,
+            String mediaType,
+            String body
+    ) {
         byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-        log.info(String.format("Created Content: %s (%s) [%d bytes] %s",
-                href, mediaType, bytes.length, name));
         return new Content(mediaType, href, bytes);
     }
 

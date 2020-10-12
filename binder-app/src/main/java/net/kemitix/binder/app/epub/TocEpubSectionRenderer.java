@@ -11,7 +11,7 @@ import javax.inject.Inject;
 @Log
 @ApplicationScoped
 public class TocEpubSectionRenderer
-        extends EpubSectionRenderer<HtmlSection> {
+        implements EpubSectionRenderer<HtmlSection> {
 
     private final HtmlManuscript htmlManuscript;
 
@@ -38,9 +38,8 @@ public class TocEpubSectionRenderer
                             section.getTitle()));
                 });
         html.append("</ul>");
-        String name = htmlSection.getName();
         String href = htmlSection.getHref();
-        return htmlContent(name, href, html.toString());
+        return htmlContent(href, html.toString());
     }
 
 }
