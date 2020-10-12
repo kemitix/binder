@@ -18,11 +18,27 @@ public class HtmlSection {
         return section.isEpub();
     }
 
+    public boolean isToc() {
+        return section.isToc();
+    }
+
     public String getType() {
         return section.getType();
     }
 
     public String getName() {
         return section.getName();
+    }
+
+    public int getPage() {
+        return section.getPage();
+    }
+
+    public String getTitle() {
+        return section.getTitle();
+    }
+
+    public String getHref() {
+        return "content/%s.html".formatted(getName());
     }
 }

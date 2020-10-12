@@ -26,10 +26,6 @@ public class ObjectMother {
     private final ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
     private final DocxContentFactory docxContentFactory = new DocxContentFactory(xhtmlImporter);
     private final Section section = mock(Section.class);
-    private final SectionRenderer<HtmlSection, Content> htmlContentSectionRenderer =
-            new HtmlContentSectionRenderer();
-    private final SectionRenderer<HtmlSection, Content> tocContentSectionRenderer =
-            new TocContentSectionRenderer();
 
     public DocxFactory docxFactory() {
         return  new DocxFactory(binderConfig, htmlManuscript(), docxContentFactory);
@@ -96,8 +92,8 @@ public class ObjectMother {
 
     private EpubHtmlSectionRenderer epubHtmlSectionRenderer() {
         List<SectionRenderer<HtmlSection, Content>> htmlSectionRenderers = new ArrayList<>();
-        htmlSectionRenderers.add(htmlContentSectionRenderer);
-        htmlSectionRenderers.add(tocContentSectionRenderer);
+        htmlSectionRenderers.add(new HtmlContentSectionRenderer());
+        htmlSectionRenderers.add(new TocContentSectionRenderer(htmlManuscript()));
         return new EpubHtmlSectionRenderer(new InstanceStream<>(htmlSectionRenderers));
     }
 }
