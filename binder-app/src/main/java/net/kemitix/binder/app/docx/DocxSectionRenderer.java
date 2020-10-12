@@ -18,7 +18,8 @@ public class DocxSectionRenderer
         this.htmlSectionRenderers = htmlSectionRenderers;
     }
 
-    public DocxContent renderContent(HtmlSection htmlSection) {
+    @Override
+    public DocxContent render(HtmlSection htmlSection) {
         return findRenderer(htmlSection.getType(), htmlSectionRenderers)
                 .render(htmlSection);
     }

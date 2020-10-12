@@ -21,7 +21,7 @@ public class DocxFactory {
     ) {
         return htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
-                .map(docxHtmlSectionRenderer::renderContent)
+                .map(docxHtmlSectionRenderer::render)
                 .collect(Collectors.toList());
     }
 

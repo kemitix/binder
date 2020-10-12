@@ -16,4 +16,5 @@ public interface AggregateRenderer<R extends Renderer<T, O>, T, O> {
                                 .formatted(type)));
     }
 
+    O render(T source);
 }
