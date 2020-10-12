@@ -8,6 +8,7 @@ import net.kemitix.binder.app.docx.HtmlDocxRenderer;
 import net.kemitix.binder.app.docx.PlateDocxRenderer;
 import net.kemitix.binder.app.docx.TocDocxRenderer;
 import net.kemitix.binder.app.epub.EpubFactory;
+import net.kemitix.binder.app.epub.EpubRenderer;
 import net.kemitix.binder.app.epub.EpubSectionRenderer;
 import net.kemitix.binder.app.epub.HtmlEpubRenderer;
 import net.kemitix.binder.app.epub.TocEpubRenderer;
@@ -90,7 +91,7 @@ public class ObjectMother {
     }
 
     private EpubSectionRenderer epubHtmlSectionRenderer() {
-        List<Renderer<HtmlSection, Content>> renderers = new ArrayList<>();
+        List<EpubRenderer> renderers = new ArrayList<>();
         renderers.add(new HtmlEpubRenderer());
         renderers.add(new TocEpubRenderer(htmlManuscript()));
         return new EpubSectionRenderer(new InstanceStream<>(renderers));

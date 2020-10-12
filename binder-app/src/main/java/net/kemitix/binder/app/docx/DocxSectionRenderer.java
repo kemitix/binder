@@ -1,14 +1,15 @@
 package net.kemitix.binder.app.docx;
 
+import net.kemitix.binder.app.AggregateRenderer;
 import net.kemitix.binder.app.HtmlSection;
-import net.kemitix.binder.app.Renderer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class DocxSectionRenderer {
+public class DocxSectionRenderer
+        implements AggregateRenderer<DocxRenderer, HtmlSection, DocxContent> {
 
     private final Instance<DocxRenderer> htmlSectionRenderers;
 
@@ -18,18 +19,8 @@ public class DocxSectionRenderer {
     }
 
     public DocxContent renderContent(HtmlSection htmlSection) {
-        return findRenderer(htmlSection)
+        return findRenderer(htmlSection.getType(), htmlSectionRenderers)
                 .render(htmlSection);
     }
 
-    private Renderer<HtmlSection, DocxContent> findRenderer(HtmlSection htmlSection) {
-        return htmlSectionRenderers.stream()
-                .filter(renderer -> renderer.canHandle(htmlSection.getType()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Unsupported docx section type: %s in %s"
-                                .formatted(
-                                        htmlSection.getType(),
-                                        htmlSection.getName())));
-    }
 }

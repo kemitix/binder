@@ -2,8 +2,8 @@ package net.kemitix.binder.app.epub;
 
 import coza.opencollab.epub.creator.model.Content;
 import lombok.extern.java.Log;
+import net.kemitix.binder.app.AggregateRenderer;
 import net.kemitix.binder.app.HtmlSection;
-import net.kemitix.binder.app.Renderer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -11,30 +11,20 @@ import javax.inject.Inject;
 
 @Log
 @ApplicationScoped
-public class EpubSectionRenderer {
+public class EpubSectionRenderer
+        implements AggregateRenderer<EpubRenderer, HtmlSection, Content> {
 
-    private final Instance<Renderer<HtmlSection, Content>> htmlSectionRenderers;
+    private final Instance<EpubRenderer> epubRenderers;
 
     @Inject
     public EpubSectionRenderer(
-            Instance<Renderer<HtmlSection, Content>> htmlSectionRenderers
+            Instance<EpubRenderer> epubRenderers
     ) {
-        this.htmlSectionRenderers = htmlSectionRenderers;
+        this.epubRenderers = epubRenderers;
     }
 
     public Content render(HtmlSection htmlSection) {
-        return findRenderer(htmlSection)
+        return findRenderer(htmlSection.getType(), epubRenderers)
                 .render(htmlSection);
-    }
-
-    private Renderer<HtmlSection, Content> findRenderer(HtmlSection htmlSection) {
-        return htmlSectionRenderers.stream()
-                .filter(renderer -> renderer.canHandle(htmlSection.getType()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Unsupported epub section type: %s in %s"
-                                .formatted(
-                                        htmlSection.getType(),
-                                        htmlSection.getName())));
     }
 }

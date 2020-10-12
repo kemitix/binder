@@ -9,7 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 @Log
 @ApplicationScoped
 public class HtmlEpubRenderer
-        implements EpubRenderer<HtmlSection> {
+        implements EpubRenderer {
 
     @Override
     public boolean canHandle(String type) {

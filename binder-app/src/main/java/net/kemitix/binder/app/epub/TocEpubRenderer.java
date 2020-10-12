@@ -11,7 +11,7 @@ import javax.inject.Inject;
 @Log
 @ApplicationScoped
 public class TocEpubRenderer
-        implements EpubRenderer<HtmlSection> {
+        implements EpubRenderer {
 
     private final HtmlManuscript htmlManuscript;
 
@@ -33,9 +33,17 @@ public class TocEpubRenderer
                 .filter(HtmlSection::isEpub)
                 .filter(HtmlSection::isToc)
                 .forEach(section -> {
-                    html.append("<li><a href=\"../%s\">%s</a></li>".formatted(
-                            section.getHref(),
-                            section.getTitle()));
+                    //TODO: replace with Renderer...
+                    if ("story".equals(section.getType())) {
+                        html.append("<li><a href=\"../%s\">%s</a> by %s</li>".formatted(
+                                section.getHref(),
+                                section.getTitle(),
+                                section.getAuthor()));
+                    } else {
+                        html.append("<li><a href=\"../%s\">%s</a></li>".formatted(
+                                section.getHref(),
+                                section.getTitle()));
+                    }
                 });
         html.append("</ul>");
         String href = htmlSection.getHref();
