@@ -5,8 +5,8 @@ import net.kemitix.binder.app.HtmlSection;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class DefaultEpubTocRenderer
-        implements EpubTocRenderer {
+public class DefaultEpubTocItemRenderer
+        implements EpubTocItemRenderer {
 
     @Override
     public boolean canHandle(String type) {
