@@ -14,7 +14,8 @@ import net.kemitix.binder.app.epub.EpubTocItemRenderer;
 import net.kemitix.binder.app.epub.HtmlEpubRenderer;
 import net.kemitix.binder.app.epub.StoryEpubTocItemRenderer;
 import net.kemitix.binder.app.epub.TocEpubRenderer;
-import org.docx4j.convert.in.xhtml.XHTMLImporter;
+import org.docx4j.jaxb.Context;
+import org.docx4j.wml.ObjectFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.mock;
 public class ObjectMother {
 
     private final BinderConfig binderConfig = mock(BinderConfig.class);
+    private final ObjectFactory objectFactory = Context.getWmlObjectFactory();
 
     private final YamlLoader yamlLoader = new YamlLoader();
     private final SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
@@ -101,8 +103,12 @@ public class ObjectMother {
         List<DocxRenderer> renderers = new ArrayList<>();
         renderers.add(new HtmlDocxRenderer());
         renderers.add(new PlateDocxRenderer());
-        renderers.add(new TocDocxRenderer(htmlManuscript()));
+        renderers.add(new TocDocxRenderer(htmlManuscript(), objectFactory()));
         return new DocxSectionRenderer(new InstanceStream<>(renderers));
+    }
+
+    private ObjectFactory objectFactory() {
+        return objectFactory;
     }
 
 }
