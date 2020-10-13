@@ -23,7 +23,6 @@ public class EpubSectionRenderer
         this.epubRenderers = epubRenderers;
     }
 
-    @Override
     public Content render(HtmlSection htmlSection) {
         return findRenderer(htmlSection.getType(), epubRenderers)
                 .render(htmlSection);
