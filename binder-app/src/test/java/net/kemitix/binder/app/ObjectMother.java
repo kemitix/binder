@@ -26,7 +26,6 @@ import static org.mockito.Mockito.mock;
 public class ObjectMother {
 
     private final BinderConfig binderConfig = mock(BinderConfig.class);
-    private final XHTMLImporter xhtmlImporter = mock(XHTMLImporter.class);
 
     private final YamlLoader yamlLoader = new YamlLoader();
     private final SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
@@ -35,10 +34,6 @@ public class ObjectMother {
 
     public DocxFactory docxFactory() {
         return new DocxFactory();
-    }
-
-    public XHTMLImporter xhtmlImporter() {
-        return xhtmlImporter;
     }
 
     public HtmlManuscript htmlManuscript() {
@@ -104,7 +99,7 @@ public class ObjectMother {
 
     private DocxSectionRenderer docxHtmlSectionRenderer() {
         List<DocxRenderer> renderers = new ArrayList<>();
-        renderers.add(new HtmlDocxRenderer(xhtmlImporter));
+        renderers.add(new HtmlDocxRenderer());
         renderers.add(new PlateDocxRenderer());
         renderers.add(new TocDocxRenderer(htmlManuscript()));
         return new DocxSectionRenderer(new InstanceStream<>(renderers));
