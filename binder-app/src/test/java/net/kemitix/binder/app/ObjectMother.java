@@ -1,8 +1,8 @@
 package net.kemitix.binder.app;
 
 import net.kemitix.binder.app.docx.DocxFactory;
-import net.kemitix.binder.app.docx.DocxSectionRenderer;
 import net.kemitix.binder.app.docx.DocxRenderer;
+import net.kemitix.binder.app.docx.DocxSectionRenderer;
 import net.kemitix.binder.app.docx.HtmlDocxRenderer;
 import net.kemitix.binder.app.docx.PlateDocxRenderer;
 import net.kemitix.binder.app.docx.TocDocxRenderer;
@@ -16,7 +16,6 @@ import net.kemitix.binder.app.epub.StoryEpubTocItemRenderer;
 import net.kemitix.binder.app.epub.TocEpubRenderer;
 import org.docx4j.convert.in.xhtml.XHTMLImporter;
 
-import javax.enterprise.inject.Instance;
 import java.util.ArrayList;
 import java.util.List;
 
