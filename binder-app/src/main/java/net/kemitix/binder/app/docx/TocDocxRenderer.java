@@ -1,17 +1,16 @@
 package net.kemitix.binder.app.docx;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.app.AggregateRenderer;
 import net.kemitix.binder.app.HtmlManuscript;
 import net.kemitix.binder.app.HtmlSection;
-import org.docx4j.openpackaging.exceptions.InvalidFormatException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.R;
 import org.docx4j.wml.Text;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +18,22 @@ import java.util.List;
 @Log
 @ApplicationScoped
 public class TocDocxRenderer
-        implements DocxRenderer {
+        implements DocxRenderer,
+        AggregateRenderer<DocxTocItemRenderer, HtmlSection, Object> {
 
     private final HtmlManuscript htmlManuscript;
     private final ObjectFactory factory;
+    private final Instance<DocxTocItemRenderer> tocItemRenderers;
 
     @Inject
-    public TocDocxRenderer(HtmlManuscript htmlManuscript, ObjectFactory factory) {
+    public TocDocxRenderer(
+            HtmlManuscript htmlManuscript,
+            ObjectFactory factory,
+            Instance<DocxTocItemRenderer> tocItemRenderers
+    ) {
         this.htmlManuscript = htmlManuscript;
         this.factory = factory;
+        this.tocItemRenderers = tocItemRenderers;
     }
 
     @Override
@@ -41,7 +47,12 @@ public class TocDocxRenderer
         List<Object> content = new ArrayList<>();
         //TODO insert page break
         content.add(paragraph("Table of Contents"));
-        content.add(paragraph("blah blah"));
+        htmlManuscript.sections()
+                .filter(HtmlSection::isDocx)
+                .filter(HtmlSection::isToc)
+                .forEach(section -> content.add(
+                        findRenderer(section.getType(), tocItemRenderers)
+                                .render(section)));
         return new DocxContent(content);
     }
 

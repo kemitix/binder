@@ -1,8 +1,10 @@
 package net.kemitix.binder.app;
 
+import net.kemitix.binder.app.docx.DefaultDocxTocItemRenderer;
 import net.kemitix.binder.app.docx.DocxFactory;
 import net.kemitix.binder.app.docx.DocxRenderer;
 import net.kemitix.binder.app.docx.DocxSectionRenderer;
+import net.kemitix.binder.app.docx.DocxTocItemRenderer;
 import net.kemitix.binder.app.docx.HtmlDocxRenderer;
 import net.kemitix.binder.app.docx.PlateDocxRenderer;
 import net.kemitix.binder.app.docx.TocDocxRenderer;
@@ -100,10 +102,12 @@ public class ObjectMother {
     }
 
     private DocxSectionRenderer docxHtmlSectionRenderer() {
+        List<DocxTocItemRenderer> tocItemRenderers = new ArrayList<>();
+        tocItemRenderers.add(new DefaultDocxTocItemRenderer(objectFactory));
         List<DocxRenderer> renderers = new ArrayList<>();
         renderers.add(new HtmlDocxRenderer());
         renderers.add(new PlateDocxRenderer());
-        renderers.add(new TocDocxRenderer(htmlManuscript(), objectFactory()));
+        renderers.add(new TocDocxRenderer(htmlManuscript(), objectFactory(), new InstanceStream<>(tocItemRenderers)));
         return new DocxSectionRenderer(new InstanceStream<>(renderers));
     }
 
