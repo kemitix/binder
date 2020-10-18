@@ -5,9 +5,6 @@ import net.kemitix.binder.app.AggregateRenderer;
 import net.kemitix.binder.app.HtmlManuscript;
 import net.kemitix.binder.app.HtmlSection;
 import org.docx4j.wml.ObjectFactory;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
-import org.docx4j.wml.Text;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -24,16 +21,19 @@ public class TocDocxRenderer
     private final HtmlManuscript htmlManuscript;
     private final ObjectFactory factory;
     private final Instance<DocxTocItemRenderer> tocItemRenderers;
+    private final DocxHelper docxHelper;
 
     @Inject
     public TocDocxRenderer(
             HtmlManuscript htmlManuscript,
             ObjectFactory factory,
-            Instance<DocxTocItemRenderer> tocItemRenderers
+            Instance<DocxTocItemRenderer> tocItemRenderers,
+            DocxHelper docxHelper
     ) {
         this.htmlManuscript = htmlManuscript;
         this.factory = factory;
         this.tocItemRenderers = tocItemRenderers;
+        this.docxHelper = docxHelper;
     }
 
     @Override
@@ -45,25 +45,16 @@ public class TocDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("TOC: %s".formatted(htmlSection.getName()));
         List<Object> content = new ArrayList<>();
-        //TODO insert page break
-        content.add(paragraph("Table of Contents"));
+        // <pic:cNvPr id="0" name="text-image-240-Contents.png"/>
+        content.add(docxHelper.textParagraph("Table of Contents"));
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)
                 .forEach(section -> content.add(
                         findRenderer(section.getType(), tocItemRenderers)
                                 .render(section)));
+        content.add(docxHelper.breakToOddPage());
         return new DocxContent(content);
-    }
-
-    private P paragraph(String s) {
-        P p1 = factory.createP();
-        R r1 = factory.createR();
-        Text title = factory.createText();
-        title.setValue(s);
-        r1.getContent().add(title);
-        p1.getContent().add(r1);
-        return p1;
     }
 
 }

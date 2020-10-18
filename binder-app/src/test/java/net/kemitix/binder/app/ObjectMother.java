@@ -2,6 +2,7 @@ package net.kemitix.binder.app;
 
 import net.kemitix.binder.app.docx.DefaultDocxTocItemRenderer;
 import net.kemitix.binder.app.docx.DocxFactory;
+import net.kemitix.binder.app.docx.DocxHelper;
 import net.kemitix.binder.app.docx.DocxRenderer;
 import net.kemitix.binder.app.docx.DocxSectionRenderer;
 import net.kemitix.binder.app.docx.DocxTocItemRenderer;
@@ -35,6 +36,7 @@ public class ObjectMother {
     private final SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
     private final ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
     private final Section section = mock(Section.class);
+    private final DocxHelper docxHelper = new DocxHelper(objectFactory);
 
     public DocxFactory docxFactory() {
         return new DocxFactory();
@@ -105,9 +107,10 @@ public class ObjectMother {
         List<DocxTocItemRenderer> tocItemRenderers = new ArrayList<>();
         tocItemRenderers.add(new DefaultDocxTocItemRenderer(objectFactory));
         List<DocxRenderer> renderers = new ArrayList<>();
-        renderers.add(new HtmlDocxRenderer());
-        renderers.add(new PlateDocxRenderer());
-        renderers.add(new TocDocxRenderer(htmlManuscript(), objectFactory(), new InstanceStream<>(tocItemRenderers)));
+        renderers.add(new HtmlDocxRenderer(docxHelper));
+        renderers.add(new PlateDocxRenderer(docxHelper));
+        renderers.add(new TocDocxRenderer(htmlManuscript(), objectFactory(),
+                new InstanceStream<>(tocItemRenderers), docxHelper));
         return new DocxSectionRenderer(new InstanceStream<>(renderers));
     }
 
