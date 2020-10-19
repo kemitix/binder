@@ -18,6 +18,8 @@ import net.kemitix.binder.app.epub.HtmlEpubRenderer;
 import net.kemitix.binder.app.epub.StoryEpubTocItemRenderer;
 import net.kemitix.binder.app.epub.TocEpubRenderer;
 import org.docx4j.jaxb.Context;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.ObjectFactory;
 
 import java.util.ArrayList;
@@ -36,7 +38,17 @@ public class ObjectMother {
     private final SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
     private final ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
     private final Section section = mock(Section.class);
-    private final DocxHelper docxHelper = new DocxHelper(objectFactory);
+
+    private final DocxHelper docxHelper;
+
+    public ObjectMother() {
+        try {
+            docxHelper = new DocxHelper(objectFactory, WordprocessingMLPackage.createPackage(),
+                    new TextImageFactory());
+        } catch (InvalidFormatException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public DocxFactory docxFactory() {
         return new DocxFactory();

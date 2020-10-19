@@ -1,6 +1,14 @@
 package net.kemitix.binder.app.docx;
 
+import net.kemitix.binder.app.TextImage;
+import net.kemitix.binder.app.TextImageFactory;
+import org.docx4j.dml.wordprocessingDrawing.Inline;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.CTTabStop;
+import org.docx4j.wml.Drawing;
+import org.docx4j.wml.Jc;
+import org.docx4j.wml.JcEnumeration;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
@@ -16,19 +24,54 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.List;
 
 @ApplicationScoped
 public class DocxHelper {
 
     private final ObjectFactory objectFactory;
+    private final WordprocessingMLPackage mlPackage;
+    private final TextImageFactory textImageFactory;
 
     @Inject
-    public DocxHelper(ObjectFactory objectFactory) {
+    public DocxHelper(
+            ObjectFactory objectFactory,
+            WordprocessingMLPackage mlPackage,
+            TextImageFactory textImageFactory
+    ) {
         this.objectFactory = objectFactory;
+        this.mlPackage = mlPackage;
+        this.textImageFactory = textImageFactory;
     }
 
     public P breakToOddPage() {
         return p(ppr(sectPr(sectPrType("oddPage"))));
+    }
+
+    public P textImage(String text, int fontSize) {
+        List<TextImage> images = textImageFactory.createImages(text, fontSize);
+
+        Object[] drawings = images.stream()
+                .map(TextImage::getBytes)
+                .map(this::drawing)
+                .toArray();
+
+        //TODO create/get image on disk
+
+        return pCentered(r(drawings));
+    }
+
+    private Object drawing(byte[] bytes) {
+        try {
+            BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(mlPackage, bytes);
+            Inline inline = imagePart.createImageInline("hint", "", 0, 0, false);
+            Drawing drawing = objectFactory.createDrawing();
+            drawing.getAnchorOrInline().add(inline);
+            return drawing;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     public P tocItem(String pageNumber, String title) {
@@ -95,6 +138,12 @@ public class DocxHelper {
         return pPr;
     }
 
+    private PPr ppr(Jc jc) {
+        PPr pPr = objectFactory.createPPr();
+        pPr.setJc(jc);
+        return pPr;
+    }
+
     private Object ppr(Tabs tabs, PPrBase.Ind tabIndent) {
         PPr pPr = objectFactory.createPPr();
         pPr.setTabs(tabs);
@@ -122,6 +171,19 @@ public class DocxHelper {
         P p = objectFactory.createP();
         p.getContent().addAll(Arrays.asList(o));
         return p;
+    }
+
+    private P pCentered(Object... o) {
+        P p = objectFactory.createP();
+        p.getContent().add(ppr(jc(JcEnumeration.LEFT)));
+        p.getContent().addAll(Arrays.asList(o));
+        return p;
+    }
+
+    private Jc jc(JcEnumeration value) {
+        Jc jc = objectFactory.createJc();
+        jc.setVal(value);
+        return jc;
     }
 
     private R r(Object... o) {

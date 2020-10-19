@@ -1,10 +1,6 @@
 package net.kemitix.binder.app.docx;
 
 import net.kemitix.binder.app.HtmlSection;
-import org.docx4j.wml.ObjectFactory;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
-import org.docx4j.wml.Text;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

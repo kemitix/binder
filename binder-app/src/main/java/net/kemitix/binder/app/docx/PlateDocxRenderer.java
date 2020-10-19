@@ -28,9 +28,9 @@ public class PlateDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("PLATE: %s".formatted(htmlSection.getName()));
         ArrayList<Object> contents = new ArrayList<>();
-        //TODO: implement properly
-        contents.add(docxHelper.textParagraph("TITLE PLATE"));
+        contents.add(docxHelper.textImage(htmlSection.getMarkdown(), 480));
         contents.add(docxHelper.breakToOddPage());
         return new DocxContent(contents);
     }
+
 }

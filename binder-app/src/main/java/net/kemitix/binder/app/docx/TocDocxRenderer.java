@@ -45,8 +45,7 @@ public class TocDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("TOC: %s".formatted(htmlSection.getName()));
         List<Object> content = new ArrayList<>();
-        // <pic:cNvPr id="0" name="text-image-240-Contents.png"/>
-        content.add(docxHelper.textParagraph("Table of Contents"));
+        content.add(docxHelper.textImage("Table of Contents", 240));
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)
