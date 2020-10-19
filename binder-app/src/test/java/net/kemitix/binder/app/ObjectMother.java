@@ -105,7 +105,7 @@ public class ObjectMother {
 
     private DocxSectionRenderer docxHtmlSectionRenderer() {
         List<DocxTocItemRenderer> tocItemRenderers = new ArrayList<>();
-        tocItemRenderers.add(new DefaultDocxTocItemRenderer(objectFactory));
+        tocItemRenderers.add(new DefaultDocxTocItemRenderer(docxHelper));
         List<DocxRenderer> renderers = new ArrayList<>();
         renderers.add(new HtmlDocxRenderer(docxHelper));
         renderers.add(new PlateDocxRenderer(docxHelper));

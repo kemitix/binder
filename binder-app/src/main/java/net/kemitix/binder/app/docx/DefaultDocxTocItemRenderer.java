@@ -13,11 +13,11 @@ import javax.inject.Inject;
 public class DefaultDocxTocItemRenderer
         implements DocxTocItemRenderer {
 
-    private final ObjectFactory factory;
+    private final DocxHelper docxHelper;
 
     @Inject
-    public DefaultDocxTocItemRenderer(ObjectFactory factory) {
-        this.factory = factory;
+    public DefaultDocxTocItemRenderer(DocxHelper docxHelper) {
+        this.docxHelper = docxHelper;
     }
 
     @Override
@@ -28,17 +28,6 @@ public class DefaultDocxTocItemRenderer
 
     @Override
     public Object render(HtmlSection source) {
-        Text page = factory.createText();
-        page.setValue("(tab) ");
-        R pageR = factory.createR();
-        pageR.getContent().add(page);
-        Text title = factory.createText();
-        title.setValue(source.getTitle());
-        R titleR = factory.createR();
-        titleR.getContent().add(title);
-        P item = factory.createP();
-        item.getContent().add(pageR);
-        item.getContent().add(titleR);
-        return item;
+        return docxHelper.tocItem("", source.getTitle());
     }
 }
