@@ -8,6 +8,7 @@ import org.docx4j.wml.R;
 import org.docx4j.wml.STBrType;
 import org.docx4j.wml.SectPr;
 import org.docx4j.wml.Text;
+import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -23,42 +24,49 @@ public class DocxHelper {
     }
 
     public P breakToOddPage() {
-        SectPr.Type type = new SectPr.Type();
-        type.setVal("oddPage");
+        return p(ppr(sectPr(sectPrType("oddPage"))));
+    }
 
-        SectPr sectPr = objectFactory.createSectPr();
-        sectPr.setType(type);
-
-        Br br = objectFactory.createBr();
-        br.setType(STBrType.PAGE);
-
+    @NotNull
+    private PPr ppr(SectPr sectPr) {
         PPr pPr = objectFactory.createPPr();
         pPr.setSectPr(sectPr);
+        return pPr;
+    }
 
+    @NotNull
+    private SectPr sectPr(SectPr.Type type) {
+        SectPr sectPr = objectFactory.createSectPr();
+        sectPr.setType(type);
+        return sectPr;
+    }
+
+    private SectPr.Type sectPrType(String value) {
+        SectPr.Type type = new SectPr.Type();
+        type.setVal(value);
+        return type;
+    }
+
+    public P textParagraph(String text) {
+        return p(r(text(text)));
+    }
+
+    private P p(Object o) {
         P p = objectFactory.createP();
-        p.getContent().add(pPr);
-
+        p.getContent().add(o);
         return p;
     }
 
-//    public P pageBreak() {
-//        Br br = objectFactory.createBr();
-//        br.setType(STBrType.PAGE);
-//        R r = objectFactory.createR();
-//        r.getContent().add(br);
-//        P p = objectFactory.createP();
-//        p.getContent().add(r);
-//        return p;
-//    }
-
-    public P textParagraph(String text) {
-        Text title = objectFactory.createText();
-        title.setValue(text);
+    private R r(Object o) {
         R r = objectFactory.createR();
-        r.getContent().add(title);
-        P p = objectFactory.createP();
-        p.getContent().add(r);
-        return p;
+        r.getContent().add(o);
+        return r;
+    }
+
+    private Text text(String value) {
+        Text text = objectFactory.createText();
+        text.setValue(value);
+        return text;
     }
 
 }
