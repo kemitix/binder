@@ -5,11 +5,9 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -17,22 +15,19 @@ public class ManuscriptLoader {
 
     private final SectionLoader sectionLoader;
     private final YamlLoader yamlLoader;
-    private final TemplateEngine templateEngine;
 
     @Inject
     public ManuscriptLoader(
             SectionLoader sectionLoader,
-            YamlLoader yamlLoader,
-            TemplateEngine templateEngine
+            YamlLoader yamlLoader
     ) {
         this.sectionLoader = sectionLoader;
         this.yamlLoader = yamlLoader;
-        this.templateEngine = templateEngine;
     }
 
     @Produces
     @ApplicationScoped
-    Metadata metadata(BinderConfig binderConfig) {
+    public Metadata metadata(BinderConfig binderConfig) {
         File scanDirectory = binderConfig.getScanDirectory();
         if (!scanDirectory.exists()) {
             throw new MissingBinderDirectory(scanDirectory);
@@ -47,7 +42,7 @@ public class ManuscriptLoader {
 
     @Produces
     @ApplicationScoped
-    MdManuscript mdManuscript(Metadata metadata) {
+    public MdManuscript mdManuscript(Metadata metadata) {
         return MdManuscript.builder()
                 .metadata(metadata)
                 .contents(loadSections(metadata.getContents()));
@@ -64,7 +59,7 @@ public class ManuscriptLoader {
 
     @Produces
     @ApplicationScoped
-    HtmlManuscript htmlManuscript(
+    public HtmlManuscript htmlManuscript(
             MdManuscript mdManuscript,
             MarkdownToHtml markdownToHtml
     ) {

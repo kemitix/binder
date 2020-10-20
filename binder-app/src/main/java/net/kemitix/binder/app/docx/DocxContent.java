@@ -1,23 +1,17 @@
 package net.kemitix.binder.app.docx;
 
-import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import lombok.Getter;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class DocxContent {
-    private final WordprocessingMLPackage wordMLPackage;
 
-    public DocxContent(WordprocessingMLPackage wordMLPackage) {
-        this.wordMLPackage = wordMLPackage;
+    @Getter
+    private Collection<?> contents = new ArrayList<>();
+
+    public DocxContent(Collection<?> contents) {
+        this.contents = contents;
     }
 
-    public void save(String file) {
-        try {
-            wordMLPackage.save(new File(file));
-        } catch (Docx4JException e) {
-            throw new RuntimeException(
-                    "Error saving file: %s".formatted(file), e);
-        }
-    }
 }

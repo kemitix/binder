@@ -24,15 +24,14 @@ public class Section {
     private String type; // prelude, content or coda
     private boolean toc = true; // show in table of contents
     private boolean template = false; // should expand template variables
+    private boolean epub = true; // include in epub output
+    private boolean docx = true; // include in docx output
     private String title; // the title, taken from the yaml header
     private String name; // the base filename
     private String author;
+    private int page = 0; // page in paperback to toc
     private int copyright; // the year the story was copyrighted
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
-    @Deprecated
-    private File htmlFile;
-    @Deprecated
-    private String html;
 
 }

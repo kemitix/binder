@@ -1,5 +1,6 @@
 package net.kemitix.binder.app;
 
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,13 +36,11 @@ public class MdManuscriptLoaderTest
     private File validDirectory = new File(getClass().getResource("valid").getPath());
     private File missingDirectory = new File("missing");
     private File invalidDirectory = new File(getClass().getResource("invalid").getPath());
-    VelocityEngine velocityEngine = new VelocityProvider().velocityEngine();
-    TemplateEngine templateEngine = new TemplateEngine(velocityEngine);
 
     @BeforeEach
     public void setUp() {
         sectionLoader = new SectionLoader(binderConfig, yamlLoader);
-        manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader, templateEngine);
+        manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
     }
 
     @Nested
@@ -67,7 +66,7 @@ public class MdManuscriptLoaderTest
             expected.setCover("cover.jpg");
             expected.setCoverArtist("my-cover-artist");
             expected.setContents(List.of(
-                    "prelude-1", "prelude-2",
+                    "prelude-1", "toc",
                     "content-1", "content-3", "content-2",
                     "coda-1", "coda-2"));
             //when
@@ -144,18 +143,18 @@ public class MdManuscriptLoaderTest
             //then
             List<Section> prelude1s = mdManuscript.getContents()
                     .stream()
-                    .filter(section -> "prelude-2".equals(section.getName()))
+                    .filter(section -> "toc".equals(section.getName()))
                     .collect(Collectors.toList());
             assertThat(prelude1s).hasSize(1);
             assertThat(prelude1s).satisfies(preludes -> {
                 Section prelude = preludes.get(0);
-                assertThat(prelude.getName()).isEqualTo("prelude-2");
+                assertThat(prelude.getName()).isEqualTo("toc");
                 assertThat(prelude.getFilename()).isEqualTo(
                         validDirectory.toPath()
-                                .resolve("prelude-2.md").toFile());
-                assertThat(prelude.getTitle()).isEqualTo("test prelude 2 title");
+                                .resolve("toc.md").toFile());
+                assertThat(prelude.getTitle()).isNullOrEmpty();
                 assertThat(prelude.getMarkdown())
-                        .isEqualTo("# Document Title 2\n\ndocument body");
+                        .isEqualTo("");
                 assertThat(prelude.isToc()).isTrue();
             });
         }
