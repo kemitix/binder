@@ -3,6 +3,7 @@ package net.kemitix.binder.app;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.vladsch.flexmark.parser.Parser;
+import net.kemitix.binder.spi.MdManuscript;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;

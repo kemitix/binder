@@ -1,29 +1,10 @@
 package net.kemitix.binder.app;
 
-import net.kemitix.binder.app.docx.DefaultDocxTocItemRenderer;
-import net.kemitix.binder.app.docx.DocxFactory;
-import net.kemitix.binder.app.docx.DocxHelper;
-import net.kemitix.binder.app.docx.DocxRenderer;
-import net.kemitix.binder.app.docx.DocxSectionRenderer;
-import net.kemitix.binder.app.docx.DocxTocItemRenderer;
-import net.kemitix.binder.app.docx.HtmlDocxRenderer;
-import net.kemitix.binder.app.docx.PlateDocxRenderer;
-import net.kemitix.binder.app.docx.TocDocxRenderer;
-import net.kemitix.binder.app.epub.DefaultEpubTocItemRenderer;
-import net.kemitix.binder.app.epub.EpubFactory;
-import net.kemitix.binder.app.epub.EpubRenderer;
-import net.kemitix.binder.app.epub.EpubSectionRenderer;
-import net.kemitix.binder.app.epub.EpubTocItemRenderer;
-import net.kemitix.binder.app.epub.HtmlEpubRenderer;
-import net.kemitix.binder.app.epub.StoryEpubTocItemRenderer;
-import net.kemitix.binder.app.epub.TocEpubRenderer;
-import org.docx4j.jaxb.Context;
-import org.docx4j.openpackaging.exceptions.InvalidFormatException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.wml.ObjectFactory;
-
-import java.util.ArrayList;
-import java.util.List;
+import net.kemitix.binder.spi.BinderConfig;
+import net.kemitix.binder.spi.HtmlManuscript;
+import net.kemitix.binder.spi.MdManuscript;
+import net.kemitix.binder.spi.Metadata;
+import net.kemitix.binder.spi.Section;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -32,27 +13,11 @@ import static org.mockito.Mockito.mock;
 public class ObjectMother {
 
     private final BinderConfig binderConfig = mock(BinderConfig.class);
-    private final ObjectFactory objectFactory = Context.getWmlObjectFactory();
 
     private final YamlLoader yamlLoader = new YamlLoader();
     private final SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
     private final ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
     private final Section section = mock(Section.class);
-
-    private final DocxHelper docxHelper;
-
-    public ObjectMother() {
-        try {
-            docxHelper = new DocxHelper(objectFactory, WordprocessingMLPackage.createPackage(),
-                    new TextImageFactory());
-        } catch (InvalidFormatException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public DocxFactory docxFactory() {
-        return new DocxFactory();
-    }
 
     public HtmlManuscript htmlManuscript() {
         return manuscriptLoader.htmlManuscript(mdManuscript(), markdownToHtml());
@@ -98,36 +63,6 @@ public class ObjectMother {
 
     public Section section() {
         return section;
-    }
-
-    public EpubFactory epubFactory() {
-        return new EpubFactory(binderConfig, htmlManuscript(),
-                epubHtmlSectionRenderer());
-    }
-
-    private EpubSectionRenderer epubHtmlSectionRenderer() {
-        List<EpubTocItemRenderer> tocItemRenderers = new ArrayList<>();
-        tocItemRenderers.add(new DefaultEpubTocItemRenderer());
-        tocItemRenderers.add(new StoryEpubTocItemRenderer());
-        List<EpubRenderer> epubRenderers = new ArrayList<>();
-        epubRenderers.add(new HtmlEpubRenderer());
-        epubRenderers.add(new TocEpubRenderer(htmlManuscript(), new InstanceStream<>(tocItemRenderers)));
-        return new EpubSectionRenderer(new InstanceStream<>(epubRenderers));
-    }
-
-    private DocxSectionRenderer docxHtmlSectionRenderer() {
-        List<DocxTocItemRenderer> tocItemRenderers = new ArrayList<>();
-        tocItemRenderers.add(new DefaultDocxTocItemRenderer(docxHelper));
-        List<DocxRenderer> renderers = new ArrayList<>();
-        renderers.add(new HtmlDocxRenderer(docxHelper));
-        renderers.add(new PlateDocxRenderer(docxHelper));
-        renderers.add(new TocDocxRenderer(htmlManuscript(), objectFactory(),
-                new InstanceStream<>(tocItemRenderers), docxHelper));
-        return new DocxSectionRenderer(new InstanceStream<>(renderers));
-    }
-
-    private ObjectFactory objectFactory() {
-        return objectFactory;
     }
 
 }

@@ -1,5 +1,6 @@
 package net.kemitix.binder.app;
 
+import net.kemitix.binder.spi.ManuscriptWriter;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,9 @@
 package net.kemitix.binder.app;
 
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
+import net.kemitix.binder.spi.BinderConfig;
+import net.kemitix.binder.spi.MdManuscript;
+import net.kemitix.binder.spi.Metadata;
+import net.kemitix.binder.spi.Section;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

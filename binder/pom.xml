@@ -42,6 +42,14 @@
             <groupId>net.kemitix.binder</groupId>
             <artifactId>binder-app</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.kemitix.binder</groupId>
+            <artifactId>binder-epub</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kemitix.binder</groupId>
+            <artifactId>binder-docx</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.quarkus</groupId>

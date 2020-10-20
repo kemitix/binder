@@ -3,7 +3,7 @@ package net.kemitix.binder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
-import net.kemitix.binder.app.BinderConfig;
+import net.kemitix.binder.spi.BinderConfig;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;

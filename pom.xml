@@ -17,7 +17,10 @@
 
     <modules>
         <module>binder-parent</module>
+        <module>binder-spi</module>
         <module>binder-app</module>
+        <module>binder-epub</module>
+        <module>binder-docx</module>
         <module>binder</module>
     </modules>
 

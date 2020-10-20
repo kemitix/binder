@@ -1,5 +1,6 @@
 package net.kemitix.binder.app;
 
+import net.kemitix.binder.spi.Section;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 
