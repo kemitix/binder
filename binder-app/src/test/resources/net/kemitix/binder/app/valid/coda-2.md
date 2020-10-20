@@ -1,4 +1,4 @@
 ---
-type: coda
+type: html
 toc: false
 ---

@@ -1,5 +1,5 @@
 ---
-type: prelude
+type: html
 title: test prelude 1 title
 toc: false
 ---
