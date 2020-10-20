@@ -13,6 +13,11 @@
     <artifactId>binder-app</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>net.kemitix.binder</groupId>
+            <artifactId>binder-spi</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -33,20 +38,6 @@
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-all</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>net.kemitix</groupId>
-            <artifactId>epub-creator</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.docx4j</groupId>
-            <artifactId>docx4j-ImportXHTML</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.docx4j</groupId>
-            <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
         </dependency>
 
         <dependency>

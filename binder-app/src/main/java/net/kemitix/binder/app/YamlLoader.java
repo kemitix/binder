@@ -1,10 +1,10 @@
 package net.kemitix.binder.app;
 
+import net.kemitix.binder.spi.Section;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class YamlLoader {
         }
     }
 
-    public  Section loadSectionFile(
+    public Section loadSectionFile(
             File file
     ) throws IOException {
         requireFileExists(file);

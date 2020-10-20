@@ -1,6 +1,7 @@
 package net.kemitix.binder.app;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.spi.ManuscriptWriter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;

@@ -1,5 +1,11 @@
 package net.kemitix.binder.app;
 
+import net.kemitix.binder.spi.BinderConfig;
+import net.kemitix.binder.spi.HtmlManuscript;
+import net.kemitix.binder.spi.MdManuscript;
+import net.kemitix.binder.spi.Metadata;
+import net.kemitix.binder.spi.Section;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;

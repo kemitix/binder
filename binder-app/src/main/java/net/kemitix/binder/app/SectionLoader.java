@@ -1,5 +1,8 @@
 package net.kemitix.binder.app;
 
+import net.kemitix.binder.spi.BinderConfig;
+import net.kemitix.binder.spi.Section;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.File;
