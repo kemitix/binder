@@ -22,7 +22,7 @@
         <lombok.version>1.18.16</lombok.version>
         <assertj.version>3.17.2</assertj.version>
         <junit.version>5.7.0</junit.version>
-        <mockito-junit-jupiter.version>3.5.13</mockito-junit-jupiter.version>
+        <mockito-junit-jupiter.version>3.5.15</mockito-junit-jupiter.version>
         <jakartaee-api.version>8.0.0</jakartaee-api.version>
         <snakeyaml.version>1.27</snakeyaml.version>
         <flexmark.version>0.62.2</flexmark.version>
