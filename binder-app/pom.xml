@@ -46,6 +46,19 @@
         </dependency>
 
         <dependency>
+            <groupId>net.kemitix</groupId>
+            <artifactId>fontface</artifactId>
+            <version>${fontface.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.beryx</groupId>
+            <artifactId>awt-color-factory</artifactId>
+        </dependency>
+
+
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
@@ -64,5 +77,8 @@
         </dependency>
 
     </dependencies>
+    <properties>
+        <fontface.version>1.0.0</fontface.version>
+    </properties>
 
 </project>

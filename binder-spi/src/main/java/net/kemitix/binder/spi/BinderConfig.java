@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public interface BinderConfig {
+
     File getScanDirectory();
 
     default File getFile(String name, String extension) {

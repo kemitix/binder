@@ -48,8 +48,8 @@ public class DocxHelper {
         return p(ppr(sectPr(sectPrType("oddPage"))));
     }
 
-    public P textImage(String text, int fontSize) {
-        List<TextImage> images = textImageFactory.createImages(text, fontSize);
+    public P textImage(String text, int fontSize, int pageWidth) {
+        List<TextImage> images = textImageFactory.createImages(text, fontSize, pageWidth);
 
         Object[] drawings = images.stream()
                 .map(TextImage::getBytes)
