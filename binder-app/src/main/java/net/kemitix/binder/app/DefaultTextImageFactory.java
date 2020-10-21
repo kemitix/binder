@@ -18,6 +18,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class DefaultTextImageFactory
@@ -41,7 +42,11 @@ public class DefaultTextImageFactory
             int fontSize,
             int pageWidth
     ) {
-        return Arrays.stream(text.split(" "))
+        String[] lines = text.split(System.lineSeparator());
+        Stream<String> words = Arrays.stream(lines)
+                .flatMap(line -> Arrays.stream(line.split("\s+")))
+                .filter(word -> word.length() > 0);
+        return words
                 .map(word -> createImage(word, fontSize, pageWidth))
                 .collect(Collectors.toList());
     }
@@ -69,7 +74,7 @@ public class DefaultTextImageFactory
         Graphics2D graphics = bufferedImage.createGraphics();
         graphics.setPaint(ColorFactory.web("black", 1.0));
         graphics.setFont(titleFont);
-        graphics.drawString(word, 0, 0);
+        graphics.drawString(word, 0, (int) (stringBounds.getHeight() * 0.75));
         return new DefaultTextImage(word, fontSize, bufferedImage);
     }
 
