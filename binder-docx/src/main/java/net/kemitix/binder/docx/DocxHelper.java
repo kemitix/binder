@@ -55,9 +55,6 @@ public class DocxHelper {
                 .map(TextImage::getBytes)
                 .map(this::drawing)
                 .toArray();
-
-        //TODO create/get image on disk
-
         return pCentered(r(drawings));
     }
 
