@@ -4,4 +4,7 @@ public interface TextImage {
 
     byte[] getBytes();
 
+    int getWidth();
+
+    TextImage withWidth(int maxWidth);
 }

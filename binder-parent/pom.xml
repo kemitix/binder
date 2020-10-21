@@ -30,6 +30,7 @@
         <docx4j-ImportXHTML.version>8.0.0</docx4j-ImportXHTML.version>
         <docx4j-JAXB-ReferenceImpl.version>11.1.8</docx4j-JAXB-ReferenceImpl.version>
         <velocity-engine.version>2.2</velocity-engine.version>
+        <awt-color-factory.version>1.0.2</awt-color-factory.version>
     </properties>
 
     <dependencyManagement>
@@ -77,6 +78,12 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.beryx</groupId>
+                <artifactId>awt-color-factory</artifactId>
+                <version>${awt-color-factory.version}</version>
             </dependency>
 
             <dependency>

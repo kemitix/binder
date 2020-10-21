@@ -19,19 +19,16 @@ public class TocDocxRenderer
         AggregateRenderer<DocxTocItemRenderer, HtmlSection, Object> {
 
     private final HtmlManuscript htmlManuscript;
-    private final ObjectFactory factory;
     private final Instance<DocxTocItemRenderer> tocItemRenderers;
     private final DocxHelper docxHelper;
 
     @Inject
     public TocDocxRenderer(
             HtmlManuscript htmlManuscript,
-            ObjectFactory factory,
             Instance<DocxTocItemRenderer> tocItemRenderers,
             DocxHelper docxHelper
     ) {
         this.htmlManuscript = htmlManuscript;
-        this.factory = factory;
         this.tocItemRenderers = tocItemRenderers;
         this.docxHelper = docxHelper;
     }
@@ -45,7 +42,8 @@ public class TocDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("TOC: %s".formatted(htmlSection.getName()));
         List<Object> content = new ArrayList<>();
-        content.add(docxHelper.textImage("Table of Contents", 240));
+        int pageWidth = 5000;//TODO
+        content.add(docxHelper.textImage("Table of Contents", 240, pageWidth));
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)

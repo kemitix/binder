@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.enterprise.inject.Vetoed;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class Metadata {
     private String editor;
     private String cover;
     private String coverArtist;
+    private File titleFont;
     private List<String> contents = new ArrayList<>();
 
 }
