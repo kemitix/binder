@@ -19,19 +19,16 @@ public class TocDocxRenderer
         AggregateRenderer<DocxTocItemRenderer, HtmlSection, Object> {
 
     private final HtmlManuscript htmlManuscript;
-    private final ObjectFactory factory;
     private final Instance<DocxTocItemRenderer> tocItemRenderers;
     private final DocxHelper docxHelper;
 
     @Inject
     public TocDocxRenderer(
             HtmlManuscript htmlManuscript,
-            ObjectFactory factory,
             Instance<DocxTocItemRenderer> tocItemRenderers,
             DocxHelper docxHelper
     ) {
         this.htmlManuscript = htmlManuscript;
-        this.factory = factory;
         this.tocItemRenderers = tocItemRenderers;
         this.docxHelper = docxHelper;
     }
