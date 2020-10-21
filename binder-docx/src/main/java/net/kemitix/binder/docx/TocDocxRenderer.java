@@ -45,7 +45,7 @@ public class TocDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("TOC: %s".formatted(htmlSection.getName()));
         List<Object> content = new ArrayList<>();
-        int pageWidth = 0;//TODO
+        int pageWidth = 5000;//TODO
         content.add(docxHelper.textImage("Table of Contents", 240, pageWidth));
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
