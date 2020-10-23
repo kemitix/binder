@@ -26,6 +26,10 @@ public class Metadata {
     private String cover;
     private String coverArtist;
     private File titleFont;
+    private float paperbackPageWidthInches;
+    private float paperbackPageHeightInches;
+    private float paperbackMarginSides;
+    private float paperbackMarginTopBottom;
     private List<String> contents = new ArrayList<>();
 
 }
