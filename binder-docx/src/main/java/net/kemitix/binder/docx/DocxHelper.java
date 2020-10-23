@@ -1,5 +1,6 @@
 package net.kemitix.binder.docx;
 
+import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
@@ -32,16 +33,19 @@ public class DocxHelper {
     private final ObjectFactory objectFactory;
     private final WordprocessingMLPackage mlPackage;
     private final TextImageFactory textImageFactory;
+    private final Metadata metadata;
 
     @Inject
     public DocxHelper(
             ObjectFactory objectFactory,
             WordprocessingMLPackage mlPackage,
-            TextImageFactory textImageFactory
+            TextImageFactory textImageFactory,
+            Metadata metadata
     ) {
         this.objectFactory = objectFactory;
         this.mlPackage = mlPackage;
         this.textImageFactory = textImageFactory;
+        this.metadata = metadata;
     }
 
     public P breakToOddPage() {
@@ -150,8 +154,24 @@ public class DocxHelper {
 
     private SectPr sectPr(SectPr.Type type) {
         SectPr sectPr = objectFactory.createSectPr();
+        sectPr.setPgSz(pgSz());
         sectPr.setType(type);
         return sectPr;
+    }
+
+    private SectPr.PgSz pgSz() {
+        SectPr.PgSz pgSz = objectFactory.createSectPrPgSz();
+        float widthInches = metadata.getPaperbackPageWidthInches();
+        float heightInches = metadata.getPaperbackPageHeightInches();
+        // A4: 8.3" x 11.7"
+        //        pgSz.setW(BigInteger.valueOf(11907));
+        double ratio = 11907 / 8.3;
+        //        pgSz.setH(BigInteger.valueOf(16839));
+        long width = (long) (widthInches * ratio);
+        long height = (long) (heightInches * ratio);
+        pgSz.setH(BigInteger.valueOf(height));
+        pgSz.setW(BigInteger.valueOf(width));
+        return pgSz;
     }
 
     private SectPr.Type sectPrType(String value) {
