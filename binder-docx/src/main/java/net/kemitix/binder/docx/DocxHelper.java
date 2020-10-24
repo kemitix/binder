@@ -30,6 +30,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -120,10 +121,15 @@ public class DocxHelper {
         }
     }
 
+    private AtomicInteger idCounter = new AtomicInteger();
+
     private Inline inline(BinaryPartAbstractImage imagePart) {
         try {
             return imagePart
-                    .createImageInline("hint", "", 0, 1, false);
+                    .createImageInline("hint", "",
+                            idCounter.incrementAndGet(),
+                            idCounter.incrementAndGet(),
+                            false);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
