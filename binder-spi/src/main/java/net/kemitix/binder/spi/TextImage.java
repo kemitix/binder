@@ -2,6 +2,8 @@ package net.kemitix.binder.spi;
 
 public interface TextImage {
 
+    String getWord();
+
     byte[] getBytes();
 
     int getWidth();

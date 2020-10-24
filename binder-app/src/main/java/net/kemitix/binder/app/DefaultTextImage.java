@@ -1,5 +1,6 @@
 package net.kemitix.binder.app;
 
+import lombok.Getter;
 import lombok.extern.java.Log;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.TextImage;
@@ -18,6 +19,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 public class DefaultTextImage
         implements TextImage {
 
+    @Getter
     private final String word;
     private final FontSize fontSize;
     private final BufferedImage bufferedImage;
