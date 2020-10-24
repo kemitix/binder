@@ -1,5 +1,8 @@
 package net.kemitix.binder.docx;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Delegate;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.TextImage;
@@ -8,7 +11,6 @@ import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.CTTabStop;
-import org.docx4j.wml.Drawing;
 import org.docx4j.wml.Jc;
 import org.docx4j.wml.JcEnumeration;
 import org.docx4j.wml.ObjectFactory;
@@ -26,7 +28,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class DocxHelper {
@@ -35,6 +39,8 @@ public class DocxHelper {
     private final WordprocessingMLPackage mlPackage;
     private final TextImageFactory textImageFactory;
     private final Metadata metadata;
+
+    private final Map<FontSize, ImagePartCache> imagePartCaches = new HashMap<>();
 
     @Inject
     public DocxHelper(
@@ -53,25 +59,72 @@ public class DocxHelper {
         return p(ppr(sectPr(sectPrType("oddPage"))));
     }
 
-        List<TextImage> images = textImageFactory.createImages(text, fontSize, pageWidth);
-
-        Object[] drawings = images.stream()
-                .map(TextImage::getBytes)
     public P textImage(String text, FontSize fontSize, int pageWidth) {
+        var imagePartCache = getImagePartCache(fontSize);
+        Object[] drawings = words(text)
+                .flatMap(word -> textImageFactory.createImages(word, fontSize, pageWidth).stream())
+                .map(image -> imagePart(image, imagePartCache))
+                .map(this::inline)
                 .map(this::drawing)
                 .toArray();
         return pCentered(r(drawings));
     }
 
-    private Object drawing(byte[] bytes) {
+    private ImagePartCache getImagePartCache(FontSize fontSize) {
+        return imagePartCaches.computeIfAbsent(fontSize,
+                (fs) -> ImagePartCache.create());
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    private static class ImagePartCache
+            implements Map<String, BinaryPartAbstractImage> {
+
+        @Delegate
+        Map<String, BinaryPartAbstractImage> delegate = new HashMap<>();
+
+        public static ImagePartCache create() {
+            return new ImagePartCache();
+        }
+    }
+
+    private BinaryPartAbstractImage imagePart(
+            TextImage image,
+            Map<String, BinaryPartAbstractImage> imagePartCache
+    ) {
+        return imagePartCache.computeIfAbsent(image.getWord(),
+                word -> {
+                    try {
+                        return BinaryPartAbstractImage
+                                .createImagePart(mlPackage, image.getBytes());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
+
+    private Stream<String> words(String text) {
+        String[] lines = text.split(System.lineSeparator());
+        return Arrays.stream(lines)
+                .flatMap(line -> Arrays.stream(line.split("\s+")))
+                .filter(word -> word.length() > 0);
+    }
+
+    private Object drawing(Inline inline) {
         try {
-            BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(mlPackage, bytes);
-            Inline inline = imagePart.createImageInline("hint", "", 0, 0, false);
-            Drawing drawing = objectFactory.createDrawing();
-            drawing.getAnchorOrInline().add(inline);
+            var drawing = objectFactory.createDrawing();
+            drawing.getAnchorOrInline()
+                    .add(inline);
             return drawing;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error creating drawing", e);
+        }
+    }
+
+    private Inline inline(BinaryPartAbstractImage imagePart) {
+        try {
+            return imagePart
+                    .createImageInline("hint", "", 0, 1, false);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
