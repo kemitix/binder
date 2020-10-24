@@ -9,11 +9,11 @@ import javax.inject.Inject;
 public class DefaultDocxTocItemRenderer
         implements DocxTocItemRenderer {
 
-    private final DocxHelper docxHelper;
+    private final DocxFacade docx;
 
     @Inject
-    public DefaultDocxTocItemRenderer(DocxHelper docxHelper) {
-        this.docxHelper = docxHelper;
+    public DefaultDocxTocItemRenderer(DocxFacade docx) {
+        this.docx = docx;
     }
 
     @Override
@@ -24,6 +24,6 @@ public class DefaultDocxTocItemRenderer
 
     @Override
     public Object render(HtmlSection source) {
-        return docxHelper.tocItem("", source.getTitle());
+        return docx.tocItem("", source.getTitle());
     }
 }

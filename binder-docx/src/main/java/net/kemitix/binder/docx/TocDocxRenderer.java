@@ -5,7 +5,6 @@ import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
-import org.docx4j.wml.ObjectFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -21,17 +20,17 @@ public class TocDocxRenderer
 
     private final HtmlManuscript htmlManuscript;
     private final Instance<DocxTocItemRenderer> tocItemRenderers;
-    private final DocxHelper docxHelper;
+    private final DocxFacade docx;
 
     @Inject
     public TocDocxRenderer(
             HtmlManuscript htmlManuscript,
             Instance<DocxTocItemRenderer> tocItemRenderers,
-            DocxHelper docxHelper
+            DocxFacade docx
     ) {
         this.htmlManuscript = htmlManuscript;
         this.tocItemRenderers = tocItemRenderers;
-        this.docxHelper = docxHelper;
+        this.docx = docx;
     }
 
     @Override
@@ -44,14 +43,14 @@ public class TocDocxRenderer
         log.info("TOC: %s".formatted(htmlSection.getName()));
         List<Object> content = new ArrayList<>();
         int pageWidth = 5000;//TODO
-        content.add(docxHelper.textImage("Table of Contents", FontSize.of(240), pageWidth));
+        content.add(docx.textImage("Table of Contents", FontSize.of(240), pageWidth));
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)
                 .forEach(section -> content.add(
                         findRenderer(section.getType(), tocItemRenderers)
                                 .render(section)));
-        content.add(docxHelper.breakToOddPage());
+        content.add(docx.breakToOddPage());
         return new DocxContent(content);
     }
 

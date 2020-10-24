@@ -13,11 +13,11 @@ import java.util.ArrayList;
 public class PlateDocxRenderer
         implements DocxRenderer {
 
-    private final DocxHelper docxHelper;
+    private final DocxFacade docx;
 
     @Inject
-    public PlateDocxRenderer(DocxHelper docxHelper) {
-        this.docxHelper = docxHelper;
+    public PlateDocxRenderer(DocxFacade docx) {
+        this.docx = docx;
     }
 
     @Override
@@ -30,8 +30,8 @@ public class PlateDocxRenderer
         log.info("PLATE: %s".formatted(htmlSection.getName()));
         ArrayList<Object> contents = new ArrayList<>();
         int pageWidth = 5000;// TODO
-        contents.add(docxHelper.textImage(htmlSection.getMarkdown(), FontSize.of(512), pageWidth));
-        contents.add(docxHelper.breakToOddPage());
+        contents.add(docx.textImage(htmlSection.getMarkdown(), FontSize.of(512), pageWidth));
+        contents.add(docx.breakToOddPage());
         return new DocxContent(contents);
     }
 

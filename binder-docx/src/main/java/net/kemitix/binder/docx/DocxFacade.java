@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 @ApplicationScoped
-public class DocxHelper {
+public class DocxFacade {
 
     private final ObjectFactory objectFactory;
     private final WordprocessingMLPackage mlPackage;
@@ -44,7 +44,7 @@ public class DocxHelper {
     private final Map<FontSize, ImagePartCache> imagePartCaches = new HashMap<>();
 
     @Inject
-    public DocxHelper(
+    public DocxFacade(
             ObjectFactory objectFactory,
             WordprocessingMLPackage mlPackage,
             TextImageFactory textImageFactory,

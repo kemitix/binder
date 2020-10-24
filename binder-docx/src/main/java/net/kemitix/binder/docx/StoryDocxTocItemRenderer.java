@@ -9,11 +9,11 @@ import javax.inject.Inject;
 public class StoryDocxTocItemRenderer
         implements DocxTocItemRenderer {
 
-    private final DocxHelper docxHelper;
+    private final DocxFacade docx;
 
     @Inject
-    public StoryDocxTocItemRenderer(DocxHelper docxHelper) {
-        this.docxHelper = docxHelper;
+    public StoryDocxTocItemRenderer(DocxFacade docx) {
+        this.docx = docx;
     }
 
     @Override
@@ -23,6 +23,6 @@ public class StoryDocxTocItemRenderer
 
     @Override
     public Object render(HtmlSection source) {
-        return docxHelper.tocItem(Integer.toString(source.getPage()), source.getTitle());
+        return docx.tocItem(Integer.toString(source.getPage()), source.getTitle());
     }
 }
