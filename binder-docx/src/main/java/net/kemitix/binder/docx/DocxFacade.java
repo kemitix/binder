@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import net.kemitix.binder.spi.FontSize;
@@ -41,6 +42,7 @@ public class DocxFacade {
     private final TextImageFactory textImageFactory;
     private final Metadata metadata;
 
+    @Getter
     private final WordprocessingMLPackage mlPackage;
     private final Map<FontSize, ImagePartCache> imagePartCaches;
     private final ObjectFactory objectFactory;

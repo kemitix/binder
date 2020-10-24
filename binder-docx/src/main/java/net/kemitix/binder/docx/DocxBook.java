@@ -24,11 +24,16 @@ import java.util.stream.Collectors;
 public class DocxBook {
 
     private final List<DocxContent> contents;
+    private final DocxFacade docx;
 
     @Inject
-    public DocxBook(List<DocxContent> contents) {
-        log.info("Content items: %d".formatted(contents.size()));
+    public DocxBook(
+            List<DocxContent> contents,
+            DocxFacade docx
+    ) {
+        this.docx = docx;
         this.contents = contents;
+        log.info("Content items: %d".formatted(contents.size()));
     }
 
     public void writeToFile(String fileName) {
@@ -52,7 +57,7 @@ public class DocxBook {
 
     private WordprocessingMLPackage createMainDocument()
             throws InvalidFormatException, JAXBException {
-        var wordMLPackage = WordprocessingMLPackage.createPackage();
+        var wordMLPackage = docx.getMlPackage();
         var mainDocument = wordMLPackage.getMainDocumentPart();
         definePartNumbering(mainDocument);
         mainDocument.getContent().addAll(getContents());
