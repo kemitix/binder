@@ -23,6 +23,7 @@ public class DefaultTextImage
     private final String word;
     private final FontSize fontSize;
     private final BufferedImage bufferedImage;
+    @Getter
     private final File file;
 
     public DefaultTextImage(
@@ -34,11 +35,11 @@ public class DefaultTextImage
         this.fontSize = fontSize;
         this.bufferedImage = bufferedImage;
         file = new File("text-image-%s-%s.png".formatted(fontSize, word));
+        writeImageFile();
     }
 
     @Override
     public byte[] getBytes() {
-        writeImageFile();
         return readImageFile();
     }
 

@@ -8,6 +8,8 @@ import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
+import org.docx4j.jaxb.Context;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.CTTabStop;
@@ -36,24 +38,24 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class DocxFacade {
 
-    private final ObjectFactory objectFactory;
-    private final WordprocessingMLPackage mlPackage;
     private final TextImageFactory textImageFactory;
     private final Metadata metadata;
 
-    private final Map<FontSize, ImagePartCache> imagePartCaches = new HashMap<>();
+    private final WordprocessingMLPackage mlPackage;
+    private final Map<FontSize, ImagePartCache> imagePartCaches;
+    private final ObjectFactory objectFactory;
 
     @Inject
     public DocxFacade(
-            ObjectFactory objectFactory,
-            WordprocessingMLPackage mlPackage,
             TextImageFactory textImageFactory,
             Metadata metadata
-    ) {
-        this.objectFactory = objectFactory;
-        this.mlPackage = mlPackage;
+    ) throws InvalidFormatException {
         this.textImageFactory = textImageFactory;
         this.metadata = metadata;
+
+        mlPackage = WordprocessingMLPackage.createPackage();
+        imagePartCaches = new HashMap<>();
+        objectFactory = Context.getWmlObjectFactory();
     }
 
     public P breakToOddPage() {
@@ -67,8 +69,9 @@ public class DocxFacade {
                 .map(image -> imagePart(image, imagePartCache))
                 .map(this::inline)
                 .map(this::drawing)
+                .map(this::r)
                 .toArray();
-        return pCentered(r(drawings));
+        return pCentered(drawings);
     }
 
     private ImagePartCache getImagePartCache(FontSize fontSize) {
@@ -96,7 +99,7 @@ public class DocxFacade {
                 word -> {
                     try {
                         return BinaryPartAbstractImage
-                                .createImagePart(mlPackage, image.getBytes());
+                                .createImagePart(mlPackage, image.getFile());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -126,7 +129,9 @@ public class DocxFacade {
     private Inline inline(BinaryPartAbstractImage imagePart) {
         try {
             return imagePart
-                    .createImageInline("hint", "",
+                    .createImageInline(
+                            imagePart.getPartName().getName(),
+                            imagePart.getContentType(),
                             idCounter.incrementAndGet(),
                             idCounter.incrementAndGet(),
                             false);
@@ -215,6 +220,12 @@ public class DocxFacade {
     private SectPr sectPr(SectPr.Type type) {
         SectPr sectPr = objectFactory.createSectPr();
         sectPr.setPgSz(pgSz());
+        //TODO: MUST ALSO SATISFY THIS WAY OF GETTING PAGE SIZE:
+        /**
+         *
+         List<SectionWrapper> sections = wmlPackage.getDocumentModel().getSections();
+         PageDimensions page = sections.get(sections.size() - 1).getPageDimensions();
+         */
         sectPr.setPgMar(pgMar());
         sectPr.setType(type);
         return sectPr;
