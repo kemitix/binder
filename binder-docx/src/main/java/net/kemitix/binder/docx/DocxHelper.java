@@ -1,5 +1,6 @@
 package net.kemitix.binder.docx;
 
+import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
@@ -52,11 +53,11 @@ public class DocxHelper {
         return p(ppr(sectPr(sectPrType("oddPage"))));
     }
 
-    public P textImage(String text, int fontSize, int pageWidth) {
         List<TextImage> images = textImageFactory.createImages(text, fontSize, pageWidth);
 
         Object[] drawings = images.stream()
                 .map(TextImage::getBytes)
+    public P textImage(String text, FontSize fontSize, int pageWidth) {
                 .map(this::drawing)
                 .toArray();
         return pCentered(r(drawings));

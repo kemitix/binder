@@ -1,6 +1,7 @@
 package net.kemitix.binder.app;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.TextImage;
 
 import javax.imageio.ImageIO;
@@ -18,19 +19,19 @@ public class DefaultTextImage
         implements TextImage {
 
     private final String word;
-    private final int fontSize;
+    private final FontSize fontSize;
     private final BufferedImage bufferedImage;
     private final File file;
 
     public DefaultTextImage(
             String word,
-            int fontSize,
+            FontSize fontSize,
             BufferedImage bufferedImage
     ) {
         this.word = word;
         this.fontSize = fontSize;
         this.bufferedImage = bufferedImage;
-        file = new File("text-image-%d-%s.png".formatted(fontSize, word));
+        file = new File("text-image-%s-%s.png".formatted(fontSize, word));
     }
 
     @Override
@@ -44,20 +45,22 @@ public class DefaultTextImage
             return Files.readAllBytes(file.toPath());
         } catch (IOException e) {
             throw new RuntimeException(
-                    "Error reading Image for %s @ %d: %s".formatted(word, fontSize, file.getAbsolutePath()),
+                    "Error reading Image for %s @ %s: %s".formatted(word, fontSize, file.getAbsolutePath()),
                     e);
         }
     }
 
     private boolean writeImageFile() {
-        log.info("Writing %s @ %d (%dx%d): %s".formatted(word, fontSize,
+        log.info("Writing %s @ %s (%dx%d): %s".formatted(word, fontSize,
                 bufferedImage.getWidth(), bufferedImage.getHeight(),
                 file.getAbsolutePath()));
         try {
             return ImageIO.write(bufferedImage, "PNG", file);
         } catch (IOException e) {
             throw new RuntimeException(
-                    "Error writing Image for %s @ %d: %s".formatted(word, fontSize, file.getAbsolutePath()),
+                    "Error writing Image for %s @ %s: %s"
+                            .formatted(
+                                    word, fontSize, file.getAbsolutePath()),
                     e);
         }
     }

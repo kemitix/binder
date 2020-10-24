@@ -1,6 +1,7 @@
 package net.kemitix.binder.app;
 
 import net.kemitix.binder.spi.CoverFont;
+import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
 import net.kemitix.fontface.FontCache;
@@ -39,7 +40,7 @@ public class DefaultTextImageFactory
     @Override
     public List<TextImage> createImages(
             String text,
-            int fontSize,
+            FontSize fontSize,
             int pageWidth
     ) {
         String[] lines = text.split(System.lineSeparator());
@@ -53,7 +54,7 @@ public class DefaultTextImageFactory
 
     private TextImage createImage(
             String word,
-            int fontSize,
+            FontSize fontSize,
             int maxWidth
     ) {
         TextImage image = createImage(word, fontSize);
@@ -63,7 +64,7 @@ public class DefaultTextImageFactory
         return image;
     }
 
-    private DefaultTextImage createImage(String word, int fontSize) {
+    private DefaultTextImage createImage(String word, FontSize fontSize) {
         Font titleFont = getFont(fontSize);
         Rectangle2D stringBounds = getStringBounds(word, titleFont);
         BufferedImage bufferedImage =
@@ -78,8 +79,8 @@ public class DefaultTextImageFactory
         return new DefaultTextImage(word, fontSize, bufferedImage);
     }
 
-    private Font getFont(int fontSize) {
-        FontFace fontFace = FontFace.of(fontUri, fontSize, "black");
+    private Font getFont(FontSize fontSize) {
+        FontFace fontFace = FontFace.of(fontUri, fontSize.getValue(), "black");
         return fontCache.loadFont(fontFace);
     }
 

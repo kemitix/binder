@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlSection;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -29,7 +30,7 @@ public class PlateDocxRenderer
         log.info("PLATE: %s".formatted(htmlSection.getName()));
         ArrayList<Object> contents = new ArrayList<>();
         int pageWidth = 5000;// TODO
-        contents.add(docxHelper.textImage(htmlSection.getMarkdown(), 512, pageWidth));
+        contents.add(docxHelper.textImage(htmlSection.getMarkdown(), FontSize.of(512), pageWidth));
         contents.add(docxHelper.breakToOddPage());
         return new DocxContent(contents);
     }
