@@ -52,12 +52,12 @@ public class DefaultTextImage
         }
     }
 
-    private boolean writeImageFile() {
+    private void writeImageFile() {
         log.info("Writing %s @ %s (%dx%d): %s".formatted(word, fontSize,
                 bufferedImage.getWidth(), bufferedImage.getHeight(),
                 file.getAbsolutePath()));
         try {
-            return ImageIO.write(bufferedImage, "PNG", file);
+            ImageIO.write(bufferedImage, "PNG", file);
         } catch (IOException e) {
             throw new RuntimeException(
                     "Error writing Image for %s @ %s: %s"
