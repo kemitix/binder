@@ -1,22 +1,14 @@
 package net.kemitix.binder.docx;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Delegate;
-import lombok.extern.java.Log;
-import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Metadata;
-import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
 import org.docx4j.UnitsOfMeasurement;
-import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.jaxb.Context;
-import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.CTTabStop;
+import org.docx4j.wml.Drawing;
 import org.docx4j.wml.Jc;
 import org.docx4j.wml.JcEnumeration;
 import org.docx4j.wml.ObjectFactory;
@@ -34,31 +26,23 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 @ApplicationScoped
 public class DocxFacade {
 
-    private final TextImageFactory textImageFactory;
     private final Metadata metadata;
 
     @Getter
     private final WordprocessingMLPackage mlPackage;
 
-    private final ObjectFactory objectFactory = Context.getWmlObjectFactory();
-    private final Map<FontSize, ImagePartCache> imagePartCaches = new HashMap<>();
-    private final AtomicInteger idCounter = new AtomicInteger();
+    private final ObjectFactory objectFactory =
+            Context.getWmlObjectFactory();
 
     @Inject
     public DocxFacade(
-            TextImageFactory textImageFactory,
             Metadata metadata
     ) throws InvalidFormatException {
-        this.textImageFactory = textImageFactory;
         this.metadata = metadata;
 
         mlPackage = WordprocessingMLPackage.createPackage();
@@ -66,90 +50,6 @@ public class DocxFacade {
 
     public P breakToOddPage() {
         return p(ppr(sectPr(sectPrType("oddPage"))));
-    }
-
-    public P textImage(String text, FontSize fontSize) {
-        var imagePartCache = getImagePartCache(fontSize);
-        Object[] drawings = words(text)
-                .flatMap(word -> textImageFactory.createImages(word, fontSize).stream())
-                .map(image -> imagePart(image, imagePartCache))
-                .map(this::inline)
-                .map(this::drawing)
-                .map(this::r)
-                .toArray();
-        return pCentered(drawings);
-    }
-
-    private int getBodyWidthTwips() {
-        float marginSides = metadata.getPaperbackMarginSides();
-        float pageWidthInches = metadata.getPaperbackPageWidthInches();
-        float bodyWidthInches = pageWidthInches - (2 * marginSides);
-        return UnitsOfMeasurement.inchToTwip(bodyWidthInches);
-    }
-
-    private ImagePartCache getImagePartCache(FontSize fontSize) {
-        return imagePartCaches.computeIfAbsent(fontSize,
-                (fs) -> ImagePartCache.create());
-    }
-
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    private static class ImagePartCache
-            implements Map<String, BinaryPartAbstractImage> {
-
-        @Delegate
-        Map<String, BinaryPartAbstractImage> delegate = new HashMap<>();
-
-        public static ImagePartCache create() {
-            return new ImagePartCache();
-        }
-    }
-
-    private BinaryPartAbstractImage imagePart(
-            TextImage image,
-            Map<String, BinaryPartAbstractImage> imagePartCache
-    ) {
-        return imagePartCache.computeIfAbsent(image.getWord(),
-                word -> {
-                    try {
-                        return BinaryPartAbstractImage
-                                .createImagePart(mlPackage, image.getFile());
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-    }
-
-    private Stream<String> words(String text) {
-        String[] lines = text.split(System.lineSeparator());
-        return Arrays.stream(lines)
-                .flatMap(line -> Arrays.stream(line.split("\s+")))
-                .filter(word -> word.length() > 0);
-    }
-
-    private Object drawing(Inline inline) {
-        try {
-            var drawing = objectFactory.createDrawing();
-            drawing.getAnchorOrInline()
-                    .add(inline);
-            return drawing;
-        } catch (Exception e) {
-            throw new RuntimeException("Error creating drawing", e);
-        }
-    }
-
-    private Inline inline(BinaryPartAbstractImage imagePart) {
-        try {
-            return imagePart
-                    .createImageInline(
-                            imagePart.getPartName().getName(),
-                            imagePart.getContentType(),
-                            idCounter.incrementAndGet(),
-                            idCounter.incrementAndGet(),
-                            getBodyWidthTwips(),
-                            false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public P tocItem(String pageNumber, String title) {
@@ -304,4 +204,11 @@ public class DocxFacade {
         return text;
     }
 
+    public P drawings(Drawing[] drawings) {
+        R r = r();
+        for (Drawing drawing : drawings) {
+            r.getContent().add(drawing);
+        }
+        return pCentered(r);
+    }
 }

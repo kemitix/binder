@@ -21,16 +21,19 @@ public class TocDocxRenderer
     private final HtmlManuscript htmlManuscript;
     private final Instance<DocxTocItemRenderer> tocItemRenderers;
     private final DocxFacade docx;
+    private final DocxImageFacade docxImage;
 
     @Inject
     public TocDocxRenderer(
             HtmlManuscript htmlManuscript,
             Instance<DocxTocItemRenderer> tocItemRenderers,
-            DocxFacade docx
+            DocxFacade docx,
+            DocxImageFacade docxImage
     ) {
         this.htmlManuscript = htmlManuscript;
         this.tocItemRenderers = tocItemRenderers;
         this.docx = docx;
+        this.docxImage = docxImage;
     }
 
     @Override
@@ -42,7 +45,11 @@ public class TocDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("TOC: %s".formatted(htmlSection.getName()));
         List<Object> content = new ArrayList<>();
-        content.add(docx.textImage("Contents", FontSize.of(240)));
+        content.add(
+                docx.drawings(
+                        docxImage.textImages(
+                                "Contents",
+                                FontSize.of(240))));
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)

@@ -14,10 +14,15 @@ public class PlateDocxRenderer
         implements DocxRenderer {
 
     private final DocxFacade docx;
+    private final DocxImageFacade docxImage;
 
     @Inject
-    public PlateDocxRenderer(DocxFacade docx) {
+    public PlateDocxRenderer(
+            DocxFacade docx,
+            DocxImageFacade docxImage
+    ) {
         this.docx = docx;
+        this.docxImage = docxImage;
     }
 
     @Override
@@ -29,7 +34,11 @@ public class PlateDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("PLATE: %s".formatted(htmlSection.getName()));
         ArrayList<Object> contents = new ArrayList<>();
-        contents.add(docx.textImage(htmlSection.getMarkdown(), FontSize.of(512)));
+        contents.add(
+                docx.drawings(
+                        docxImage.textImages(
+                                htmlSection.getMarkdown(),
+                                FontSize.of(512))));
         contents.add(docx.breakToOddPage());
         return new DocxContent(contents);
     }
