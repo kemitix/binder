@@ -29,8 +29,7 @@ public class PlateDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("PLATE: %s".formatted(htmlSection.getName()));
         ArrayList<Object> contents = new ArrayList<>();
-        int pageWidth = 5000;// TODO
-        contents.add(docx.textImage(htmlSection.getMarkdown(), FontSize.of(512), pageWidth));
+        contents.add(docx.textImage(htmlSection.getMarkdown(), FontSize.of(512)));
         contents.add(docx.breakToOddPage());
         return new DocxContent(contents);
     }

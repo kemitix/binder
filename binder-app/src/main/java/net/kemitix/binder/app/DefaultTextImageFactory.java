@@ -40,28 +40,15 @@ public class DefaultTextImageFactory
     @Override
     public List<TextImage> createImages(
             String text,
-            FontSize fontSize,
-            int pageWidth
+            FontSize fontSize
     ) {
         String[] lines = text.split(System.lineSeparator());
         Stream<String> words = Arrays.stream(lines)
                 .flatMap(line -> Arrays.stream(line.split("\s+")))
                 .filter(word -> word.length() > 0);
         return words
-                .map(word -> createImage(word, fontSize, pageWidth))
+                .map(word -> createImage(word, fontSize))
                 .collect(Collectors.toList());
-    }
-
-    private TextImage createImage(
-            String word,
-            FontSize fontSize,
-            int maxWidth
-    ) {
-        TextImage image = createImage(word, fontSize);
-        if (maxWidth < image.getWidth()) {
-            return image.withWidth(maxWidth);
-        }
-        return image;
     }
 
     private DefaultTextImage createImage(String word, FontSize fontSize) {

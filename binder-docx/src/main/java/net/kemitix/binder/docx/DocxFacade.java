@@ -4,12 +4,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
+import lombok.extern.java.Log;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
+import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.jaxb.Context;
+import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
@@ -32,10 +35,12 @@ import javax.inject.Inject;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+@Log
 @ApplicationScoped
 public class DocxFacade {
 
@@ -44,8 +49,10 @@ public class DocxFacade {
 
     @Getter
     private final WordprocessingMLPackage mlPackage;
-    private final Map<FontSize, ImagePartCache> imagePartCaches;
-    private final ObjectFactory objectFactory;
+
+    private final ObjectFactory objectFactory = Context.getWmlObjectFactory();
+    private final Map<FontSize, ImagePartCache> imagePartCaches = new HashMap<>();
+    private final AtomicInteger idCounter = new AtomicInteger();
 
     @Inject
     public DocxFacade(
@@ -56,24 +63,32 @@ public class DocxFacade {
         this.metadata = metadata;
 
         mlPackage = WordprocessingMLPackage.createPackage();
-        imagePartCaches = new HashMap<>();
-        objectFactory = Context.getWmlObjectFactory();
     }
 
     public P breakToOddPage() {
         return p(ppr(sectPr(sectPrType("oddPage"))));
     }
 
-    public P textImage(String text, FontSize fontSize, int pageWidth) {
+    public P textImage(String text, FontSize fontSize) {
         var imagePartCache = getImagePartCache(fontSize);
         Object[] drawings = words(text)
-                .flatMap(word -> textImageFactory.createImages(word, fontSize, pageWidth).stream())
+                .flatMap(word -> textImageFactory.createImages(word, fontSize).stream())
                 .map(image -> imagePart(image, imagePartCache))
                 .map(this::inline)
                 .map(this::drawing)
                 .map(this::r)
                 .toArray();
         return pCentered(drawings);
+    }
+
+    private int getBodyWidthTwips() {
+        float marginSides = metadata.getPaperbackMarginSides();
+        float pageWidthInches = metadata.getPaperbackPageWidthInches();
+        float bodyWidthInches = pageWidthInches - (2 * marginSides);
+        log.info("Widths: page %.2f\", margins %.2f\", body %.2f\"".formatted(
+                pageWidthInches, marginSides, bodyWidthInches
+        ));
+        return UnitsOfMeasurement.inchToTwip(bodyWidthInches);
     }
 
     private ImagePartCache getImagePartCache(FontSize fontSize) {
@@ -126,8 +141,6 @@ public class DocxFacade {
         }
     }
 
-    private AtomicInteger idCounter = new AtomicInteger();
-
     private Inline inline(BinaryPartAbstractImage imagePart) {
         try {
             return imagePart
@@ -136,6 +149,7 @@ public class DocxFacade {
                             imagePart.getContentType(),
                             idCounter.incrementAndGet(),
                             idCounter.incrementAndGet(),
+                            getBodyWidthTwips(),
                             false);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -235,11 +249,12 @@ public class DocxFacade {
 
     private SectPr.PgMar pgMar() {
         SectPr.PgMar pgMar = objectFactory.createSectPrPgMar();
-        double ratio = getInchesToUnitsRatio();
-        float paperbackMarginSides = metadata.getPaperbackMarginSides();
-        float paperbackMarginTopBottom = metadata.getPaperbackMarginTopBottom();
-        BigInteger sides = BigInteger.valueOf((long) (paperbackMarginSides * ratio));
-        BigInteger topBottom = BigInteger.valueOf((long) (paperbackMarginTopBottom * ratio));
+        BigInteger sides = BigInteger.valueOf(
+                UnitsOfMeasurement.inchToTwip(
+                        metadata.getPaperbackMarginSides()));
+        BigInteger topBottom = BigInteger.valueOf(
+                UnitsOfMeasurement.inchToTwip(
+                        metadata.getPaperbackMarginTopBottom()));
         pgMar.setTop(topBottom);
         pgMar.setBottom(topBottom);
         pgMar.setLeft(sides);
@@ -249,22 +264,13 @@ public class DocxFacade {
 
     private SectPr.PgSz pgSz() {
         SectPr.PgSz pgSz = objectFactory.createSectPrPgSz();
-        float widthInches = metadata.getPaperbackPageWidthInches();
-        float heightInches = metadata.getPaperbackPageHeightInches();
-        double ratio = getInchesToUnitsRatio();
-        long width = (long) (widthInches * ratio);
-        long height = (long) (heightInches * ratio);
-        pgSz.setH(BigInteger.valueOf(height));
-        pgSz.setW(BigInteger.valueOf(width));
+        pgSz.setH(BigInteger.valueOf(
+                UnitsOfMeasurement.inchToTwip(
+                        metadata.getPaperbackPageHeightInches())));
+        pgSz.setW(BigInteger.valueOf(
+                UnitsOfMeasurement.inchToTwip(
+                        metadata.getPaperbackPageWidthInches())));
         return pgSz;
-    }
-
-    private double getInchesToUnitsRatio() {
-        // A4: 8.3" x 11.7"
-        //        pgSz.setW(BigInteger.valueOf(11907));
-        //        pgSz.setH(BigInteger.valueOf(16839));
-        double ratio = 11907 / 8.3;
-        return ratio;
     }
 
     private SectPr.Type sectPrType(String value) {
