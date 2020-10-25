@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-@Log
 @ApplicationScoped
 public class DocxFacade {
 
@@ -85,9 +84,6 @@ public class DocxFacade {
         float marginSides = metadata.getPaperbackMarginSides();
         float pageWidthInches = metadata.getPaperbackPageWidthInches();
         float bodyWidthInches = pageWidthInches - (2 * marginSides);
-        log.info("Widths: page %.2f\", margins %.2f\", body %.2f\"".formatted(
-                pageWidthInches, marginSides, bodyWidthInches
-        ));
         return UnitsOfMeasurement.inchToTwip(bodyWidthInches);
     }
 
@@ -236,12 +232,6 @@ public class DocxFacade {
     private SectPr sectPr(SectPr.Type type) {
         SectPr sectPr = objectFactory.createSectPr();
         sectPr.setPgSz(pgSz());
-        //TODO: MUST ALSO SATISFY THIS WAY OF GETTING PAGE SIZE:
-        /**
-         *
-         List<SectionWrapper> sections = wmlPackage.getDocumentModel().getSections();
-         PageDimensions page = sections.get(sections.size() - 1).getPageDimensions();
-         */
         sectPr.setPgMar(pgMar());
         sectPr.setType(type);
         return sectPr;
