@@ -3,6 +3,7 @@ package net.kemitix.binder.docx;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
+import lombok.extern.java.Log;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.TextImage;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+@Log
 @ApplicationScoped
 public class DocxImageFacade {
 
@@ -50,7 +52,7 @@ public class DocxImageFacade {
         return words(text)
                 .flatMap(word -> textImageFactory.createImages(word, fontSize).stream())
                 .map(image -> imagePart(image, imagePartCache))
-                .map(this::inline)
+                .map(imagePart -> inline(imagePart, fontSize))
                 .map(this::drawing)
                 .toArray(Drawing[]::new);
     }
@@ -71,12 +73,20 @@ public class DocxImageFacade {
         }
     }
 
-    private Inline inline(BinaryPartAbstractImage imagePart) {
+    private Inline inline(
+            BinaryPartAbstractImage imagePart,
+            FontSize fontSize
+    ) {
         try {
-            long cx = Math.min(
-                    getBodyWidthTwips(),
-                    getImageWidthTwips(imagePart));
-            //long cy = 0;// fontSize * 1000
+            long cx =
+                    UnitsOfMeasurement.twipToEMU(
+                            Math.min(
+                                    getBodyWidthTwips(),
+                                    getImageWidthTwips(imagePart)
+                            ))
+                    ;
+            long cy = fontSize.getValue() * 1000;
+            log.info("Image: cx %d, cy %d".formatted(cx, cy));
             return imagePart
                     .createImageInline(
                             imagePart.getPartName().getName(),
@@ -84,7 +94,7 @@ public class DocxImageFacade {
                             idCounter.incrementAndGet(),
                             idCounter.incrementAndGet(),
                             cx,
-              //              cy,
+                            cy,
                             false);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -114,13 +124,14 @@ public class DocxImageFacade {
     }
 
     private int getImageWidthTwips(BinaryPartAbstractImage imagePart) {
+        int dpi = 72;
         //noinspection deprecation
         return UnitsOfMeasurement
-                .pxToTwip(
+                .inchToTwip(
                         imagePart
                                 .getImageInfo()
                                 .getSize()
-                                .getWidthPx());
+                                .getWidthPx()) / dpi;
     }
 
     private int getBodyWidthTwips() {
