@@ -78,11 +78,16 @@ public class DocxImageFacade {
             FontSize fontSize
     ) {
         try {
+            int bodyWidthTwips = getBodyWidthTwips();
+            int imageWidthTwips = getImageWidthTwips(imagePart);
+            log.info("Widths: body %d, image %d"
+                    .formatted(UnitsOfMeasurement.twipToEMU(bodyWidthTwips),
+                            UnitsOfMeasurement.twipToEMU(imageWidthTwips)));
             long cx =
                     UnitsOfMeasurement.twipToEMU(
                             Math.min(
-                                    getBodyWidthTwips(),
-                                    getImageWidthTwips(imagePart)
+                                    bodyWidthTwips,
+                                    imageWidthTwips
                             ))
                     ;
             long cy = fontSize.getValue() * 1000;
