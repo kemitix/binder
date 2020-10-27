@@ -56,16 +56,23 @@ public class DefaultTextImageFactory
 
     private DefaultTextImage createImage(String word, FontSize fontSize) {
         Font titleFont = getFont(fontSize);
+        int spaceWidth = fontSize.getValue();
+        int padWidth = spaceWidth / 2;
         Rectangle2D stringBounds = getStringBounds(word, titleFont);
+        int width = (int) stringBounds.getWidth() + padWidth;
+        int height = (int) stringBounds.getHeight();
+
         BufferedImage bufferedImage =
                 new BufferedImage(
-                        (int) stringBounds.getWidth(),
-                        (int) stringBounds.getHeight(),
+                        width,
+                        height,
                         BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = bufferedImage.createGraphics();
         graphics.setPaint(ColorFactory.web("black", 1.0));
         graphics.setFont(titleFont);
-        graphics.drawString(word, 0, (int) (stringBounds.getHeight() * 0.75));
+        graphics.drawString(word,
+                padWidth,
+                (int) (height * 0.75));
         return new DefaultTextImage(word, fontSize, bufferedImage);
     }
 
