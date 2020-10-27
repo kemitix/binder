@@ -34,11 +34,22 @@ public class PlateDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("PLATE: %s".formatted(htmlSection.getName()));
         ArrayList<Object> contents = new ArrayList<>();
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
+        contents.add(
+                docx.drawings(
+                        docxImage.textImages(
+                                htmlSection.getTitle(),
+                                FontSize.of(512))));
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
         contents.add(
                 docx.drawings(
                         docxImage.textImages(
                                 htmlSection.getMarkdown(),
-                                FontSize.of(512))));
+                                FontSize.of(240))));
         contents.add(docx.breakToOddPage());
         return new DocxContent(contents);
     }
