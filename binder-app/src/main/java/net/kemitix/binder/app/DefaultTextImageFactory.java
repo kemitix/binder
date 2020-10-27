@@ -13,11 +13,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
+import java.awt.font.TextAttribute;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,7 +71,11 @@ public class DefaultTextImageFactory
 
     private Font getFont(FontSize fontSize) {
         FontFace fontFace = FontFace.of(fontUri, fontSize.getValue(), "black");
-        return fontCache.loadFont(fontFace);
+        final Map<TextAttribute, Object> map = new HashMap<>();
+        map.put(TextAttribute.LIGATURES, TextAttribute.LIGATURES_ON);
+        map.put(TextAttribute.KERNING, TextAttribute.KERNING_ON);
+        return fontCache.loadFont(fontFace)
+                .deriveFont(map);
     }
 
     private Rectangle2D getStringBounds(String word, Font titleFont) {
