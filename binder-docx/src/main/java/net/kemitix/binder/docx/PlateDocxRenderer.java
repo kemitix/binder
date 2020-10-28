@@ -50,6 +50,7 @@ public class PlateDocxRenderer
                         docxImage.textImages(
                                 htmlSection.getMarkdown(),
                                 FontSize.of(240))));
+        contents.add(docx.textParagraph(""));
         contents.add(docx.breakToOddPage());
         return new DocxContent(contents);
     }
