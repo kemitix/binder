@@ -8,6 +8,7 @@ import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
+import org.apache.xmlgraphics.image.loader.ImageSize;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.dml.wordprocessingDrawing.Inline;
 import org.docx4j.jaxb.Context;
@@ -80,6 +81,7 @@ public class DocxImageFacade {
         try {
             int bodyWidthTwips = getBodyWidthTwips();
             int imageWidthTwips = getImageWidthTwips(imagePart);
+            int imageHeightTwips = getImageHeightTwips(imagePart);
             log.info("Widths: body %d, image %d"
                     .formatted(UnitsOfMeasurement.twipToEMU(bodyWidthTwips),
                             UnitsOfMeasurement.twipToEMU(imageWidthTwips)));
@@ -90,7 +92,7 @@ public class DocxImageFacade {
                                     imageWidthTwips
                             ))
                     ;
-            long cy = fontSize.getValue() * 1000;
+            long cy = UnitsOfMeasurement.twipToEMU(imageHeightTwips);
             log.info("Image: cx %d, cy %d".formatted(cx, cy));
             return imagePart
                     .createImageInline(
@@ -128,15 +130,29 @@ public class DocxImageFacade {
                 .filter(word -> word.length() > 0);
     }
 
+    private final int dpi = 720;
+
     private int getImageWidthTwips(BinaryPartAbstractImage imagePart) {
-        int dpi = 72;
-        //noinspection deprecation
         return UnitsOfMeasurement
                 .inchToTwip(
-                        imagePart
-                                .getImageInfo()
-                                .getSize()
-                                .getWidthPx()) / dpi;
+                        getImageSize(imagePart)
+                                .getWidthPx()
+                ) / dpi;
+    }
+
+    private int getImageHeightTwips(BinaryPartAbstractImage imagePart) {
+        return UnitsOfMeasurement
+                .inchToTwip(
+                        getImageSize(imagePart)
+                                .getHeightPx()
+                ) / dpi;
+    }
+
+    private ImageSize getImageSize(BinaryPartAbstractImage imagePart) {
+        //noinspection deprecation
+        return imagePart
+                .getImageInfo()
+                .getSize();
     }
 
     private int getBodyWidthTwips() {
