@@ -181,7 +181,7 @@ public class DocxFacade {
 
     private P pCentered(Object... o) {
         P p = objectFactory.createP();
-        p.getContent().add(ppr(jc(JcEnumeration.LEFT)));
+        p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
         p.getContent().addAll(Arrays.asList(o));
         return p;
     }
