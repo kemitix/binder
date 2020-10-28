@@ -71,7 +71,7 @@ public class DefaultTextImageFactory
         graphics.drawString(
                 word,
                 padWidth,
-                height);
+                (int) (stringBounds.getHeight() * 0.8));
         return new DefaultTextImage(word, fontSize, bufferedImage);
     }
 
