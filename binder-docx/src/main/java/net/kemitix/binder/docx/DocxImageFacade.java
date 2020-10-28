@@ -32,6 +32,7 @@ public class DocxImageFacade {
     private final Metadata metadata;
     private final DocxFacade docx;
 
+    private final int dpi = 640;
     private final Map<FontSize, ImagePartCache> imagePartCaches =
             new HashMap<>();
     private final AtomicInteger idCounter = new AtomicInteger();
@@ -129,8 +130,6 @@ public class DocxImageFacade {
                 .flatMap(line -> Arrays.stream(line.split("\s+")))
                 .filter(word -> word.length() > 0);
     }
-
-    private final int dpi = 720;
 
     private int getImageWidthTwips(BinaryPartAbstractImage imagePart) {
         return UnitsOfMeasurement
