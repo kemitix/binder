@@ -70,7 +70,7 @@ public class DefaultTextImageFactory
         graphics.setFont(titleFont);
         graphics.drawString(
                 word,
-                padWidth,
+                padWidth / 2,
                 (int) (stringBounds.getHeight() * 0.8));
         return new DefaultTextImage(word, fontSize, bufferedImage);
     }
