@@ -17,11 +17,11 @@ import java.util.List;
 public class HtmlDocxRenderer
         implements DocxRenderer {
 
-    private final DocxHelper docxHelper;
+    private final DocxFacade docx;
 
     @Inject
-    public HtmlDocxRenderer(DocxHelper docxHelper) {
-        this.docxHelper = docxHelper;
+    public HtmlDocxRenderer(DocxFacade docx) {
+        this.docx = docx;
     }
 
     XHTMLImporterImpl xhtmlImporter() throws InvalidFormatException {
@@ -44,7 +44,7 @@ public class HtmlDocxRenderer
             List<Object> contents = new ArrayList<>(
                     xhtmlImporter().convert(htmlSection.getHtml(),
                             "BASEURL"));
-            contents.add(docxHelper.breakToOddPage());
+            contents.add(docx.breakToOddPage());
             return new DocxContent(contents);
         } catch (Docx4JException e) {
             throw new RuntimeException(

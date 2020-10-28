@@ -31,6 +31,7 @@
         <docx4j-JAXB-ReferenceImpl.version>11.1.8</docx4j-JAXB-ReferenceImpl.version>
         <velocity-engine.version>2.2</velocity-engine.version>
         <awt-color-factory.version>1.0.2</awt-color-factory.version>
+        <mon.version>2.2.0</mon.version>
     </properties>
 
     <dependencyManagement>
@@ -72,6 +73,12 @@
                 <artifactId>jakarta.jakartaee-api</artifactId>
                 <version>${jakartaee-api.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>net.kemitix</groupId>
+                <artifactId>mon</artifactId>
+                <version>${mon.version}</version>
             </dependency>
 
             <dependency>

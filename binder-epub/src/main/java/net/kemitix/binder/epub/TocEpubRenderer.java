@@ -35,7 +35,7 @@ public class TocEpubRenderer
 
     @Override
     public Content render(HtmlSection htmlSection) {
-        StringBuilder html = new StringBuilder("<h1>Table of Contents</h1>");
+        StringBuilder html = new StringBuilder("<h1>Contents</h1>");
         html.append("<ul>");
         htmlManuscript.sections()
                 .filter(HtmlSection::isEpub)

@@ -2,9 +2,9 @@ package net.kemitix.binder.docx;
 
 import lombok.extern.java.Log;
 import net.kemitix.binder.spi.AggregateRenderer;
+import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
-import org.docx4j.wml.ObjectFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -20,17 +20,20 @@ public class TocDocxRenderer
 
     private final HtmlManuscript htmlManuscript;
     private final Instance<DocxTocItemRenderer> tocItemRenderers;
-    private final DocxHelper docxHelper;
+    private final DocxFacade docx;
+    private final DocxImageFacade docxImage;
 
     @Inject
     public TocDocxRenderer(
             HtmlManuscript htmlManuscript,
             Instance<DocxTocItemRenderer> tocItemRenderers,
-            DocxHelper docxHelper
+            DocxFacade docx,
+            DocxImageFacade docxImage
     ) {
         this.htmlManuscript = htmlManuscript;
         this.tocItemRenderers = tocItemRenderers;
-        this.docxHelper = docxHelper;
+        this.docx = docx;
+        this.docxImage = docxImage;
     }
 
     @Override
@@ -42,15 +45,18 @@ public class TocDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("TOC: %s".formatted(htmlSection.getName()));
         List<Object> content = new ArrayList<>();
-        int pageWidth = 5000;//TODO
-        content.add(docxHelper.textImage("Table of Contents", 240, pageWidth));
+        content.add(
+                docx.drawings(
+                        docxImage.textImages(
+                                "Contents",
+                                FontSize.of(240))));
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)
                 .forEach(section -> content.add(
                         findRenderer(section.getType(), tocItemRenderers)
                                 .render(section)));
-        content.add(docxHelper.breakToOddPage());
+        content.add(docx.breakToOddPage());
         return new DocxContent(content);
     }
 

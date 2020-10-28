@@ -1,11 +1,12 @@
 package net.kemitix.binder.docx;
 
+import lombok.Getter;
 import net.kemitix.binder.spi.Metadata;
-import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
-import org.docx4j.dml.wordprocessingDrawing.Inline;
+import org.docx4j.UnitsOfMeasurement;
+import org.docx4j.jaxb.Context;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.BinaryPartAbstractImage;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.Drawing;
 import org.docx4j.wml.Jc;
@@ -25,54 +26,30 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
-public class DocxHelper {
+public class DocxFacade {
 
-    private final ObjectFactory objectFactory;
-    private final WordprocessingMLPackage mlPackage;
-    private final TextImageFactory textImageFactory;
     private final Metadata metadata;
 
+    @Getter
+    private final WordprocessingMLPackage mlPackage;
+
+    private final ObjectFactory objectFactory =
+            Context.getWmlObjectFactory();
+
     @Inject
-    public DocxHelper(
-            ObjectFactory objectFactory,
-            WordprocessingMLPackage mlPackage,
-            TextImageFactory textImageFactory,
+    public DocxFacade(
             Metadata metadata
-    ) {
-        this.objectFactory = objectFactory;
-        this.mlPackage = mlPackage;
-        this.textImageFactory = textImageFactory;
+    ) throws InvalidFormatException {
         this.metadata = metadata;
+
+        mlPackage = WordprocessingMLPackage.createPackage();
     }
 
     public P breakToOddPage() {
         return p(ppr(sectPr(sectPrType("oddPage"))));
-    }
-
-    public P textImage(String text, int fontSize, int pageWidth) {
-        List<TextImage> images = textImageFactory.createImages(text, fontSize, pageWidth);
-
-        Object[] drawings = images.stream()
-                .map(TextImage::getBytes)
-                .map(this::drawing)
-                .toArray();
-        return pCentered(r(drawings));
-    }
-
-    private Object drawing(byte[] bytes) {
-        try {
-            BinaryPartAbstractImage imagePart = BinaryPartAbstractImage.createImagePart(mlPackage, bytes);
-            Inline inline = imagePart.createImageInline("hint", "", 0, 0, false);
-            Drawing drawing = objectFactory.createDrawing();
-            drawing.getAnchorOrInline().add(inline);
-            return drawing;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
     }
 
     public P tocItem(String pageNumber, String title) {
@@ -162,11 +139,12 @@ public class DocxHelper {
 
     private SectPr.PgMar pgMar() {
         SectPr.PgMar pgMar = objectFactory.createSectPrPgMar();
-        double ratio = getInchesToUnitsRatio();
-        float paperbackMarginSides = metadata.getPaperbackMarginSides();
-        float paperbackMarginTopBottom = metadata.getPaperbackMarginTopBottom();
-        BigInteger sides = BigInteger.valueOf((long) (paperbackMarginSides * ratio));
-        BigInteger topBottom = BigInteger.valueOf((long) (paperbackMarginTopBottom * ratio));
+        BigInteger sides = BigInteger.valueOf(
+                UnitsOfMeasurement.inchToTwip(
+                        metadata.getPaperbackMarginSides()));
+        BigInteger topBottom = BigInteger.valueOf(
+                UnitsOfMeasurement.inchToTwip(
+                        metadata.getPaperbackMarginTopBottom()));
         pgMar.setTop(topBottom);
         pgMar.setBottom(topBottom);
         pgMar.setLeft(sides);
@@ -176,22 +154,13 @@ public class DocxHelper {
 
     private SectPr.PgSz pgSz() {
         SectPr.PgSz pgSz = objectFactory.createSectPrPgSz();
-        float widthInches = metadata.getPaperbackPageWidthInches();
-        float heightInches = metadata.getPaperbackPageHeightInches();
-        double ratio = getInchesToUnitsRatio();
-        long width = (long) (widthInches * ratio);
-        long height = (long) (heightInches * ratio);
-        pgSz.setH(BigInteger.valueOf(height));
-        pgSz.setW(BigInteger.valueOf(width));
+        pgSz.setH(BigInteger.valueOf(
+                UnitsOfMeasurement.inchToTwip(
+                        metadata.getPaperbackPageHeightInches())));
+        pgSz.setW(BigInteger.valueOf(
+                UnitsOfMeasurement.inchToTwip(
+                        metadata.getPaperbackPageWidthInches())));
         return pgSz;
-    }
-
-    private double getInchesToUnitsRatio() {
-        // A4: 8.3" x 11.7"
-        //        pgSz.setW(BigInteger.valueOf(11907));
-        //        pgSz.setH(BigInteger.valueOf(16839));
-        double ratio = 11907 / 8.3;
-        return ratio;
     }
 
     private SectPr.Type sectPrType(String value) {
@@ -212,7 +181,7 @@ public class DocxHelper {
 
     private P pCentered(Object... o) {
         P p = objectFactory.createP();
-        p.getContent().add(ppr(jc(JcEnumeration.LEFT)));
+        p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
         p.getContent().addAll(Arrays.asList(o));
         return p;
     }
@@ -235,4 +204,11 @@ public class DocxHelper {
         return text;
     }
 
+    public P drawings(Drawing[] drawings) {
+        R r = r();
+        for (Drawing drawing : drawings) {
+            r.getContent().add(drawing);
+        }
+        return pCentered(r);
+    }
 }

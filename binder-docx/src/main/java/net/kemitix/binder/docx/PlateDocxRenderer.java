@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlSection;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -12,11 +13,16 @@ import java.util.ArrayList;
 public class PlateDocxRenderer
         implements DocxRenderer {
 
-    private final DocxHelper docxHelper;
+    private final DocxFacade docx;
+    private final DocxImageFacade docxImage;
 
     @Inject
-    public PlateDocxRenderer(DocxHelper docxHelper) {
-        this.docxHelper = docxHelper;
+    public PlateDocxRenderer(
+            DocxFacade docx,
+            DocxImageFacade docxImage
+    ) {
+        this.docx = docx;
+        this.docxImage = docxImage;
     }
 
     @Override
@@ -28,9 +34,24 @@ public class PlateDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("PLATE: %s".formatted(htmlSection.getName()));
         ArrayList<Object> contents = new ArrayList<>();
-        int pageWidth = 5000;// TODO
-        contents.add(docxHelper.textImage(htmlSection.getMarkdown(), 512, pageWidth));
-        contents.add(docxHelper.breakToOddPage());
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
+        contents.add(
+                docx.drawings(
+                        docxImage.textImages(
+                                htmlSection.getTitle(),
+                                FontSize.of(512))));
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
+        contents.add(
+                docx.drawings(
+                        docxImage.textImages(
+                                htmlSection.getMarkdown(),
+                                FontSize.of(240))));
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.breakToOddPage());
         return new DocxContent(contents);
     }
 

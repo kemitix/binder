@@ -1,6 +1,5 @@
-package net.kemitix.binder.app.epub;
+package net.kemitix.binder.epub;
 
-import net.kemitix.binder.app.ObjectMother;
 import org.assertj.core.api.WithAssertions;
 
 public class EpubFactoryTest
