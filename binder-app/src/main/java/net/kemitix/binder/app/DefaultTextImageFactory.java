@@ -6,13 +6,11 @@ import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
 import net.kemitix.fontface.FontCache;
 import net.kemitix.fontface.FontFace;
-import org.apache.pdfbox.rendering.ImageType;
 import org.beryx.awt.color.ColorFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.awt.*;
-import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -60,7 +58,7 @@ public class DefaultTextImageFactory
         int padWidth = spaceWidth / 2;
         Rectangle2D stringBounds = getStringBounds(word, titleFont);
         int width = (int) stringBounds.getWidth() + padWidth;
-        int height = (int) stringBounds.getHeight();
+        int height = (int) (stringBounds.getHeight() * 1.2);
 
         BufferedImage bufferedImage =
                 new BufferedImage(
@@ -70,9 +68,10 @@ public class DefaultTextImageFactory
         Graphics2D graphics = bufferedImage.createGraphics();
         graphics.setPaint(ColorFactory.web("black", 1.0));
         graphics.setFont(titleFont);
-        graphics.drawString(word,
+        graphics.drawString(
+                word,
                 padWidth,
-                (int) (height * 0.75));
+                height);
         return new DefaultTextImage(word, fontSize, bufferedImage);
     }
 
