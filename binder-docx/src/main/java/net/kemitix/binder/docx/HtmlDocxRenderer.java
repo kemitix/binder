@@ -57,7 +57,7 @@ public class HtmlDocxRenderer
                 contents.add(docx.textParagraphCentered(htmlSection.getAuthor()));
                 contents.addAll(docx.leaders());
             }
-            List<Object> objects = xhtmlImporter().convert(htmlSection.getHtml(), "BASEURL");
+            List<Object> objects = xhtmlImporter().convert(htmlDocument(htmlSection), "BASEURL");
             contents.addAll(objects);
             contents.add(docx.breakToOddPage());
             return new DocxContent(contents);
@@ -66,6 +66,18 @@ public class HtmlDocxRenderer
                     "Error create docx from HTML file for: %s"
                             .formatted(htmlSection.getName()), e);
         }
+    }
+
+    private String htmlDocument(HtmlSection htmlSection) {
+        return """
+                    <html><head><title>%s</title></head>
+                    <body>
+                    %s
+                    </body>
+                    </html>
+                    """.formatted(
+                htmlSection.getTitle(),
+                htmlSection.getHtml());
     }
 
     private void addTitle(HtmlSection htmlSection, List<Object> contents) {
