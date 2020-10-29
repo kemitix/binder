@@ -25,7 +25,9 @@ import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
@@ -173,6 +175,10 @@ public class DocxFacade {
         return p(r(t(text)));
     }
 
+    public P textParagraphCentered(String text) {
+        return pCentered(r(t(text)));
+    }
+
     private P p(Object... o) {
         P p = objectFactory.createP();
         p.getContent().addAll(Arrays.asList(o));
@@ -210,5 +216,12 @@ public class DocxFacade {
             r.getContent().add(drawing);
         }
         return pCentered(r);
+    }
+
+    public List<P> leaders() {
+        return Arrays.asList(
+                textParagraph(""),
+                textParagraph("")
+        );
     }
 }
