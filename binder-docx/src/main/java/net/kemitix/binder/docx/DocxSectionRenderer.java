@@ -19,9 +19,8 @@ public class DocxSectionRenderer
     }
 
     public DocxContent render(HtmlSection htmlSection) {
-        var type = htmlSection.getType();
-        var renderer = findRenderer(type, htmlSectionRenderers);
-        return renderer.render(htmlSection);
+        return findRenderer(htmlSection.getType(), htmlSectionRenderers)
+                .render(htmlSection);
     }
 
 }

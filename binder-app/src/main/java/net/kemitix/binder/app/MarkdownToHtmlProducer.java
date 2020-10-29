@@ -26,16 +26,7 @@ public class MarkdownToHtmlProducer {
         {
             String markdown = section.getMarkdown();
             String htmlBodyTemplate = renderer.render(parser.parse(markdown));
-            String htmlBody =
-                    templateEngine.resolve(htmlBodyTemplate, section);
-            return ("""
-                    <html><head><title>%s</title></head>
-                    <body>
-
-                    %s
-                    </body>
-                    </html>""")
-                    .formatted(section.getTitle(), htmlBody);
+            return templateEngine.resolve(htmlBodyTemplate, section);
         };
     }
 
