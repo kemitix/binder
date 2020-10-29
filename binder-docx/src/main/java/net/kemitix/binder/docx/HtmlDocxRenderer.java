@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlSection;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
@@ -11,6 +12,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Log
 @ApplicationScoped
@@ -18,10 +20,15 @@ public class HtmlDocxRenderer
         implements DocxRenderer {
 
     private final DocxFacade docx;
+    private final DocxImageFacade docxImage;
 
     @Inject
-    public HtmlDocxRenderer(DocxFacade docx) {
+    public HtmlDocxRenderer(
+            DocxFacade docx,
+            DocxImageFacade docxImage
+    ) {
         this.docx = docx;
+        this.docxImage = docxImage;
     }
 
     XHTMLImporterImpl xhtmlImporter() throws InvalidFormatException {
@@ -41,9 +48,10 @@ public class HtmlDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("HTML: %s".formatted(htmlSection.getName()));
         try {
-            List<Object> contents = new ArrayList<>(
-                    xhtmlImporter().convert(htmlSection.getHtml(),
-                            "BASEURL"));
+            List<Object> contents = new ArrayList<>();
+            addTitle(htmlSection, contents);
+            List<Object> objects = xhtmlImporter().convert(htmlSection.getHtml(), "BASEURL");
+            contents.addAll(objects);
             contents.add(docx.breakToOddPage());
             return new DocxContent(contents);
         } catch (Docx4JException e) {
@@ -51,5 +59,20 @@ public class HtmlDocxRenderer
                     "Error create docx from HTML file for: %s"
                             .formatted(htmlSection.getName()), e);
         }
+    }
+
+    private void addTitle(HtmlSection htmlSection, List<Object> contents) {
+        String title = getTitle(htmlSection);
+        if (title.length() > 0) {
+            contents.add(
+                    docx.drawings(
+                            docxImage.textImages(
+                                    title,
+                                    FontSize.of(240))));
+        }
+    }
+
+    private String getTitle(HtmlSection htmlSection) {
+        return Objects.requireNonNullElse(htmlSection.getTitle(), "");
     }
 }
