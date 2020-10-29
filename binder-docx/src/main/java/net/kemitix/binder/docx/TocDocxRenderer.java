@@ -45,11 +45,13 @@ public class TocDocxRenderer
     public DocxContent render(HtmlSection htmlSection) {
         log.info("TOC: %s".formatted(htmlSection.getName()));
         List<Object> content = new ArrayList<>();
+        content.add(docx.textParagraph(""));
         content.add(
                 docx.drawings(
                         docxImage.textImages(
                                 "Contents",
                                 FontSize.of(240))));
+        content.add(docx.textParagraph(""));
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)

@@ -49,7 +49,14 @@ public class HtmlDocxRenderer
         log.info("HTML: %s".formatted(htmlSection.getName()));
         try {
             List<Object> contents = new ArrayList<>();
+            if ("story".equals(htmlSection.getType())) {
+                contents.addAll(docx.leaders());
+            }
             addTitle(htmlSection, contents);
+            if ("story".equals(htmlSection.getType())) {
+                contents.add(docx.textParagraphCentered(htmlSection.getAuthor()));
+                contents.addAll(docx.leaders());
+            }
             List<Object> objects = xhtmlImporter().convert(htmlSection.getHtml(), "BASEURL");
             contents.addAll(objects);
             contents.add(docx.breakToOddPage());
@@ -64,11 +71,13 @@ public class HtmlDocxRenderer
     private void addTitle(HtmlSection htmlSection, List<Object> contents) {
         String title = getTitle(htmlSection);
         if (title.length() > 0) {
+            contents.add(docx.textParagraph(""));
             contents.add(
                     docx.drawings(
                             docxImage.textImages(
                                     title,
                                     FontSize.of(240))));
+            contents.add(docx.textParagraph(""));
         }
     }
 
