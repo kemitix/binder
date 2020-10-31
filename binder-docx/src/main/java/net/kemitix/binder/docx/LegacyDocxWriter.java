@@ -5,33 +5,34 @@ import net.kemitix.binder.spi.ManuscriptWriter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.nio.file.Path;
 
 @ApplicationScoped
-public class DocxWriter
-        implements ManuscriptWriter {
+public class LegacyDocxWriter implements ManuscriptWriter {
 
     private final BinderConfig binderConfig;
-    private final DocxManuscript docxManuscript;
+    private final DocxBook docxBook;
 
     @Inject
-    public DocxWriter(
+    public LegacyDocxWriter(
             BinderConfig binderConfig,
-            DocxManuscript docxManuscript
+            DocxBook docxBook
     ) {
         this.binderConfig = binderConfig;
-        this.docxManuscript = docxManuscript;
+        this.docxBook = docxBook;
     }
 
-    @Override
     public void write() {
-        String docxFile = binderConfig.getDocxFile().getAbsolutePath();
+        Path path = binderConfig.getDocxFile().toPath();
+        String filename = "legacy-%s".formatted(path.getFileName());
+        String docxFile = path.getParent().resolve(filename).toFile().getAbsolutePath();
         try {
-            docxManuscript.writeToFile(docxFile);
+            docxBook.writeToFile(docxFile);
         } catch (Exception e) {
             throw new RuntimeException(String.format(
                     "Error creating docx file %s: %s",
                     docxFile, e.getMessage()), e);
         }
-
     }
+
 }
