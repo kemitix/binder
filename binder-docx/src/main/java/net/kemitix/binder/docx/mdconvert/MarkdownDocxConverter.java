@@ -1,4 +1,4 @@
-package net.kemitix.binder.docx;
+package net.kemitix.binder.docx.mdconvert;
 
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;

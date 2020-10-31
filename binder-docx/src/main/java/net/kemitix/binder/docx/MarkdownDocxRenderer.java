@@ -1,5 +1,6 @@
 package net.kemitix.binder.docx;
 
+import net.kemitix.binder.docx.mdconvert.MarkdownDocxConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
 
