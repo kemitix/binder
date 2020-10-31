@@ -4,16 +4,16 @@ import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 @ApplicationScoped
 public class DocumentNodeHandler
-        implements NodeHandler{
+        implements NodeHandler {
 
     @Override
-    public Stream<Node> handle(Node node, List<Object> objects) {
-        return Stream.of(node);
+    public List<Object> handleNode(Node node) {
+        return Collections.emptyList();
     }
 
     @Override

@@ -8,12 +8,9 @@ import lombok.extern.java.Log;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Log
 @ApplicationScoped
@@ -33,21 +30,12 @@ public class MarkdownDocxConverter {
 
     public List<Object> convert(String markdown) {
         Document document = parser.parse(markdown);
-        return accept(document).collect(Collectors.toList());
+        return accept(document);
     }
 
-    private Stream<Object> accept(Node node) {
-        List<Object> objects = new ArrayList<>();
-        objects.addAll(findHandler(node.getClass())
-                .handle(node, objects)
-                .flatMap(handledNode ->
-                        Stream.of(
-                                handledNode.getFirstChild(),
-                                handledNode.getNext()
-                        )
-                                .filter(Objects::nonNull)
-                                .flatMap(this::accept)).collect(Collectors.toList()));
-        return objects.stream();
+    public List<Object> accept(Node node) {
+        return findHandler(node.getClass())
+                .handle(node, this);
     }
 
     private NodeHandler findHandler(Class<? extends Node> aClass) {
@@ -60,9 +48,9 @@ public class MarkdownDocxConverter {
     private Supplier<NodeHandler> ignoreNodeHandler() {
         return () -> new NodeHandler() {
             @Override
-            public Stream<Node> handle(Node node, List<Object> objects) {
+            public List<Object> handleNode(Node node) {
                 log.info("Ignoring: %s".formatted(node.getClass().getSimpleName()));
-                return Stream.empty();
+                return Collections.emptyList();
             }
             @Override
             public boolean canHandle(Class<? extends Node> aClass) {
