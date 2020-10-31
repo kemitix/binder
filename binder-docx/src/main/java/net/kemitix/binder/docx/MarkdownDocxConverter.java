@@ -40,7 +40,7 @@ public class MarkdownDocxConverter {
         List<Object> objects = new ArrayList<>();
         objects.addAll(findHandler(node.getClass())
                 .handle(node, objects)
-                .map(handledNode ->
+                .flatMap(handledNode ->
                         Stream.of(
                                 handledNode.getFirstChild(),
                                 handledNode.getNext()
