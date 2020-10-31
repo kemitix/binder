@@ -1,5 +1,7 @@
 package net.kemitix.binder.app;
 
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.MdManuscript;
@@ -32,7 +34,16 @@ public class ObjectMother {
                         new TemplateEngine(
                                 velocityProvider.velocityEngine(),
                                 velocityProvider.context(mdManuscript)),
-                        mdManuscript);
+                        markdownParser(),
+                        htmlRenderer());
+    }
+
+    private HtmlRenderer htmlRenderer() {
+        return new FlexmarkProducers().htmlRenderer();
+    }
+
+    private Parser markdownParser() {
+        return new FlexmarkProducers().parser();
     }
 
     public MdManuscript mdManuscript() {
