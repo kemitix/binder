@@ -2,48 +2,50 @@ package net.kemitix.binder.docx.mdconvert;
 
 import com.vladsch.flexmark.util.ast.Node;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public interface NodeHandler {
 
+    Object[] EMPTY = new Object[0];
+
     boolean canHandle(Class<? extends Node> aClass);
 
-    default List<Object> handle(
+    default Object[] handle(
             Node node,
             MarkdownDocxConverter converter
     ) {
+        Object[] children = handleChildren(node, converter);
         return Stream.of(
-                handleNode(node, handleChildren(node, converter)),
+                body(node, children),
                 handleNext(node, converter)
         )
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .flatMap(Arrays::stream)
+                .toArray();
     }
 
-    List<Object> handleNode(Node node, List<Object> objects);
+    default Object[] body(Node node, Object[] content) {
+        return content;
+    }
 
-    default List<Object> handleChildren(
+    default Object[] handleChildren(
             Node node,
             MarkdownDocxConverter converter
     ) {
         if (node.getFirstChild() != null) {
             return converter.accept(node.getFirstChild());
         }
-        return Collections.emptyList();
+        return EMPTY;
     }
 
-    default List<Object> handleNext(
+    default Object[] handleNext(
             Node node,
             MarkdownDocxConverter converter
     ) {
         if (node.getNext() != null) {
             return converter.accept(node.getNext());
         }
-        return Collections.emptyList();
+        return EMPTY;
     }
 
 }

@@ -6,9 +6,6 @@ import net.kemitix.binder.docx.DocxFacade;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @ApplicationScoped
 public class ParagraphNodeHandler
@@ -22,9 +19,12 @@ public class ParagraphNodeHandler
     }
 
     @Override
-    public List<Object> handleNode(Node node, List<Object> objects) {
-        return Collections.singletonList(
-                docx.p(objects.toArray()));
+    public Object[] body(Node node, Object[] content) {
+        return new Object[]{
+                docx.p(
+                        content
+                )
+        };
     }
 
     @Override

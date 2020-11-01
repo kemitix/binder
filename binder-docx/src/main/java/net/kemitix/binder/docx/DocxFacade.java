@@ -2,7 +2,6 @@ package net.kemitix.binder.docx;
 
 import lombok.Getter;
 import net.kemitix.binder.spi.Metadata;
-import net.kemitix.binder.spi.TextImageFactory;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
@@ -16,6 +15,7 @@ import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
 import org.docx4j.wml.PPrBase;
 import org.docx4j.wml.R;
+import org.docx4j.wml.RPr;
 import org.docx4j.wml.STTabJc;
 import org.docx4j.wml.SectPr;
 import org.docx4j.wml.Tabs;
@@ -28,7 +28,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class DocxFacade {
@@ -207,6 +206,7 @@ public class DocxFacade {
     public Text t(String value) {
         Text text = objectFactory.createText();
         text.setValue(value);
+        text.setSpace("preserve");// contains significant whitespace
         return text;
     }
 
@@ -225,4 +225,12 @@ public class DocxFacade {
         );
     }
 
+    public Object italic(Object... content) {
+        RPr rPr = objectFactory.createRPr();
+        rPr.setI(objectFactory.createBooleanDefaultTrue());
+        List<Object> o = new ArrayList<>();
+        o.add(rPr);
+        o.addAll(Arrays.asList(content));
+        return r(o.toArray());
+    }
 }

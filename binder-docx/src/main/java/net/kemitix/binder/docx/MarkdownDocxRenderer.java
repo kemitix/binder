@@ -7,6 +7,7 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,9 +49,9 @@ public class MarkdownDocxRenderer
             contents.addAll(docx.leaders());
         }
 
-        List<Object> objects = converter.convert(source.getMarkdown());
+        Object[] objects = converter.convert(source.getMarkdown());
 
-        contents.addAll(objects);
+        contents.addAll(Arrays.asList(objects));
         contents.add(docx.breakToOddPage());
         return new DocxContent(contents);
     }

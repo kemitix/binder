@@ -8,8 +8,6 @@ import lombok.extern.java.Log;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Supplier;
 
 @Log
@@ -28,14 +26,16 @@ public class MarkdownDocxConverter {
         this.nodeHandlers = nodeHandlers;
     }
 
-    public List<Object> convert(String markdown) {
+    public Object[] convert(String markdown) {
         Document document = parser.parse(markdown);
-        return accept(document);
+        Object[] accepted = accept(document);
+        return accepted;
     }
 
-    public List<Object> accept(Node node) {
-        return findHandler(node.getClass())
-                .handle(node, this);
+    public Object[] accept(Node node) {
+        NodeHandler handler = findHandler(node.getClass());
+        Object[] objects = handler.handle(node, this);
+        return objects;
     }
 
     private NodeHandler findHandler(Class<? extends Node> aClass) {
@@ -46,17 +46,7 @@ public class MarkdownDocxConverter {
     }
 
     private Supplier<NodeHandler> ignoreNodeHandler() {
-        return () -> new NodeHandler() {
-            @Override
-            public List<Object> handleNode(Node node, List<Object> objects) {
-                log.info("Ignoring: %s".formatted(node.getClass().getSimpleName()));
-                return Collections.emptyList();
-            }
-            @Override
-            public boolean canHandle(Class<? extends Node> aClass) {
-                return true;
-            }
-        };
+        return () -> (NodeHandler) aClass -> true;
     }
 
 }
