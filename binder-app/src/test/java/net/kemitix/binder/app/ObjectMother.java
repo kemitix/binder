@@ -7,7 +7,9 @@ import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.Section;
+import org.mockito.stubbing.Answer;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -20,6 +22,13 @@ public class ObjectMother {
     private final SectionLoader sectionLoader = new SectionLoader(binderConfig, yamlLoader);
     private final ManuscriptLoader manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
     private final Section section = mock(Section.class);
+    private final TemplateEngine templateEngine = mock(TemplateEngine.class);
+
+    public ObjectMother() {
+        given(templateEngine.resolve(anyString(), any(Section.class), any(MdManuscript.class)))
+                .willAnswer((Answer<String>) invocation ->
+                        invocation.getArgument(0));
+    }
 
     public HtmlManuscript htmlManuscript() {
         return manuscriptLoader.htmlManuscript(mdManuscript(), markdownToHtml());
@@ -28,12 +37,11 @@ public class ObjectMother {
     public MarkdownToHtml markdownToHtml() {
         MarkdownToHtmlProducer markdownToHtmlProducer = new MarkdownToHtmlProducer();
         VelocityProvider velocityProvider = new VelocityProvider();
-        MdManuscript mdManuscript = mdManuscript();
         return markdownToHtmlProducer
                 .markdownToHtml(
                         new TemplateEngine(
                                 velocityProvider.velocityEngine(),
-                                velocityProvider.context(mdManuscript)),
+                                velocityProvider.context()),
                         markdownParser(),
                         htmlRenderer());
     }
@@ -47,7 +55,7 @@ public class ObjectMother {
     }
 
     public MdManuscript mdManuscript() {
-        return manuscriptLoader.mdManuscript(metadata());
+        return manuscriptLoader.mdManuscript(metadata(), templateEngine);
     }
 
     public Metadata metadata() {

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +17,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 public class MdManuscriptLoaderTest
         implements WithAssertions {
@@ -38,11 +44,15 @@ public class MdManuscriptLoaderTest
     private File validDirectory = new File(getClass().getResource("valid").getPath());
     private File missingDirectory = new File("missing");
     private File invalidDirectory = new File(getClass().getResource("invalid").getPath());
+    private TemplateEngine templateEngine = mock(TemplateEngine.class);
 
     @BeforeEach
     public void setUp() {
         sectionLoader = new SectionLoader(binderConfig, yamlLoader);
         manuscriptLoader = new ManuscriptLoader(sectionLoader, yamlLoader);
+        given(templateEngine.resolve(anyString(), any(Section.class), any(MdManuscript.class)))
+                .willAnswer((Answer<String>) invocation ->
+                        invocation.getArgument(0));
     }
 
     @Nested
@@ -118,7 +128,8 @@ public class MdManuscriptLoaderTest
         @Test
         void loadAndParsePrelude1() {
             //when
-            MdManuscript mdManuscript = manuscriptLoader.mdManuscript(metadata);
+            MdManuscript mdManuscript =
+                    manuscriptLoader.mdManuscript(metadata, templateEngine);
             //then
             List<Section> prelude1s = mdManuscript.getContents()
                     .stream()
@@ -141,7 +152,8 @@ public class MdManuscriptLoaderTest
         @Test
         void loadAndParsePrelude2() {
             //when
-            MdManuscript mdManuscript = manuscriptLoader.mdManuscript(metadata);
+            MdManuscript mdManuscript =
+                    manuscriptLoader.mdManuscript(metadata, templateEngine);
             //then
             List<Section> prelude1s = mdManuscript.getContents()
                     .stream()

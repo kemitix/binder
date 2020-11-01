@@ -15,11 +15,11 @@ public class MarkdownToHtmlProducer {
             Parser parser,
             HtmlRenderer renderer
     ) {
-        return section ->
+        return (section, mdManuscript) ->
         {
             String markdown = section.getMarkdown();
             String htmlBodyTemplate = renderer.render(parser.parse(markdown));
-            return templateEngine.resolve(htmlBodyTemplate, section);
+            return templateEngine.resolve(htmlBodyTemplate, section, mdManuscript);
         };
     }
 
