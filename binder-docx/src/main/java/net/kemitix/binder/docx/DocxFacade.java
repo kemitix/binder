@@ -1,6 +1,5 @@
 package net.kemitix.binder.docx;
 
-import com.vladsch.flexmark.util.sequence.BasedSequence;
 import lombok.Getter;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
@@ -12,7 +11,6 @@ import org.docx4j.wml.Drawing;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.Jc;
 import org.docx4j.wml.JcEnumeration;
-import org.docx4j.wml.Lvl;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
@@ -258,15 +256,19 @@ public class DocxFacade {
      */
     public Object heading(int level, String text) {
         PPr pPr = objectFactory.createPPr();
-        ParaRPr paraRPr = objectFactory.createParaRPr();
-        RPr rPr = objectFactory.createRPr();
+
         PPrBase.PStyle pStyle = objectFactory.createPPrBasePStyle();
         pStyle.setVal("Normal");
         pPr.setPStyle(pStyle);
+
         HpsMeasure sz = objectFactory.createHpsMeasure();
         sz.setVal(BigInteger.valueOf(szForLevel(level)));
+
+        RPr rPr = objectFactory.createRPr();
         rPr.setSz(sz);
         rPr.setSzCs(sz);
+
+        ParaRPr paraRPr = objectFactory.createParaRPr();
         paraRPr.setSz(sz);
         paraRPr.setSzCs(sz);
         pPr.setRPr(paraRPr);
@@ -287,5 +289,53 @@ public class DocxFacade {
     private long szForLevel(int level) {
         int point = 30 - (6 * level);
         return point * 2;
+    }
+
+    /**
+     * <w:p>
+     *   <w:pPr>
+     *     <w:pStyle w:val="Normal"/>
+     *     <w:numPr>
+     *       <w:ilvl w:val="0"/>
+     *       <w:numId w:val="1"/>
+     *     </w:numPr>
+     *     <w:rPr/>
+     *   </w:pPr>
+     *   <w:r>
+     *     <w:rPr/>
+     *     <w:t>item 1</w:t>
+     *   </w:r>
+     * </w:p>
+     */
+    public Object bulletItem(String text) {
+        PPrBase.PStyle pStyle = objectFactory.createPPrBasePStyle();
+        pStyle.setVal("Normal");
+
+        PPr pPr = objectFactory.createPPr();
+        pPr.setPStyle(pStyle);
+
+        PPrBase.NumPr.Ilvl ilvl = objectFactory.createPPrBaseNumPrIlvl();
+        ilvl.setVal(BigInteger.ZERO);
+
+        PPrBase.NumPr numPr = objectFactory.createPPrBaseNumPr();
+        numPr.setIlvl(ilvl);
+
+        PPrBase.NumPr.NumId numId = objectFactory.createPPrBaseNumPrNumId();
+        numId.setVal(BigInteger.TWO);
+        numPr.setNumId(numId);
+
+        pPr.setNumPr(numPr);
+
+        pPr.setRPr(objectFactory.createParaRPr());
+
+        RPr rPr = objectFactory.createRPr();
+        return
+                p(
+                        pPr,
+                        r(
+                                rPr,
+                                t(text)
+                        )
+                );
     }
 }
