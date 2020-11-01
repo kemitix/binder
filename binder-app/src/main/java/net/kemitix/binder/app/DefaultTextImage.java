@@ -1,7 +1,6 @@
 package net.kemitix.binder.app;
 
 import lombok.Getter;
-import lombok.extern.java.Log;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.TextImage;
 
@@ -15,7 +14,6 @@ import java.nio.file.Files;
 import static java.awt.Image.SCALE_SMOOTH;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
-@Log
 public class DefaultTextImage
         implements TextImage {
 
@@ -54,9 +52,6 @@ public class DefaultTextImage
     }
 
     private void writeImageFile() {
-        log.info("Writing %s @ %s (%dx%d): %s".formatted(word, fontSize,
-                bufferedImage.getWidth(), bufferedImage.getHeight(),
-                file.getAbsolutePath()));
         try {
             ImageIO.write(bufferedImage, "PNG", file);
         } catch (IOException e) {

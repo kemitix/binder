@@ -5,7 +5,6 @@ import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
-import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -15,19 +14,19 @@ import java.util.List;
 
 @Log
 @ApplicationScoped
-public class TocDocxRenderer
-        implements DocxRenderer,
-        AggregateRenderer<DocxTocItemRenderer, Section, Object> {
+public class LegacyTocDocxRenderer
+        implements LegacyDocxRenderer,
+        AggregateRenderer<LegacyDocxTocItemRenderer, HtmlSection, Object> {
 
     private final HtmlManuscript htmlManuscript;
-    private final Instance<DocxTocItemRenderer> tocItemRenderers;
+    private final Instance<LegacyDocxTocItemRenderer> tocItemRenderers;
     private final DocxFacade docx;
     private final DocxImageFacade docxImage;
 
     @Inject
-    public TocDocxRenderer(
+    public LegacyTocDocxRenderer(
             HtmlManuscript htmlManuscript,
-            Instance<DocxTocItemRenderer> tocItemRenderers,
+            Instance<LegacyDocxTocItemRenderer> tocItemRenderers,
             DocxFacade docx,
             DocxImageFacade docxImage
     ) {
@@ -43,8 +42,8 @@ public class TocDocxRenderer
     }
 
     @Override
-    public DocxContent render(Section section) {
-        log.info("TOC: %s".formatted(section.getName()));
+    public DocxContent render(HtmlSection htmlSection) {
+        log.info("TOC: %s".formatted(htmlSection.getName()));
         List<Object> content = new ArrayList<>();
         content.add(docx.textParagraph(""));
         content.add(
@@ -56,9 +55,9 @@ public class TocDocxRenderer
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)
-                .forEach(s -> content.add(
-                        findRenderer(s.getType(), tocItemRenderers)
-                                .render(s)));
+                .forEach(section -> content.add(
+                        findRenderer(section.getType(), tocItemRenderers)
+                                .render(section)));
         content.add(docx.breakToOddPage());
         return new DocxContent(content);
     }

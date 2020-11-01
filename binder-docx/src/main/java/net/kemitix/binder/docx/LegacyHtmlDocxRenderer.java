@@ -16,14 +16,14 @@ import java.util.Objects;
 
 @Log
 @ApplicationScoped
-public class HtmlDocxRenderer
-        implements DocxRenderer {
+public class LegacyHtmlDocxRenderer
+        implements LegacyDocxRenderer {
 
     private final DocxFacade docx;
     private final DocxImageFacade docxImage;
 
     @Inject
-    public HtmlDocxRenderer(
+    public LegacyHtmlDocxRenderer(
             DocxFacade docx,
             DocxImageFacade docxImage
     ) {

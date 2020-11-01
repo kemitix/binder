@@ -2,7 +2,7 @@ package net.kemitix.binder.docx;
 
 import lombok.extern.java.Log;
 import net.kemitix.binder.spi.FontSize;
-import net.kemitix.binder.spi.Section;
+import net.kemitix.binder.spi.HtmlSection;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,14 +10,14 @@ import java.util.ArrayList;
 
 @Log
 @ApplicationScoped
-public class PlateDocxRenderer
-        implements DocxRenderer {
+public class LegacyPlateDocxRenderer
+        implements LegacyDocxRenderer {
 
     private final DocxFacade docx;
     private final DocxImageFacade docxImage;
 
     @Inject
-    public PlateDocxRenderer(
+    public LegacyPlateDocxRenderer(
             DocxFacade docx,
             DocxImageFacade docxImage
     ) {
@@ -31,8 +31,8 @@ public class PlateDocxRenderer
     }
 
     @Override
-    public DocxContent render(Section section) {
-        log.info("PLATE: %s".formatted(section.getName()));
+    public DocxContent render(HtmlSection htmlSection) {
+        log.info("PLATE: %s".formatted(htmlSection.getName()));
         ArrayList<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
@@ -40,7 +40,7 @@ public class PlateDocxRenderer
         contents.add(
                 docx.drawings(
                         docxImage.textImages(
-                                section.getTitle(),
+                                htmlSection.getTitle(),
                                 FontSize.of(512))));
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
@@ -48,7 +48,7 @@ public class PlateDocxRenderer
         contents.add(
                 docx.drawings(
                         docxImage.textImages(
-                                section.getMarkdown(),
+                                htmlSection.getMarkdown(),
                                 FontSize.of(240))));
         contents.add(docx.textParagraph(""));
         contents.add(docx.breakToOddPage());

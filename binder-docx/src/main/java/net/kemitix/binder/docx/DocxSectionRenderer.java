@@ -9,12 +9,12 @@ import javax.inject.Inject;
 
 @ApplicationScoped
 public class DocxSectionRenderer
-        implements AggregateRenderer<DocxRenderer, HtmlSection, DocxContent> {
+        implements AggregateRenderer<LegacyDocxRenderer, HtmlSection, DocxContent> {
 
-    private final Instance<DocxRenderer> htmlSectionRenderers;
+    private final Instance<LegacyDocxRenderer> htmlSectionRenderers;
 
     @Inject
-    public DocxSectionRenderer(Instance<DocxRenderer> htmlSectionRenderers) {
+    public DocxSectionRenderer(Instance<LegacyDocxRenderer> htmlSectionRenderers) {
         this.htmlSectionRenderers = htmlSectionRenderers;
     }
 

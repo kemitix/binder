@@ -3,7 +3,6 @@ package net.kemitix.binder.docx;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
-import lombok.extern.java.Log;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.TextImage;
@@ -24,7 +23,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-@Log
 @ApplicationScoped
 public class DocxImageFacade {
 
@@ -83,9 +81,6 @@ public class DocxImageFacade {
             int bodyWidthTwips = getBodyWidthTwips();
             int imageWidthTwips = getImageWidthTwips(imagePart);
             int imageHeightTwips = getImageHeightTwips(imagePart);
-            log.info("Widths: body %d, image %d"
-                    .formatted(UnitsOfMeasurement.twipToEMU(bodyWidthTwips),
-                            UnitsOfMeasurement.twipToEMU(imageWidthTwips)));
             long cx =
                     UnitsOfMeasurement.twipToEMU(
                             Math.min(
@@ -94,7 +89,6 @@ public class DocxImageFacade {
                             ))
                     ;
             long cy = UnitsOfMeasurement.twipToEMU(imageHeightTwips);
-            log.info("Image: cx %d, cy %d".formatted(cx, cy));
             return imagePart
                     .createImageInline(
                             imagePart.getPartName().getName(),

@@ -16,19 +16,24 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log
 @ApplicationScoped
 public class DocxManuscript {
 
-    private final List<Object> contents = new ArrayList<>();
+    private final List<DocxContent> contents;
 
     private final DocxFacade docx;
 
     @Inject
-    public DocxManuscript(DocxFacade docx) {
+    public DocxManuscript(
+            List<DocxContent> contents,
+            DocxFacade docx
+    ) {
+        this.contents = contents;
         this.docx = docx;
     }
 
@@ -56,7 +61,7 @@ public class DocxManuscript {
         var wordMLPackage = docx.getMlPackage();
         var mainDocument = wordMLPackage.getMainDocumentPart();
         definePartNumbering(mainDocument);
-        mainDocument.getContent().addAll(contents);
+        mainDocument.getContent().addAll(getContents());
         return wordMLPackage;
     }
 
@@ -65,6 +70,12 @@ public class DocxManuscript {
         var numberingDefinitionsPart = new NumberingDefinitionsPart();
         numberingDefinitionsPart.unmarshalDefaultNumbering();
         mainDocument.addTargetPart(numberingDefinitionsPart);
+    }
+
+    private Collection<?> getContents() {
+        return contents.stream()
+                .flatMap(docxContent -> docxContent.getContents().stream())
+                .collect(Collectors.toList());
     }
 
 }

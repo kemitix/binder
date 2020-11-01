@@ -48,10 +48,21 @@ public class ManuscriptLoader {
 
     @Produces
     @ApplicationScoped
-    public MdManuscript mdManuscript(Metadata metadata) {
-        return MdManuscript.builder()
+    public MdManuscript mdManuscript(
+            Metadata metadata,
+            TemplateEngine templateEngine
+    ) {
+        MdManuscript raw = MdManuscript.builder()
                 .metadata(metadata)
                 .contents(loadSections(metadata.getContents()));
+        List<Section> resolvedSections = raw.getContents()
+                .stream()
+                .map(section -> section.withMarkdown(
+                        templateEngine.resolve(section.getMarkdown(), section, raw)))
+                .collect(Collectors.toList());
+        return MdManuscript.builder()
+                .metadata(metadata)
+                .contents(resolvedSections);
     }
 
     private List<Section> loadSections(
@@ -74,7 +85,7 @@ public class ManuscriptLoader {
                 .forEach(section ->
                         htmlSections.put(
                                 section.getName(),
-                                markdownToHtml.apply(section)));
+                                markdownToHtml.apply(section, mdManuscript)));
         return HtmlManuscript.htmlBuilder()
                 .metadata(mdManuscript)
                 .htmlSections(htmlSections);

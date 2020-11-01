@@ -1,18 +1,18 @@
 package net.kemitix.binder.docx;
 
-import net.kemitix.binder.spi.Section;
+import net.kemitix.binder.spi.HtmlSection;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class DefaultDocxTocItemRenderer
-        implements DocxTocItemRenderer {
+public class LegacyDefaultDocxTocItemRenderer
+        implements LegacyDocxTocItemRenderer {
 
     private final DocxFacade docx;
 
     @Inject
-    public DefaultDocxTocItemRenderer(DocxFacade docx) {
+    public LegacyDefaultDocxTocItemRenderer(DocxFacade docx) {
         this.docx = docx;
     }
 
@@ -23,7 +23,7 @@ public class DefaultDocxTocItemRenderer
     }
 
     @Override
-    public Object render(Section source) {
+    public Object render(HtmlSection source) {
         return docx.tocItem("", source.getTitle());
     }
 }
