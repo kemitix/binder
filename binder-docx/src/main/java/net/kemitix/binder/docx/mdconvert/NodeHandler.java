@@ -17,22 +17,21 @@ public interface NodeHandler {
             MarkdownDocxConverter converter
     ) {
         return Stream.of(
-                handleNode(node),
-                handleChildren(node, converter),
+                handleNode(node, handleChildren(node, converter)),
                 handleNext(node, converter)
         )
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
-    List<Object> handleNode(Node node);
+    List<Object> handleNode(Node node, List<Object> objects);
 
     default List<Object> handleChildren(
             Node node,
             MarkdownDocxConverter converter
     ) {
         if (node.getFirstChild() != null) {
-            converter.accept(node.getFirstChild());
+            return converter.accept(node.getFirstChild());
         }
         return Collections.emptyList();
     }
@@ -42,7 +41,7 @@ public interface NodeHandler {
             MarkdownDocxConverter converter
     ) {
         if (node.getNext() != null) {
-            converter.accept(node.getNext());
+            return converter.accept(node.getNext());
         }
         return Collections.emptyList();
     }

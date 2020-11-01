@@ -48,7 +48,7 @@ public class MarkdownDocxConverter {
     private Supplier<NodeHandler> ignoreNodeHandler() {
         return () -> new NodeHandler() {
             @Override
-            public List<Object> handleNode(Node node) {
+            public List<Object> handleNode(Node node, List<Object> objects) {
                 log.info("Ignoring: %s".formatted(node.getClass().getSimpleName()));
                 return Collections.emptyList();
             }

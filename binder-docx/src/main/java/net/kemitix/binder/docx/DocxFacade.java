@@ -179,7 +179,7 @@ public class DocxFacade {
         return pCentered(r(t(text)));
     }
 
-    private P p(Object... o) {
+    public P p(Object... o) {
         P p = objectFactory.createP();
         p.getContent().addAll(Arrays.asList(o));
         return p;
@@ -198,13 +198,13 @@ public class DocxFacade {
         return jc;
     }
 
-    private R r(Object... o) {
+    public R r(Object... o) {
         R r = objectFactory.createR();
         r.getContent().addAll(Arrays.asList(o));
         return r;
     }
 
-    private Text t(String value) {
+    public Text t(String value) {
         Text text = objectFactory.createText();
         text.setValue(value);
         return text;
@@ -224,4 +224,5 @@ public class DocxFacade {
                 textParagraph("")
         );
     }
+
 }
