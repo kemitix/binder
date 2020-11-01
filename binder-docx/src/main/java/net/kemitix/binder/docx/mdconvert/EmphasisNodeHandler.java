@@ -32,7 +32,10 @@ public class EmphasisNodeHandler
         }
         if (content[0] instanceof R) {
             R r = (R) content[0];
-            Object italic = docx.italic(r.getContent().toArray());
+            Object italic =
+                    docx.italic(
+                            r.getContent().toArray()
+                    );
             return new Object[] {
                     italic
             };
