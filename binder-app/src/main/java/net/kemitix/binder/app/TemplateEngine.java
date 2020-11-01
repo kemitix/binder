@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 public class TemplateEngine {
 
     private static final String NON_BREAKING_SPACE = "\u00A0";
+    private static final String DOUBLE_HASH = "##";
+    private static final String NOT_A_COMMENT = "X-not-a-comment-X";
 
     private final VelocityEngine velocityEngine;
     private final Context context;
@@ -39,8 +41,13 @@ public class TemplateEngine {
         context.put("copyrights", copyrights(mdManuscript));
         context.put("toc", toc(mdManuscript));
         Writer writer = new StringWriter();
-        velocityEngine.evaluate(context, writer, "", templateBody);
-        return writer.toString();
+        // Double hashes are comments in velocity, but at the start of a line
+        // they are level two headers in markdown.
+        // This style of comment is not supported, and are broken
+        velocityEngine.evaluate(context, writer, "",
+                templateBody.replaceAll(DOUBLE_HASH, NOT_A_COMMENT));
+        return writer.toString()
+                .replaceAll(NOT_A_COMMENT, DOUBLE_HASH);
     }
 
     private String toc(MdManuscript mdManuscript) {

@@ -8,12 +8,14 @@ import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.Drawing;
+import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.Jc;
 import org.docx4j.wml.JcEnumeration;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
 import org.docx4j.wml.PPrBase;
+import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.STTabJc;
@@ -232,5 +234,108 @@ public class DocxFacade {
         o.add(rPr);
         o.addAll(Arrays.asList(content));
         return r(o.toArray());
+    }
+
+    /**
+     * <w:p>
+     *   <w:pPr>
+     *     <w:pStyle w:val="Normal"/>
+     *     <w:rPr>
+     *       <w:sz w:val="120"/>
+     *       <w:szCs w:val="120"/>
+     *     </w:rPr>
+     *   </w:pPr>
+     *   <w:r>
+     *     <w:rPr>
+     *       <w:sz w:val="120"/>
+     *       <w:szCs w:val="120"/>
+     *     </w:rPr>
+     *     <w:t>HEADING 2</w:t>
+     *   </w:r>
+     * </w:p>
+     */
+    public Object heading(int level, String text) {
+        PPr pPr = objectFactory.createPPr();
+
+        PPrBase.PStyle pStyle = objectFactory.createPPrBasePStyle();
+        pStyle.setVal("Normal");
+        pPr.setPStyle(pStyle);
+
+        HpsMeasure sz = objectFactory.createHpsMeasure();
+        sz.setVal(BigInteger.valueOf(szForLevel(level)));
+
+        RPr rPr = objectFactory.createRPr();
+        rPr.setSz(sz);
+        rPr.setSzCs(sz);
+
+        ParaRPr paraRPr = objectFactory.createParaRPr();
+        paraRPr.setSz(sz);
+        paraRPr.setSzCs(sz);
+        pPr.setRPr(paraRPr);
+        return
+                p(
+                        pPr,
+                        r(
+                                rPr,
+                                t(text)
+                        )
+                );
+    }
+
+    // h1 = 24pt
+    // h2 = 18pt
+    // h3 = 12pt
+    // lvl => 30 - (6 * lvl)
+    private long szForLevel(int level) {
+        int point = 30 - (6 * level);
+        return point * 2;
+    }
+
+    /**
+     * <w:p>
+     *   <w:pPr>
+     *     <w:pStyle w:val="Normal"/>
+     *     <w:numPr>
+     *       <w:ilvl w:val="0"/>
+     *       <w:numId w:val="1"/>
+     *     </w:numPr>
+     *     <w:rPr/>
+     *   </w:pPr>
+     *   <w:r>
+     *     <w:rPr/>
+     *     <w:t>item 1</w:t>
+     *   </w:r>
+     * </w:p>
+     */
+    public Object bulletItem(String text) {
+        PPrBase.PStyle pStyle = objectFactory.createPPrBasePStyle();
+        pStyle.setVal("Normal");
+
+        PPr pPr = objectFactory.createPPr();
+        pPr.setPStyle(pStyle);
+
+        PPrBase.NumPr.Ilvl ilvl = objectFactory.createPPrBaseNumPrIlvl();
+        ilvl.setVal(BigInteger.ZERO);
+
+        PPrBase.NumPr numPr = objectFactory.createPPrBaseNumPr();
+        numPr.setIlvl(ilvl);
+
+        PPrBase.NumPr.NumId numId = objectFactory.createPPrBaseNumPrNumId();
+        numId.setVal(BigInteger.TWO);
+        numPr.setNumId(numId);
+
+        pPr.setNumPr(numPr);
+
+        pPr.setRPr(objectFactory.createParaRPr());
+
+        RPr rPr = objectFactory.createRPr();
+        return
+                p(
+                        pPr,
+                        r(
+                                rPr,
+                                t(text)
+                        )
+                );
     }
 }
