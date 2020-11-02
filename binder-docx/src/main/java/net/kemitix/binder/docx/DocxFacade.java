@@ -236,6 +236,15 @@ public class DocxFacade {
         return r(o.toArray());
     }
 
+    public Object bold(Object... content) {
+        RPr rPr = objectFactory.createRPr();
+        rPr.setB(objectFactory.createBooleanDefaultTrue());
+        List<Object> o = new ArrayList<>();
+        o.add(rPr);
+        o.addAll(Arrays.asList(content));
+        return r(o.toArray());
+    }
+
     /**
      * <w:p>
      *   <w:pPr>
