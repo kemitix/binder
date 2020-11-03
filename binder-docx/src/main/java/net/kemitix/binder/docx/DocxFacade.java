@@ -2,6 +2,7 @@ package net.kemitix.binder.docx;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.val;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.jaxb.Context;
@@ -39,6 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class DocxFacade {
@@ -379,7 +381,7 @@ public class DocxFacade {
                     footnotes.add(edn);
                     return edn;
                 });
-        ctFtnEdn.getContent().add(footnoteBody(footnoteBody));
+        ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(footnoteBody)));
         ctFtnEdn.setId(myId);
         CTFtnEdnRef ctFtnEdnRef = objectFactory.createCTFtnEdnRef();
         ctFtnEdnRef.setId(myId);
@@ -410,7 +412,7 @@ public class DocxFacade {
         );
     }
 
-    private Object footnoteBody(String footnoteBody) {
+    private Object[] footnoteBody(String footnoteBody) {
         // in footnotes.xml:
         //  <w:footnote w:id="2">
         //    <w:p>
@@ -436,22 +438,31 @@ public class DocxFacade {
 
         RPr rPr = objectFactory.createRPr();
         rPr.setRStyle(rStyle("FootnoteCharacters"));
-        return
-                p(
-                        pPr,
-                        r(
-                                rPr,
-                                objectFactory.createRFootnoteRef()
-                        ),
-                        r(
-                                objectFactory.createRPr(),
-                                objectFactory.createRTab(),
-                                t(
-                                        //TODO - handle para splits: "~PARA~"
-                                        footnoteBody
-                                )
-                        )
-                );
+
+        List<Object> objects = new ArrayList<>();
+        objects.add(pPr);
+        objects.add(r(
+                rPr,
+                objectFactory.createRFootnoteRef()
+        ));
+        AtomicInteger pCount = new AtomicInteger(0);
+        objects.addAll(
+                Arrays.stream(footnoteBody.split("\n~PARA~\n"))
+                        .map(para -> {
+                            if (pCount.getAndIncrement() == 0) {
+                                return p(
+                                        pPr,
+                                        r(
+                                                objectFactory.createRTab(),//Only on first para
+                                                t(para)
+                                        )
+                                );
+                            }
+                            return p(
+                                    pPr,
+                                    r(t(para)));
+                        }).collect(Collectors.toList()));
+        return objects.toArray();
     }
 
     private PPrBase.PStyle pStyle(String val) {
