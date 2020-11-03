@@ -60,16 +60,16 @@ public class DocxManuscript {
             throws InvalidFormatException, JAXBException {
         var wordMLPackage = docx.getMlPackage();
         var mainDocument = wordMLPackage.getMainDocumentPart();
-        definePartNumbering(mainDocument);
+        mainDocument.addTargetPart(numberingDefinitionPart());
         mainDocument.getContent().addAll(getContents());
         return wordMLPackage;
     }
 
-    private void definePartNumbering(MainDocumentPart mainDocument)
+    private NumberingDefinitionsPart numberingDefinitionPart()
             throws InvalidFormatException, JAXBException {
-        var numberingDefinitionsPart = new NumberingDefinitionsPart();
-        numberingDefinitionsPart.unmarshalDefaultNumbering();
-        mainDocument.addTargetPart(numberingDefinitionsPart);
+        var part = new NumberingDefinitionsPart();
+        part.unmarshalDefaultNumbering();
+        return part;
     }
 
     private Collection<?> getContents() {
