@@ -26,6 +26,7 @@ import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.RStyle;
+import org.docx4j.wml.STFtnEdn;
 import org.docx4j.wml.STTabJc;
 import org.docx4j.wml.SectPr;
 import org.docx4j.wml.Tabs;
@@ -52,7 +53,7 @@ public class DocxFacade {
 
     private final ObjectFactory objectFactory =
             Context.getWmlObjectFactory();
-    private final AtomicInteger myFootnoteRef = new AtomicInteger(1);
+    private final AtomicInteger myFootnoteRef = new AtomicInteger(0);
 
     @Inject
     public DocxFacade(
@@ -371,28 +372,32 @@ public class DocxFacade {
     private Object footnoteReference(String footnoteBody) {
         FootnotesPart footnotesPart = getFootnotesPart();
         CTFootnotes contents = footnotesPart.getContents();
-        BigInteger myId = BigInteger.valueOf(myFootnoteRef.getAndIncrement());
         List<CTFtnEdn> footnotes = contents.getFootnote();
-        CTFtnEdn ctFtnEdn = footnotes.stream()
-                .filter(o -> o.getId().equals(myId))
-                .findFirst()
-                .orElseGet(() -> {
-                    CTFtnEdn edn = objectFactory.createCTFtnEdn();
-                    footnotes.add(edn);
-                    return edn;
-                });
+        CTFtnEdn ctFtnEdn = getNextCtFtnEdn(footnotes);
         ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(footnoteBody)));
-        ctFtnEdn.setId(myId);
         CTFtnEdnRef ctFtnEdnRef = objectFactory.createCTFtnEdnRef();
-        ctFtnEdnRef.setId(myId);
+        ctFtnEdnRef.setId(ctFtnEdn.getId());
 
         RPr rPr = objectFactory.createRPr();
         rPr.setRStyle(rStyle("FootnoteAnchor"));
         return r(
                 rPr,
                 objectFactory.createRFootnoteReference(ctFtnEdnRef),
-                t(myId.toString())
+                t(ctFtnEdn.getId().toString())
         );
+    }
+
+    private CTFtnEdn getNextCtFtnEdn(List<CTFtnEdn> footnotes) {
+        var id = BigInteger.valueOf(myFootnoteRef.getAndIncrement());
+        return footnotes.stream()
+                .filter(o -> o.getId().equals(id))
+                .findFirst()
+                .orElseGet(() -> {
+                    CTFtnEdn edn = objectFactory.createCTFtnEdn();
+                    edn.setId(id);
+                    footnotes.add(edn);
+                    return edn;
+                });
     }
 
     private FootnotesPart getFootnotesPart() {
@@ -402,7 +407,7 @@ public class DocxFacade {
                 () -> {
                     try {
                         FootnotesPart part = new FootnotesPart();
-                        part.setContents(objectFactory.createCTFootnotes());
+                        part.setContents(initFootnotes());
                         mainDocumentPart.addTargetPart(part);
                         return part;
                     } catch (InvalidFormatException e) {
@@ -410,6 +415,35 @@ public class DocxFacade {
                     }
                 }
         );
+    }
+
+    private CTFootnotes initFootnotes() {
+        CTFootnotes ctFootnotes = objectFactory.createCTFootnotes();
+        List<CTFtnEdn> footnotes = ctFootnotes.getFootnote();
+
+        //    <w:footnote w:id="0" w:type="separator">
+        //        <w:p>
+        //            <w:r>
+        //                <w:separator/>
+        //            </w:r>
+        //        </w:p>
+        //    </w:footnote>
+        CTFtnEdn separator = getNextCtFtnEdn(footnotes);
+        separator.setType(STFtnEdn.SEPARATOR);
+        separator.getContent().add(p(r(objectFactory.createRSeparator())));
+
+//        //    <w:footnote w:id="1" w:type="continuationSeparator">
+//        //        <w:p>
+//        //            <w:r>
+//        //                <w:continuationSeparator/>
+//        //            </w:r>
+//        //        </w:p>
+//        //    </w:footnote>
+//        CTFtnEdn continuation = getNextCtFtnEdn(footnotes);
+//        continuation.setType(STFtnEdn.CONTINUATION_SEPARATOR);
+//        continuation.getContent().add(p(r(objectFactory.createRContinuationSeparator())));
+
+        return ctFootnotes;
     }
 
     private Object[] footnoteBody(String footnoteBody) {
