@@ -1,11 +1,17 @@
 package net.kemitix.binder.docx;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.docx4j.wml.CTFootnotes;
+import org.docx4j.wml.CTFtnEdn;
+import org.docx4j.wml.CTFtnEdnRef;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.Drawing;
 import org.docx4j.wml.HpsMeasure;
@@ -18,6 +24,7 @@ import org.docx4j.wml.PPrBase;
 import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
+import org.docx4j.wml.RStyle;
 import org.docx4j.wml.STTabJc;
 import org.docx4j.wml.SectPr;
 import org.docx4j.wml.Tabs;
@@ -30,6 +37,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class DocxFacade {
@@ -41,6 +50,7 @@ public class DocxFacade {
 
     private final ObjectFactory objectFactory =
             Context.getWmlObjectFactory();
+    private final AtomicInteger myFootnoteRef = new AtomicInteger(1);
 
     @Inject
     public DocxFacade(
@@ -266,8 +276,7 @@ public class DocxFacade {
     public Object heading(int level, String text) {
         PPr pPr = objectFactory.createPPr();
 
-        PPrBase.PStyle pStyle = objectFactory.createPPrBasePStyle();
-        pStyle.setVal("Normal");
+        PPrBase.PStyle pStyle = pStyle("Normal");
         pPr.setPStyle(pStyle);
 
         HpsMeasure sz = objectFactory.createHpsMeasure();
@@ -317,11 +326,8 @@ public class DocxFacade {
      * </w:p>
      */
     public Object bulletItem(String text) {
-        PPrBase.PStyle pStyle = objectFactory.createPPrBasePStyle();
-        pStyle.setVal("Normal");
-
         PPr pPr = objectFactory.createPPr();
-        pPr.setPStyle(pStyle);
+        pPr.setPStyle(pStyle("Normal"));
 
         PPrBase.NumPr.Ilvl ilvl = objectFactory.createPPrBaseNumPrIlvl();
         ilvl.setVal(BigInteger.ZERO);
@@ -346,5 +352,117 @@ public class DocxFacade {
                                 t(text)
                         )
                 );
+    }
+
+    public Object footnote(String id, String footnoteBody) {
+        // in document.xml:
+        //      <w:r>
+        //        <w:rPr>
+        //          <w:rStyle w:val="FootnoteAnchor"/>
+        //        </w:rPr>
+        //        <w:footnoteReference w:id="2"/>
+        //      </w:r>
+        return footnoteReference(footnoteBody);
+    }
+
+    @SneakyThrows
+    private Object footnoteReference(String footnoteBody) {
+        FootnotesPart footnotesPart = getFootnotesPart();
+        CTFootnotes contents = footnotesPart.getContents();
+        BigInteger myId = BigInteger.valueOf(myFootnoteRef.getAndIncrement());
+        List<CTFtnEdn> footnotes = contents.getFootnote();
+        CTFtnEdn ctFtnEdn = footnotes.stream()
+                .filter(o -> o.getId().equals(myId))
+                .findFirst()
+                .orElseGet(() -> {
+                    CTFtnEdn edn = objectFactory.createCTFtnEdn();
+                    footnotes.add(edn);
+                    return edn;
+                });
+        ctFtnEdn.getContent().add(footnoteBody(footnoteBody));
+        ctFtnEdn.setId(myId);
+        CTFtnEdnRef ctFtnEdnRef = objectFactory.createCTFtnEdnRef();
+        ctFtnEdnRef.setId(myId);
+
+        RPr rPr = objectFactory.createRPr();
+        rPr.setRStyle(rStyle("FootnoteAnchor"));
+        return r(
+                rPr,
+                objectFactory.createRFootnoteReference(ctFtnEdnRef),
+                t(myId.toString())
+        );
+    }
+
+    private FootnotesPart getFootnotesPart() {
+        MainDocumentPart mainDocumentPart = mlPackage.getMainDocumentPart();
+        return Objects.requireNonNullElseGet(
+                mainDocumentPart.getFootnotesPart(),
+                () -> {
+                    try {
+                        FootnotesPart part = new FootnotesPart();
+                        part.setContents(objectFactory.createCTFootnotes());
+                        mainDocumentPart.addTargetPart(part);
+                        return part;
+                    } catch (InvalidFormatException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
+    }
+
+    private Object footnoteBody(String footnoteBody) {
+        // in footnotes.xml:
+        //  <w:footnote w:id="2">
+        //    <w:p>
+        //      <w:pPr>
+        //        <w:pStyle w:val="Footnote"/>
+        //        <w:rPr/>
+        //      </w:pPr>
+        //      <w:r>
+        //        <w:rPr>
+        //          <w:rStyle w:val="FootnoteCharacters"/>
+        //        </w:rPr>
+        //        <w:footnoteRef/>
+        //      </w:r>
+        //      <w:r>
+        //        <w:rPr/>
+        //        <w:tab/>
+        //        <w:t>Footnote</w:t>
+        //      </w:r>
+        //    </w:p>
+        //  </w:footnote>
+        PPr pPr = objectFactory.createPPr();
+        pPr.setPStyle(pStyle("Footnote"));
+
+        RPr rPr = objectFactory.createRPr();
+        rPr.setRStyle(rStyle("FootnoteCharacters"));
+        return
+                p(
+                        pPr,
+                        r(
+                                rPr,
+                                objectFactory.createRFootnoteRef()
+                        ),
+                        r(
+                                objectFactory.createRPr(),
+                                objectFactory.createRTab(),
+                                t(
+                                        //TODO - handle para splits: "~PARA~"
+                                        footnoteBody
+                                )
+                        )
+                );
+    }
+
+    private PPrBase.PStyle pStyle(String val) {
+        var pStyle = objectFactory.createPPrBasePStyle();
+        pStyle.setVal(val);
+        return pStyle;
+    }
+
+    private RStyle rStyle(String val) {
+        var rStyle = objectFactory.createRStyle();
+        rStyle.setVal(val);
+        return rStyle;
     }
 }
