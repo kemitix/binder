@@ -358,6 +358,12 @@ public class DocxFacade {
     }
 
     public Object footnote(String id, String footnoteBody) {
+        //TODO apply markdown styles in docx to footnoteBody
+        return footnoteReference(footnoteBody);
+    }
+
+    @SneakyThrows
+    private Object footnoteReference(String footnoteBody) {
         // in document.xml:
         //      <w:r>
         //        <w:rPr>
@@ -365,11 +371,6 @@ public class DocxFacade {
         //        </w:rPr>
         //        <w:footnoteReference w:id="2"/>
         //      </w:r>
-        return footnoteReference(footnoteBody);
-    }
-
-    @SneakyThrows
-    private Object footnoteReference(String footnoteBody) {
         FootnotesPart footnotesPart = getFootnotesPart();
         CTFootnotes contents = footnotesPart.getContents();
         List<CTFtnEdn> footnotes = contents.getFootnote();
