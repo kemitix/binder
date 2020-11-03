@@ -162,6 +162,7 @@ public class DocxManuscript {
         PPrBase.Ind ind = factory.createPPrBaseInd();
         ind.setLeft(BigInteger.valueOf(339));
         ind.setRight(BigInteger.valueOf(339));
+        ind.setHanging(BigInteger.valueOf(339));
         pPr.setInd(ind);
 
         style.setPPr(pPr);

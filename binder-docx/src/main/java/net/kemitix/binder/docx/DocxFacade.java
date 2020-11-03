@@ -479,23 +479,15 @@ public class DocxFacade {
                 rPr,
                 objectFactory.createRFootnoteRef()
         ));
-        AtomicInteger pCount = new AtomicInteger(0);
         objects.addAll(
                 Arrays.stream(footnoteBody.split("\n~PARA~\n"))
-                        .map(para -> {
-                            if (pCount.getAndIncrement() == 0) {
-                                return p(
-                                        pPr,
-                                        r(
-                                                objectFactory.createRTab(),//Only on first para
-                                                t(para)
-                                        )
-                                );
-                            }
-                            return p(
-                                    pPr,
-                                    r(t(para)));
-                        }).collect(Collectors.toList()));
+                        .map(para -> p(
+                                pPr,
+                                r(
+                                        objectFactory.createRTab(),
+                                        t(para)
+                                )
+                        )).collect(Collectors.toList()));
         return objects.toArray();
     }
 
