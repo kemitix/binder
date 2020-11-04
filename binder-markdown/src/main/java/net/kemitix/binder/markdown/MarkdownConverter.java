@@ -35,7 +35,7 @@ public interface MarkdownConverter {
                     @Override
                     public Object[] handle(Node node, MarkdownConverter converter) {
                         throw new RuntimeException(
-                                "Unhandled type: %s".formatted(
+                                "Unhandled Markdown Type: %s".formatted(
                                         aClass.getSimpleName()));
                     }
                 });

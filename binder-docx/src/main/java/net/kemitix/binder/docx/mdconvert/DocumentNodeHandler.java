@@ -6,6 +6,7 @@ import net.kemitix.binder.markdown.NodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 
+@Docx
 @ApplicationScoped
 public class DocumentNodeHandler
         implements NodeHandler {

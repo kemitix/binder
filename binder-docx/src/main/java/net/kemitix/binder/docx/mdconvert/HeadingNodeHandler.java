@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Docx
 @ApplicationScoped
 public class HeadingNodeHandler
         implements NodeHandler {

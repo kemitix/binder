@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+@Docx
 @ApplicationScoped
 public class BulletListItemNodeHandler
         implements NodeHandler {

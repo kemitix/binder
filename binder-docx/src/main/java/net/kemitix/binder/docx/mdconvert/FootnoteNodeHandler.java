@@ -9,6 +9,7 @@ import net.kemitix.binder.markdown.NodeHandler;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+@Docx
 @ApplicationScoped
 public class FootnoteNodeHandler
         implements NodeHandler {

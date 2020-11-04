@@ -9,6 +9,7 @@ import org.docx4j.wml.R;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+@Docx
 @ApplicationScoped
 public class StrongEmphasisNodeHandler
         implements NodeHandler {
