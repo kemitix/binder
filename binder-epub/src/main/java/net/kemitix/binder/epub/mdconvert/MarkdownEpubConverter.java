@@ -1,7 +1,6 @@
-package net.kemitix.binder.docx.mdconvert;
+package net.kemitix.binder.epub.mdconvert;
 
 import com.vladsch.flexmark.parser.Parser;
-import lombok.extern.java.Log;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.markdown.NodeHandler;
 
@@ -10,19 +9,18 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.stream.Stream;
 
-@Log
-@Docx
+@EPub
 @ApplicationScoped
-public class MarkdownDocxConverter
+public class MarkdownEpubConverter
         implements MarkdownConverter {
 
     private final Parser parser;
     private final Instance<NodeHandler> nodeHandlers;
 
     @Inject
-    public MarkdownDocxConverter(
+    public MarkdownEpubConverter(
             Parser parser,
-            @Docx Instance<NodeHandler> nodeHandlers
+            @EPub Instance<NodeHandler> nodeHandlers
     ) {
         this.parser = parser;
         this.nodeHandlers = nodeHandlers;

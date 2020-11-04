@@ -1,6 +1,8 @@
 package net.kemitix.binder.docx;
 
+import net.kemitix.binder.docx.mdconvert.Docx;
 import net.kemitix.binder.docx.mdconvert.MarkdownDocxConverter;
+import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
 
@@ -11,19 +13,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@Docx
 @ApplicationScoped
 public class MarkdownDocxRenderer
         implements DocxRenderer {
 
     private final DocxFacade docx;
     private final DocxImageFacade docxImage;
-    private final MarkdownDocxConverter converter;
+    private final MarkdownConverter converter;
 
     @Inject
     public MarkdownDocxRenderer(
             DocxFacade docx,
             DocxImageFacade docxImage,
-            MarkdownDocxConverter converter
+            @Docx MarkdownConverter converter
     ) {
         this.docx = docx;
         this.docxImage = docxImage;
