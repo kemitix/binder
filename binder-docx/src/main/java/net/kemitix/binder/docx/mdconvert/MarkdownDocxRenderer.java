@@ -1,5 +1,9 @@
-package net.kemitix.binder.docx;
+package net.kemitix.binder.docx.mdconvert;
 
+import net.kemitix.binder.docx.DocxContent;
+import net.kemitix.binder.docx.DocxFacade;
+import net.kemitix.binder.docx.DocxImageFacade;
+import net.kemitix.binder.docx.DocxRenderer;
 import net.kemitix.binder.docx.mdconvert.Docx;
 import net.kemitix.binder.docx.mdconvert.MarkdownDocxConverter;
 import net.kemitix.binder.markdown.MarkdownConverter;
