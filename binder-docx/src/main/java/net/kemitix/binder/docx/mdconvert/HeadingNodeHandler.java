@@ -2,9 +2,8 @@ package net.kemitix.binder.docx.mdconvert;
 
 import com.vladsch.flexmark.ast.Heading;
 import com.vladsch.flexmark.util.ast.Node;
-import com.vladsch.flexmark.util.sequence.BasedSequence;
 import net.kemitix.binder.docx.DocxFacade;
-import org.jetbrains.annotations.NotNull;
+import net.kemitix.binder.markdown.NodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

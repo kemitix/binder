@@ -4,6 +4,8 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
 import lombok.extern.java.Log;
+import net.kemitix.binder.markdown.MarkdownConverter;
+import net.kemitix.binder.markdown.NodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -11,7 +13,7 @@ import javax.inject.Inject;
 
 @Log
 @ApplicationScoped
-public class MarkdownDocxConverter {
+public class MarkdownDocxConverter implements MarkdownConverter {
 
     private final Parser parser;
     private final Instance<NodeHandler> nodeHandlers;
@@ -19,7 +21,7 @@ public class MarkdownDocxConverter {
     @Inject
     public MarkdownDocxConverter(
             Parser parser,
-            Instance<NodeHandler> nodeHandlers
+            @Docx Instance<NodeHandler> nodeHandlers
     ) {
         this.parser = parser;
         this.nodeHandlers = nodeHandlers;
@@ -48,7 +50,7 @@ public class MarkdownDocxConverter {
                     }
 
                     @Override
-                    public Object[] handle(Node node, MarkdownDocxConverter converter) {
+                    public Object[] handle(Node node, MarkdownConverter converter) {
                         log.info("Unhandled type: %s".formatted(
                                 aClass.getSimpleName()));
                         log.info(node.toAstString(true));

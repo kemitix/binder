@@ -4,6 +4,7 @@ import com.vladsch.flexmark.ext.footnotes.Footnote;
 import com.vladsch.flexmark.ext.footnotes.FootnoteBlock;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.docx.DocxFacade;
+import net.kemitix.binder.markdown.NodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

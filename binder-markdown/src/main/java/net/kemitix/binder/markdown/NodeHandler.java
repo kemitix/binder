@@ -1,4 +1,4 @@
-package net.kemitix.binder.docx.mdconvert;
+package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.util.ast.Node;
 
@@ -13,7 +13,7 @@ public interface NodeHandler {
 
     default Object[] handle(
             Node node,
-            MarkdownDocxConverter converter
+            MarkdownConverter converter
     ) {
         Object[] children = handleChildren(node, converter);
         return Stream.of(
@@ -30,7 +30,7 @@ public interface NodeHandler {
 
     default Object[] handleChildren(
             Node node,
-            MarkdownDocxConverter converter
+            MarkdownConverter converter
     ) {
         if (node.getFirstChild() != null) {
             return converter.accept(node.getFirstChild());
@@ -40,7 +40,7 @@ public interface NodeHandler {
 
     default Object[] handleNext(
             Node node,
-            MarkdownDocxConverter converter
+            MarkdownConverter converter
     ) {
         if (node.getNext() != null) {
             return converter.accept(node.getNext());

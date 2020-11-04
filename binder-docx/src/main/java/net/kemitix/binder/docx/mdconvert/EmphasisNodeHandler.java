@@ -3,6 +3,7 @@ package net.kemitix.binder.docx.mdconvert;
 import com.vladsch.flexmark.ast.Emphasis;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.docx.DocxFacade;
+import net.kemitix.binder.markdown.NodeHandler;
 import org.docx4j.wml.R;
 
 import javax.enterprise.context.ApplicationScoped;

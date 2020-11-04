@@ -3,6 +3,7 @@ package net.kemitix.binder.docx.mdconvert;
 import com.vladsch.flexmark.ast.BulletListItem;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.docx.DocxFacade;
+import net.kemitix.binder.markdown.NodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
