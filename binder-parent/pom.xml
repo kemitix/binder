@@ -25,7 +25,6 @@
         <mockito-junit-jupiter.version>3.5.15</mockito-junit-jupiter.version>
         <jakartaee-api.version>8.0.0</jakartaee-api.version>
         <snakeyaml.version>1.27</snakeyaml.version>
-        <flexmark.version>0.62.2</flexmark.version>
         <epub-creator.version>1.0.2</epub-creator.version>
         <docx4j-ImportXHTML.version>8.0.0</docx4j-ImportXHTML.version>
         <docx4j-JAXB-ReferenceImpl.version>11.1.8</docx4j-JAXB-ReferenceImpl.version>
@@ -44,6 +43,11 @@
             <dependency>
                 <groupId>net.kemitix.binder</groupId>
                 <artifactId>binder-spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kemitix.binder</groupId>
+                <artifactId>binder-markdown</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -91,12 +95,6 @@
                 <groupId>org.beryx</groupId>
                 <artifactId>awt-color-factory</artifactId>
                 <version>${awt-color-factory.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.vladsch.flexmark</groupId>
-                <artifactId>flexmark-all</artifactId>
-                <version>${flexmark.version}</version>
             </dependency>
 
             <dependency>
