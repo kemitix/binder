@@ -21,8 +21,8 @@ public class SoftLineBreakNodeHandler
     }
 
     @Override
-    public boolean canHandle(Class<? extends Node> aClass) {
-        return SoftLineBreak.class.equals(aClass);
+    public Class<? extends Node> getNodeClass() {
+        return SoftLineBreak.class;
     }
 
     @Override

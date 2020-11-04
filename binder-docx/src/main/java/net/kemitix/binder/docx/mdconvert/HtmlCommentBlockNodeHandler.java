@@ -6,13 +6,14 @@ import net.kemitix.binder.markdown.NodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 
+@Docx
 @ApplicationScoped
 public class HtmlCommentBlockNodeHandler
         implements NodeHandler {
 
     @Override
-    public boolean canHandle(Class<? extends Node> aClass) {
-        return HtmlCommentBlock.class.equals(aClass);
+    public Class<? extends Node> getNodeClass() {
+        return HtmlCommentBlock.class;
     }
 
     @Override

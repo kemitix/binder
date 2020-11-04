@@ -23,8 +23,8 @@ public class FootnoteNodeHandler
     }
 
     @Override
-    public boolean canHandle(Class<? extends Node> aClass) {
-        return Footnote.class.equals(aClass);
+    public Class<? extends Node> getNodeClass() {
+        return Footnote.class;
     }
 
     @Override

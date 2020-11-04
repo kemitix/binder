@@ -9,7 +9,11 @@ public interface NodeHandler {
 
     Object[] EMPTY = new Object[0];
 
-    boolean canHandle(Class<? extends Node> aClass);
+    default boolean canHandle(Class<? extends Node> aClass) {
+        return getNodeClass().equals(aClass);
+    }
+
+    Class<? extends Node> getNodeClass();
 
     default Object[] handle(
             Node node,

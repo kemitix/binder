@@ -23,8 +23,8 @@ public class BulletListItemNodeHandler
     }
 
     @Override
-    public boolean canHandle(Class<? extends Node> aClass) {
-        return BulletListItem.class.equals(aClass);
+    public Class<? extends Node> getNodeClass() {
+        return BulletListItem.class;
     }
 
     @Override

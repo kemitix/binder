@@ -22,8 +22,8 @@ public class StrongEmphasisNodeHandler
     }
 
     @Override
-    public boolean canHandle(Class<? extends Node> aClass) {
-        return StrongEmphasis.class.equals(aClass);
+    public Class<? extends Node> getNodeClass() {
+        return StrongEmphasis.class;
     }
 
     @Override

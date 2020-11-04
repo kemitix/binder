@@ -22,8 +22,8 @@ public class TextNodeHandler
     }
 
     @Override
-    public boolean canHandle(Class<? extends Node> aClass) {
-        return Text.class.equals(aClass);
+    public Class<? extends Node> getNodeClass() {
+        return Text.class;
     }
 
     @Override

@@ -12,8 +12,8 @@ public class BulletListNodeHandler
         implements NodeHandler {
 
     @Override
-    public boolean canHandle(Class<? extends Node> aClass) {
-        return BulletList.class.equals(aClass);
+    public Class<? extends Node> getNodeClass() {
+        return BulletList.class;
     }
 
 }

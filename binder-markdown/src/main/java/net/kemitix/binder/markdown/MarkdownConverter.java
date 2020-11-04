@@ -33,6 +33,11 @@ public interface MarkdownConverter {
                     }
 
                     @Override
+                    public Class<? extends Node> getNodeClass() {
+                        return null;
+                    }
+
+                    @Override
                     public Object[] handle(Node node, MarkdownConverter converter) {
                         throw new RuntimeException(
                                 "Unhandled Markdown Type: %s".formatted(

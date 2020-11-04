@@ -12,8 +12,8 @@ public class FootnoteBlockNodeHandler
         implements NodeHandler {
 
     @Override
-    public boolean canHandle(Class<? extends Node> aClass) {
-        return FootnoteBlock.class.equals(aClass);
+    public Class<? extends Node> getNodeClass() {
+        return FootnoteBlock.class;
     }
 
     @Override

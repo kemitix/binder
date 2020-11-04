@@ -30,7 +30,7 @@ public class ParagraphNodeHandler
     }
 
     @Override
-    public boolean canHandle(Class<? extends Node> aClass) {
-        return Paragraph.class.equals(aClass);
+    public Class<? extends Node> getNodeClass() {
+        return Paragraph.class;
     }
 }

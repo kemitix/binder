@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Docx
 @ApplicationScoped
 public class MarkdownDocxRenderer
         implements DocxRenderer {
