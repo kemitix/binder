@@ -2,6 +2,7 @@ package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.Content;
 import lombok.extern.java.Log;
+import net.kemitix.binder.epub.mdconvert.EPub;
 import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
@@ -11,6 +12,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 @Log
+@EPub
 @ApplicationScoped
 public class TocEpubRenderer
         implements EpubRenderer,

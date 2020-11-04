@@ -4,8 +4,6 @@ import net.kemitix.binder.docx.DocxContent;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.docx.DocxImageFacade;
 import net.kemitix.binder.docx.DocxRenderer;
-import net.kemitix.binder.docx.mdconvert.Docx;
-import net.kemitix.binder.docx.mdconvert.MarkdownDocxConverter;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
@@ -36,7 +34,6 @@ public class MarkdownDocxRenderer
         this.docxImage = docxImage;
         this.converter = converter;
     }
-
 
     @Override
     public boolean canHandle(String type) {

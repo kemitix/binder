@@ -2,6 +2,7 @@ package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.Content;
 import lombok.extern.java.Log;
+import net.kemitix.binder.epub.mdconvert.EPub;
 import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.HtmlSection;
 
@@ -18,7 +19,7 @@ public class EpubSectionRenderer
 
     @Inject
     public EpubSectionRenderer(
-            Instance<EpubRenderer> epubRenderers
+            @EPub Instance<EpubRenderer> epubRenderers
     ) {
         this.epubRenderers = epubRenderers;
     }
