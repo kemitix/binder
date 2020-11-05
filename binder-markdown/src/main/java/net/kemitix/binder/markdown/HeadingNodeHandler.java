@@ -15,11 +15,9 @@ public interface HeadingNodeHandler<T>
     @Override
     default Stream<T> body(Node node, Stream<T> content) {
         Heading heading = (Heading) node;
-        return Stream.concat(
-                headingBody(
-                        heading.getLevel(),
-                        heading.getText().unescape()),
-                content);
+        return headingBody(
+                heading.getLevel(),
+                heading.getText().unescape());
     }
 
     Stream<T> headingBody(int level, String text);
