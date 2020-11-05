@@ -12,9 +12,7 @@ public class TextEpubNodeHandler
 
     @Override
     public Stream<String> textBody(String text) {
-        return Stream.of(
-                "<span>%s</span>".formatted(text)
-        );
+        return Stream.of(text);
     }
 
 }
