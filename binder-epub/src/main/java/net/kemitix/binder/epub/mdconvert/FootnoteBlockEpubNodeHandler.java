@@ -4,6 +4,7 @@ import com.vladsch.flexmark.ext.footnotes.FootnoteBlock;
 import net.kemitix.binder.markdown.FootnoteBlockNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Epub
@@ -15,9 +16,12 @@ public class FootnoteBlockEpubNodeHandler
             FootnoteBlock footnoteBlock,
             Stream<String> content
     ) {
-        return Stream.concat(
-                Stream.of(footnoteBlock.getText().unescape()),
-                content
+        return Stream.of("""
+                                <aside id=\"n%s\" epub:type=\"footnote\">
+                                %s
+                                </aside>
+                                """
+                .formatted(footnoteBlock.getText().unescape(), content.collect(Collectors.joining()))
         );
     }
 }
