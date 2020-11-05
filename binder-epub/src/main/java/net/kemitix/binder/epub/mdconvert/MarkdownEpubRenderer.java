@@ -34,7 +34,7 @@ public class MarkdownEpubRenderer
 
     @Override
     public Content render(HtmlSection source) {
-        Stream<String> converted = converter.convert(source.getMarkdown());
+        Stream<String> converted = converter.convert(source);
         byte[] content = converted.collect(joining()).getBytes(StandardCharsets.UTF_8);
         return new Content(source.getHref(), content);
     }

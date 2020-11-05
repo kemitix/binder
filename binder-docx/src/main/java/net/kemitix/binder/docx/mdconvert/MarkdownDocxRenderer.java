@@ -53,7 +53,7 @@ public class MarkdownDocxRenderer
             contents.addAll(docx.leaders());
         }
 
-        Stream<Object> objects = converter.convert(source.getMarkdown());
+        Stream<Object> objects = converter.convert(source);
 
         contents.addAll(objects.collect(Collectors.toList()));
         contents.add(docx.breakToOddPage());

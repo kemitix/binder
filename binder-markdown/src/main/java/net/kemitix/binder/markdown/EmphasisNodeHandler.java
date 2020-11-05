@@ -2,6 +2,7 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.ast.Emphasis;
 import com.vladsch.flexmark.util.ast.Node;
+import net.kemitix.binder.spi.Section;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ public interface EmphasisNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content) {
+    default Stream<T> body(Node node, Stream<T> content, Section section) {
         List<T> collect = content.collect(Collectors.toList());
         if (collect.size() != 1) {
             throw new RuntimeException("Not passed a single content item: %d sent"

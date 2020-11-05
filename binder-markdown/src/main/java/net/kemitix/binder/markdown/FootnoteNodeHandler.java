@@ -1,8 +1,8 @@
 package net.kemitix.binder.markdown;
 
-import com.vladsch.flexmark.ast.Heading;
 import com.vladsch.flexmark.ext.footnotes.Footnote;
 import com.vladsch.flexmark.util.ast.Node;
+import net.kemitix.binder.spi.Section;
 
 import java.util.stream.Stream;
 
@@ -14,7 +14,7 @@ public interface FootnoteNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content) {
+    default Stream<T> body(Node node, Stream<T> content, Section section) {
         Footnote footnote = (Footnote) node;
         return footnoteBody(
                 footnote.getText().unescape(),
