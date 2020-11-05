@@ -8,17 +8,21 @@ import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 @EPub
 @ApplicationScoped
 public class MarkdownEPubRenderer
         implements EpubRenderer {
 
-    private final MarkdownConverter converter;
+    private final MarkdownConverter<String> converter;
 
     @Inject
     public MarkdownEPubRenderer(
-            @EPub MarkdownConverter converter
+            @EPub MarkdownConverter<String> converter
     ) {
         this.converter = converter;
     }
@@ -31,8 +35,9 @@ public class MarkdownEPubRenderer
 
     @Override
     public Content render(HtmlSection source) {
-        Object[] converted = converter.convert(source.getMarkdown());
-        return ((Content) converted[0]);
+        Stream<String> converted = converter.convert(source.getMarkdown());
+        byte[] content = converted.collect(joining()).getBytes(StandardCharsets.UTF_8);
+        return new Content(source.getHref(), content);
     }
 
 

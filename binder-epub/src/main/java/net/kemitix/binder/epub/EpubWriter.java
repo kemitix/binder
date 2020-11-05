@@ -10,7 +10,7 @@ import javax.inject.Inject;
 /**
  * Writes the Epub file to disk
  */
-@ApplicationScoped
+//@ApplicationScoped
 public class EpubWriter implements ManuscriptWriter {
 
     private final BinderConfig binderConfig;

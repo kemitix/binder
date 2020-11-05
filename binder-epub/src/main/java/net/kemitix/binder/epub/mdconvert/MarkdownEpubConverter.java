@@ -12,15 +12,15 @@ import java.util.stream.Stream;
 @EPub
 @ApplicationScoped
 public class MarkdownEpubConverter
-        implements MarkdownConverter {
+        implements MarkdownConverter<String> {
 
     private final Parser parser;
-    private final Instance<NodeHandler> nodeHandlers;
+    private final Instance<NodeHandler<String>> nodeHandlers;
 
     @Inject
     public MarkdownEpubConverter(
             Parser parser,
-            @EPub Instance<NodeHandler> nodeHandlers
+            @EPub Instance<NodeHandler<String>> nodeHandlers
     ) {
         this.parser = parser;
         this.nodeHandlers = nodeHandlers;
@@ -32,7 +32,7 @@ public class MarkdownEpubConverter
     }
 
     @Override
-    public Stream<NodeHandler> getNodeHandlers() {
+    public Stream<NodeHandler<String>> getNodeHandlers() {
         return nodeHandlers.stream();
     }
 

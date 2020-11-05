@@ -1,12 +1,14 @@
 package net.kemitix.binder.markdown;
 
+import com.vladsch.flexmark.ast.BulletListItem;
 import com.vladsch.flexmark.ast.Heading;
 import com.vladsch.flexmark.util.ast.Node;
 
 import java.util.stream.Stream;
 
-public interface HeadingNodeHandler<T>
-        extends NodeHandler<T> {
+public interface BulletListItemNodeHandler<T>
+        extends NodeHandler<T>{
+
 
     default Class<? extends Node> getNodeClass() {
         return Heading.class;
@@ -14,14 +16,14 @@ public interface HeadingNodeHandler<T>
 
     @Override
     default Stream<T> body(Node node, Stream<T> content) {
-        Heading heading = (Heading) node;
+        BulletListItem item = (BulletListItem) node;
         return Stream.concat(
-                headingBody(
-                        heading.getLevel(),
-                        heading.getText().unescape()),
+                bulletListItemBody(
+                        item.getChildChars().unescape()
+                ),
                 content);
     }
 
-    Stream<T> headingBody(int level, String text);
+    Stream<T> bulletListItemBody(String text);
 
 }

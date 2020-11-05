@@ -14,15 +14,15 @@ import java.util.stream.Stream;
 @Docx
 @ApplicationScoped
 public class MarkdownDocxConverter
-        implements MarkdownConverter {
+        implements MarkdownConverter<Object> {
 
     private final Parser parser;
-    private final Instance<NodeHandler> nodeHandlers;
+    private final Instance<NodeHandler<Object>> nodeHandlers;
 
     @Inject
     public MarkdownDocxConverter(
             Parser parser,
-            @Docx Instance<NodeHandler> nodeHandlers
+            @Docx Instance<NodeHandler<Object>> nodeHandlers
     ) {
         this.parser = parser;
         this.nodeHandlers = nodeHandlers;
@@ -34,7 +34,7 @@ public class MarkdownDocxConverter
     }
 
     @Override
-    public Stream<NodeHandler> getNodeHandlers() {
+    public Stream<NodeHandler<Object>> getNodeHandlers() {
         return nodeHandlers.stream();
     }
 

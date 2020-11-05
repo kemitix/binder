@@ -4,35 +4,32 @@ import com.vladsch.flexmark.ast.SoftLineBreak;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.markdown.NodeHandler;
+import net.kemitix.binder.markdown.SoftLineBreakNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.stream.Stream;
 
 @Docx
 @ApplicationScoped
-public class SoftLineBreakNodeHandler
-        implements NodeHandler {
+public class SoftLineBreakDocxNodeHandler
+        implements SoftLineBreakNodeHandler<Object> {
 
     private final DocxFacade docx;
 
     @Inject
-    public SoftLineBreakNodeHandler(DocxFacade docx) {
+    public SoftLineBreakDocxNodeHandler(DocxFacade docx) {
         this.docx = docx;
     }
 
     @Override
-    public Class<? extends Node> getNodeClass() {
-        return SoftLineBreak.class;
-    }
-
-    @Override
-    public Object[] body(Node node, Object[] content) {
-        return new Object[]{
+    public Stream<Object> softLineBreakBody() {
+        return Stream.of(
                 docx.r(
                         docx.t(
                                 " "
                         )
                 )
-        };
+        );
     }
 }

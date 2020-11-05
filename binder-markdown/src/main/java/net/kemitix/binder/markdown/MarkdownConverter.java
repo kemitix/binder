@@ -6,27 +6,29 @@ import com.vladsch.flexmark.util.ast.Node;
 
 import java.util.stream.Stream;
 
-public interface MarkdownConverter {
-
-    default Object[] convert(String markdown) {
-        Document document = getParser().parse(markdown);
-        Object[] accepted = accept(document);
-        return accepted;
-    }
+public interface MarkdownConverter<T> {
 
     Parser getParser();
 
-    default Object[] accept(Node node) {
-        NodeHandler handler = findHandler(node.getClass());
-        Object[] objects = handler.handle(node, this);
+    Stream<NodeHandler<T>> getNodeHandlers();
+
+    default Stream<T> convert(String markdown) {
+        Document document = getParser().parse(markdown);
+        Stream<T> accepted = accept(document);
+        return accepted;
+    }
+
+    default Stream<T> accept(Node node) {
+        NodeHandler<T> handler = findHandler(node.getClass());
+        Stream<T> objects = handler.handle(node, this);
         return objects;
     }
 
-    default NodeHandler findHandler(Class<? extends Node> aClass) {
+    default NodeHandler<T> findHandler(Class<? extends Node> aClass) {
         return getNodeHandlers()
                 .filter(handler -> handler.canHandle(aClass))
                 .findFirst()
-                .orElseGet(() -> new NodeHandler() {
+                .orElseGet(() -> new NodeHandler<T>() {
                     @Override
                     public boolean canHandle(Class<? extends Node> ignoredClass) {
                         return true;
@@ -38,13 +40,11 @@ public interface MarkdownConverter {
                     }
 
                     @Override
-                    public Object[] handle(Node node, MarkdownConverter converter) {
+                    public Stream<T> handle(Node node, MarkdownConverter<T> converter) {
                         throw new RuntimeException(
                                 "Unhandled Markdown Type: %s".formatted(
                                         aClass.getSimpleName()));
                     }
                 });
     }
-
-    Stream<NodeHandler> getNodeHandlers();
 }

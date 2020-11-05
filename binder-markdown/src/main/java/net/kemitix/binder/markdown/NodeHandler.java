@@ -2,54 +2,53 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.util.ast.Node;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
-public interface NodeHandler {
+public interface NodeHandler<T> {
 
-    Object[] EMPTY = new Object[0];
+    Class<? extends Node> getNodeClass();
 
     default boolean canHandle(Class<? extends Node> aClass) {
         return getNodeClass().equals(aClass);
     }
 
-    Class<? extends Node> getNodeClass();
-
-    default Object[] handle(
+    default Stream<T> handle(
             Node node,
-            MarkdownConverter converter
+            MarkdownConverter<T> converter
     ) {
-        Object[] children = handleChildren(node, converter);
-        return Stream.of(
+        Stream<T> children = handleChildren(node, converter);
+        return Stream.concat(
                 body(node, children),
                 handleNext(node, converter)
-        )
-                .flatMap(Arrays::stream)
-                .toArray();
+        );
     }
 
-    default Object[] body(Node node, Object[] content) {
+    default Stream<T> body(Node node, Stream<T> content) {
         return content;
     }
 
-    default Object[] handleChildren(
+    default Stream<T> handleChildren(
             Node node,
-            MarkdownConverter converter
+            MarkdownConverter<T> converter
     ) {
         if (node.getFirstChild() != null) {
             return converter.accept(node.getFirstChild());
         }
-        return EMPTY;
+        return getEmpty();
     }
 
-    default Object[] handleNext(
+    default Stream<T> getEmpty() {
+        return Stream.empty();
+    }
+
+    default Stream<T> handleNext(
             Node node,
-            MarkdownConverter converter
+            MarkdownConverter<T> converter
     ) {
         if (node.getNext() != null) {
             return converter.accept(node.getNext());
         }
-        return EMPTY;
+        return getEmpty();
     }
 
 }

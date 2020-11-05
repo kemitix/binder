@@ -11,9 +11,10 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class MarkdownDocxRenderer
@@ -21,13 +22,13 @@ public class MarkdownDocxRenderer
 
     private final DocxFacade docx;
     private final DocxImageFacade docxImage;
-    private final MarkdownConverter converter;
+    private final MarkdownConverter<Object> converter;
 
     @Inject
     public MarkdownDocxRenderer(
             DocxFacade docx,
             DocxImageFacade docxImage,
-            @Docx MarkdownConverter converter
+            @Docx MarkdownConverter<Object> converter
     ) {
         this.docx = docx;
         this.docxImage = docxImage;
@@ -52,9 +53,9 @@ public class MarkdownDocxRenderer
             contents.addAll(docx.leaders());
         }
 
-        Object[] objects = converter.convert(source.getMarkdown());
+        Stream<Object> objects = converter.convert(source.getMarkdown());
 
-        contents.addAll(Arrays.asList(objects));
+        contents.addAll(objects.collect(Collectors.toList()));
         contents.add(docx.breakToOddPage());
         return new DocxContent(contents);
     }

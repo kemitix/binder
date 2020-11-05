@@ -357,7 +357,7 @@ public class DocxFacade {
                 );
     }
 
-    public Object footnote(String id, String footnoteBody) {
+    public Object footnote(int id, String footnoteBody) {
         //TODO apply markdown styles in docx to footnoteBody
         return footnoteReference(footnoteBody);
     }

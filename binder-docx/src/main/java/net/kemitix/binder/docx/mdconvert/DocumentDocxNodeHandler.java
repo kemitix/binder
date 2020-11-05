@@ -7,6 +7,6 @@ import javax.enterprise.context.ApplicationScoped;
 @Docx
 @ApplicationScoped
 public class DocumentDocxNodeHandler
-        implements DocumentNodeHandler {
+        implements DocumentNodeHandler <Object> {
 
 }
