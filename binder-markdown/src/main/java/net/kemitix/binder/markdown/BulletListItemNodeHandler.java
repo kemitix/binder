@@ -17,11 +17,9 @@ public interface BulletListItemNodeHandler<T>
     @Override
     default Stream<T> body(Node node, Stream<T> content) {
         BulletListItem item = (BulletListItem) node;
-        return Stream.concat(
-                bulletListItemBody(
-                        item.getChildChars().unescape()
-                ),
-                content);
+        return bulletListItemBody(
+                item.getChildChars().unescape()
+        );
     }
 
     Stream<T> bulletListItemBody(String text);
