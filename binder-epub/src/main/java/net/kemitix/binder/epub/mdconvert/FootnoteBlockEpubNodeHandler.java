@@ -4,7 +4,6 @@ import com.vladsch.flexmark.ext.footnotes.FootnoteBlock;
 import net.kemitix.binder.markdown.FootnoteBlockNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Epub
