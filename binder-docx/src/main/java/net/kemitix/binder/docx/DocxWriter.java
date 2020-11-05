@@ -1,11 +1,13 @@
 package net.kemitix.binder.docx;
 
+import lombok.extern.java.Log;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+@Log
 @ApplicationScoped
 public class DocxWriter
         implements ManuscriptWriter {
@@ -25,6 +27,7 @@ public class DocxWriter
     @Override
     public void write() {
         String docxFile = binderConfig.getDocxFile().getAbsolutePath();
+        log.info("Writing: " + docxFile);
         try {
             docxManuscript.writeToFile(docxFile);
         } catch (Exception e) {

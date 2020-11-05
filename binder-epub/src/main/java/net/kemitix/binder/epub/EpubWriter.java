@@ -1,6 +1,7 @@
 package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.EpubBook;
+import lombok.extern.java.Log;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
 
@@ -10,6 +11,7 @@ import javax.inject.Inject;
 /**
  * Writes the Epub file to disk
  */
+@Log
 @ApplicationScoped
 public class EpubWriter implements ManuscriptWriter {
 
@@ -26,6 +28,7 @@ public class EpubWriter implements ManuscriptWriter {
 
     public void write() {
         String epubFile = binderConfig.getEpubFile().getAbsolutePath();
+        log.info("Writing: " + epubFile);
         try {
             epubBook.writeToFile(epubFile);
         } catch (Exception e) {
