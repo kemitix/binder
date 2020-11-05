@@ -7,6 +7,5 @@ import javax.enterprise.context.ApplicationScoped;
 @Epub
 @ApplicationScoped
 public class DocumentEpubNodeHandler
-        implements DocumentNodeHandler<String> {
-
+        implements DocumentNodeHandler<String>, EpubNodeHandler {
 }

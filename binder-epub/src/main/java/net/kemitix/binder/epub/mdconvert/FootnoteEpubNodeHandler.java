@@ -8,12 +8,13 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class FootnoteEpubNodeHandler
-        implements FootnoteNodeHandler<String>  {
+        implements FootnoteNodeHandler<String>, EpubNodeHandler  {
     @Override
     public Stream<String> footnoteBody(String oridinal, String text) {
-        return Stream.of(
-                "<a href=\"#n%s\" epub:type=\"noteref\" >%s</a>"
-                        .formatted(oridinal, oridinal)
+        return Stream.of("""
+                        <a href="#n%s" epub:type="noteref" >%s</a>
+                        """
+                .formatted(oridinal, oridinal)
         );
     }
 }

@@ -9,13 +9,11 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class ParagraphEpubNodeHandler
-        implements ParagraphNodeHandler<String> {
+        implements ParagraphNodeHandler<String>, EpubNodeHandler {
     @Override
     public Stream<String> paragraphBody(Stream<String> content) {
         return Stream.of(
-                "<p>%s</p>".formatted(
-                        content.collect(Collectors.joining())
-                )
+                "<p>%s</p>".formatted(collect(content))
         );
     }
 }

@@ -10,18 +10,20 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class FootnoteBlockEpubNodeHandler
-        implements FootnoteBlockNodeHandler<String> {
+        implements FootnoteBlockNodeHandler<String>, EpubNodeHandler {
     @Override
     public Stream<String> footnoteBlockBody(
             FootnoteBlock footnoteBlock,
             Stream<String> content
     ) {
         return Stream.of("""
-                                <aside id=\"n%s\" epub:type=\"footnote\">
+                                <aside id="n%s" epub:type="footnote">
                                 %s
                                 </aside>
                                 """
-                .formatted(footnoteBlock.getText().unescape(), content.collect(Collectors.joining()))
+                .formatted(
+                        footnoteBlock.getText().unescape(),
+                        collect(content))
         );
     }
 }

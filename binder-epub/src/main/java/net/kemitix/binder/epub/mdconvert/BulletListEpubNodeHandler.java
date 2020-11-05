@@ -8,12 +8,12 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class BulletListEpubNodeHandler
-        implements BulletListNodeHandler<String> {
+        implements BulletListNodeHandler<String>, EpubNodeHandler {
     @Override
     public Stream<String> bulletListBody(Stream<String> content) {
         return Stream.of(
                 "<ul>%s</ul>"
-                        .formatted(content)
+                        .formatted(collect(content))
         );
     }
 }

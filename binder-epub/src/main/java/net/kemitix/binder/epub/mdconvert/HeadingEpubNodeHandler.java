@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class HeadingEpubNodeHandler
-        implements HeadingNodeHandler<String> {
+        implements HeadingNodeHandler<String>, EpubNodeHandler {
 
     @Override
     public Stream<String> headingBody(

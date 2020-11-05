@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class StrongEmphasisEpubNodeHandler
-        implements StrongEmphasisNodeHandler<String>  {
+        implements StrongEmphasisNodeHandler<String>, EpubNodeHandler {
     @Override
     public Stream<String> strongEmphasisBody(String content) {
         return Stream.of(

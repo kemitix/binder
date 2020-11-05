@@ -7,5 +7,5 @@ import javax.enterprise.context.ApplicationScoped;
 @Epub
 @ApplicationScoped
 public class HtmlCommentBlockEpubNodeHandler
-        implements HtmlCommentBlockNodeHandler<String>  {
+        implements HtmlCommentBlockNodeHandler<String>, EpubNodeHandler {
 }

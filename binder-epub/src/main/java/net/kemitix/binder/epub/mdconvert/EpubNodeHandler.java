@@ -1,0 +1,15 @@
+package net.kemitix.binder.epub.mdconvert;
+
+import net.kemitix.binder.markdown.NodeHandler;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public interface EpubNodeHandler
+        extends NodeHandler<String>  {
+
+    default String collect(Stream<String> content) {
+        return content.collect(Collectors.joining());
+    }
+
+}

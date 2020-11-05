@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class TextEpubNodeHandler
-        implements TextNodeHandler<String> {
+        implements TextNodeHandler<String>, EpubNodeHandler {
 
     @Override
     public Stream<String> textBody(String text) {
