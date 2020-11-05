@@ -18,9 +18,18 @@
 
     <dependencies>
         <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-all</artifactId>
             <version>${flexmark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kemitix.binder</groupId>
+            <artifactId>binder-spi</artifactId>
         </dependency>
     </dependencies>
 

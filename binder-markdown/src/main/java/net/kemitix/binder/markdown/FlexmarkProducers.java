@@ -1,4 +1,4 @@
-package net.kemitix.binder.app;
+package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.ext.footnotes.FootnoteExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
