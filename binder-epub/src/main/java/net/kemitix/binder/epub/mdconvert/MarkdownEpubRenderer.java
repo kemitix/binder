@@ -4,7 +4,6 @@ import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.epub.EpubRenderer;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.HtmlSection;
-import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -13,16 +12,16 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-@EPub
+@Epub
 @ApplicationScoped
-public class MarkdownEPubRenderer
+public class MarkdownEpubRenderer
         implements EpubRenderer {
 
     private final MarkdownConverter<String> converter;
 
     @Inject
-    public MarkdownEPubRenderer(
-            @EPub MarkdownConverter<String> converter
+    public MarkdownEpubRenderer(
+            @Epub MarkdownConverter<String> converter
     ) {
         this.converter = converter;
     }

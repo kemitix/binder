@@ -9,7 +9,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.stream.Stream;
 
-@EPub
+@Epub
 @ApplicationScoped
 public class MarkdownEpubConverter
         implements MarkdownConverter<String> {
@@ -20,7 +20,7 @@ public class MarkdownEpubConverter
     @Inject
     public MarkdownEpubConverter(
             Parser parser,
-            @EPub Instance<NodeHandler<String>> nodeHandlers
+            @Epub Instance<NodeHandler<String>> nodeHandlers
     ) {
         this.parser = parser;
         this.nodeHandlers = nodeHandlers;

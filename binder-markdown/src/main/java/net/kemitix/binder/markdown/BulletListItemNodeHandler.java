@@ -11,7 +11,7 @@ public interface BulletListItemNodeHandler<T>
 
 
     default Class<? extends Node> getNodeClass() {
-        return Heading.class;
+        return BulletListItem.class;
     }
 
     @Override

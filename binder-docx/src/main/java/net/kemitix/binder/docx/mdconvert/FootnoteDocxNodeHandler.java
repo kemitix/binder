@@ -27,7 +27,7 @@ public class FootnoteDocxNodeHandler
     }
 
     @Override
-    public Stream<Object> footnoteBody(int id, String footnoteBody) {
+    public Stream<Object> footnoteBody(String id, String footnoteBody) {
         return Stream.of(
                 docx.footnote(id, footnoteBody)
         );

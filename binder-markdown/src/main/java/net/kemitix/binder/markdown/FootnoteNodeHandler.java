@@ -16,14 +16,12 @@ public interface FootnoteNodeHandler<T>
     @Override
     default Stream<T> body(Node node, Stream<T> content) {
         Footnote footnote = (Footnote) node;
-        return Stream.concat(
-                footnoteBody(
-                        footnote.getReferenceOrdinal(),
-                        footnote.getFootnoteBlock().getFootnote().unescape()
-                ),
-                content);
+        return footnoteBody(
+                footnote.getText().unescape(),
+                footnote.getFootnoteBlock().getFootnote().unescape()
+        );
     }
 
-    Stream<T> footnoteBody(int oridinal, String text);
+    Stream<T> footnoteBody(String oridinal, String text);
 
 }

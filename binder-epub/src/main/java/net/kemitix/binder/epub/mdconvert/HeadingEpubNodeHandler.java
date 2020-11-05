@@ -5,7 +5,7 @@ import net.kemitix.binder.markdown.HeadingNodeHandler;
 import javax.enterprise.context.ApplicationScoped;
 import java.util.stream.Stream;
 
-@EPub
+@Epub
 @ApplicationScoped
 public class HeadingEpubNodeHandler
         implements HeadingNodeHandler<String> {

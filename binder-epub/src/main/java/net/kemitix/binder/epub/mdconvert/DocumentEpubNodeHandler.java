@@ -4,9 +4,9 @@ import net.kemitix.binder.markdown.DocumentNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 
-@EPub
+@Epub
 @ApplicationScoped
-public class DocumentEPubNodeHandler
+public class DocumentEpubNodeHandler
         implements DocumentNodeHandler<String> {
 
 }
