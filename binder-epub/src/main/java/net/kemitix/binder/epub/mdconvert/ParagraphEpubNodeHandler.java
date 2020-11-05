@@ -13,7 +13,7 @@ public class ParagraphEpubNodeHandler
     @Override
     public Stream<String> paragraphBody(Stream<String> content) {
         return Stream.of(
-                "<p>%s</p>".formatted(collect(content))
+                "<p>%s</p>\n".formatted(collect(content))
         );
     }
 }
