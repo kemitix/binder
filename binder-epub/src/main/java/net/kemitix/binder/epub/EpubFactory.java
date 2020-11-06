@@ -1,5 +1,6 @@
 package net.kemitix.binder.epub;
 
+import coza.opencollab.epub.creator.model.Content;
 import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
 import net.kemitix.binder.spi.BinderConfig;
@@ -10,6 +11,7 @@ import net.kemitix.binder.spi.Metadata;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,16 +24,19 @@ public class EpubFactory {
     private final BinderConfig binderConfig;
     private final HtmlManuscript htmlManuscript;
     private final EpubSectionRenderer epubSectionRenderer;
+    private final Content stylesheet;
 
     @Inject
     public EpubFactory(
             BinderConfig binderConfig,
             HtmlManuscript htmlManuscript,
+            @Named Content stylesheet,
             EpubSectionRenderer epubSectionRenderer
     ) {
         this.binderConfig = binderConfig;
         this.htmlManuscript = htmlManuscript;
         this.epubSectionRenderer = epubSectionRenderer;
+        this.stylesheet = stylesheet;
     }
 
     @Produces
@@ -39,6 +44,7 @@ public class EpubFactory {
     public EpubBook create() {
         Metadata metadata = htmlManuscript.getMetadata();
         EpubBook epub = createEpub(metadata);
+        epub.addContent(stylesheet);
         epub.addCoverImage(coverImage(metadata.getCover()),
                 "image/jpeg", "cover.jpg");
         epub.addTextContent("Cover", "cover.html",

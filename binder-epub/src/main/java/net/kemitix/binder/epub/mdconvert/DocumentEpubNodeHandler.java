@@ -3,12 +3,23 @@ package net.kemitix.binder.epub.mdconvert;
 import net.kemitix.binder.markdown.DocumentNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.stream.Stream;
 
 @Epub
 @ApplicationScoped
 public class DocumentEpubNodeHandler
         implements DocumentNodeHandler<String>, EpubNodeHandler {
+
+    private final String stylesheetHref;
+
+    @Inject
+    public DocumentEpubNodeHandler(
+            @Named String stylesheetHref) {
+        this.stylesheetHref = stylesheetHref;
+    }
+
     @Override
     public Stream<String> documentBody(
             String title,
@@ -20,6 +31,7 @@ public class DocumentEpubNodeHandler
                          xmlns="http://www.w3.org/1999/xhtml"
                          xmlns:epub="http://www.idpf.org/2007/ops">
                         <head>
+                        <link rel="stylesheet" href="%s" type="text/css" media="all">
                         </head>
                         <body>
                         <h1>%s</h1>
@@ -27,6 +39,7 @@ public class DocumentEpubNodeHandler
                         </body>
                         </html>
                         """.formatted(
+                        stylesheetHref,
                         title,
                         collect(content)));
     }
@@ -43,6 +56,7 @@ public class DocumentEpubNodeHandler
                          xmlns="http://www.w3.org/1999/xhtml"
                          xmlns:epub="http://www.idpf.org/2007/ops">
                         <head>
+                        <link rel="stylesheet" href="%s" type="text/css" media="all">
                         </head>
                         <body>
                         <h1>%s</h1>
@@ -51,6 +65,7 @@ public class DocumentEpubNodeHandler
                         </body>
                         </html>
                         """.formatted(
+                        stylesheetHref,
                         title,
                         author,
                         collect(content)));
