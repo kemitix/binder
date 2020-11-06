@@ -1,8 +1,6 @@
 package net.kemitix.binder.epub.mdconvert;
 
-import com.vladsch.flexmark.util.ast.Document;
 import net.kemitix.binder.markdown.DocumentNodeHandler;
-import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.stream.Stream;
