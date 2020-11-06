@@ -12,7 +12,7 @@ public class FootnoteEpubNodeHandler
     @Override
     public Stream<String> footnoteBody(String oridinal, String text) {
         return Stream.of("""
-                        <a href="#n%s" epub:type="noteref" class="reference">%s</a>"""
+                        <a href="#n%s" epub:type="noteref"><span class="reference">%s</span></a>"""
                 .formatted(oridinal, oridinal)
         );
     }
