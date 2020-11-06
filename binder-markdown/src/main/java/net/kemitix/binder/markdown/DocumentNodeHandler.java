@@ -4,6 +4,7 @@ import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Section;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public interface DocumentNodeHandler<T>
@@ -20,10 +21,12 @@ public interface DocumentNodeHandler<T>
             Stream<T> content,
             Section section
     ) {
+        String title = Objects.requireNonNullElse(section.getTitle(), "");
         if ("story".equals(section.getType())) {
-            return documentStoryBody(section.getTitle(), section.getAuthor(), content);
+            String author = Objects.requireNonNull(section.getAuthor(), "No author for " + section.getName());
+            return documentStoryBody(title, author, content);
         }
-        return documentBody(section.getTitle(), content);
+        return documentBody(title, content);
     }
 
     default Stream<T> documentBody(
