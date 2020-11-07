@@ -14,7 +14,11 @@ public interface FootnoteNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content, Section section) {
+    default Stream<T> body(
+            Node node,
+            Stream<T> content,
+            Section section
+    ) {
         Footnote footnote = (Footnote) node;
         return footnoteBody(
                 footnote.getText().unescape(),
@@ -22,6 +26,8 @@ public interface FootnoteNodeHandler<T>
         );
     }
 
-    Stream<T> footnoteBody(String oridinal, String text);
+    Stream<T> footnoteBody(
+            String oridinal,
+            String text);
 
 }

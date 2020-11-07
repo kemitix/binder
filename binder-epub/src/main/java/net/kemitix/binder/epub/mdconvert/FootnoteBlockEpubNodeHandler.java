@@ -15,6 +15,9 @@ public class FootnoteBlockEpubNodeHandler
             FootnoteBlock footnoteBlock,
             Stream<String> content
     ) {
+        // TODO - store in a separate per-story file just for footnotes
+        // - only create the file if needed
+        // - little/no change to interfaces in markdown package
         return Stream.of("""
                                 <aside id="n%s" epub:type="footnote">
                                 %s

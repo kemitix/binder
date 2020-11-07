@@ -10,10 +10,16 @@ import java.util.stream.Stream;
 public class FootnoteEpubNodeHandler
         implements FootnoteNodeHandler<String>, EpubNodeHandler  {
     @Override
-    public Stream<String> footnoteBody(String oridinal, String text) {
+    public Stream<String> footnoteBody(
+            String oridinal,
+            String text
+    ) {
         return Stream.of("""
-                        <a href="#n%s" epub:type="noteref"><sup>%s</sup></a>"""
-                .formatted(oridinal, oridinal)
+                        <sup class="footnote-anchor"><a
+                            href="%2$s.html#note-%1$s"
+                            title="%1$s" 
+                            id="back-link=%1$s">%1$s</a></sup> """
+                .formatted(oridinal, "TODO-section-get-name-append-footnote")
         );
     }
 }

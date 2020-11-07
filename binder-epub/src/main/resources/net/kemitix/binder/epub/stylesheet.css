@@ -1,8 +1,5 @@
-sup {
-    vertical-align: super;
-    font-size: 0.5em;
-    margin-left: 2px;
-    color: blue;
-    text-decoration: underline;
-    cursor: pointer;
+.footnote-anchor {
+    font-size: 0.75em;
+    line-height: normal;
+    vertical-align: super
 }
