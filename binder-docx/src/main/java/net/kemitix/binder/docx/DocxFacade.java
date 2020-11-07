@@ -358,7 +358,8 @@ public class DocxFacade {
     }
 
     public Object footnote(String id, String footnoteBody) {
-        //TODO apply markdown styles in docx to footnoteBody
+        //TODO add footnote bodies from FootnoteBlockDocxNodeHandler
+        // this will provide styles footnotes
         return footnoteReference(footnoteBody);
     }
 

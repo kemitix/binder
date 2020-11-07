@@ -12,6 +12,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Log
 @ApplicationScoped
@@ -43,7 +44,7 @@ public class TocDocxRenderer
     }
 
     @Override
-    public DocxContent render(Section section) {
+    public Stream<DocxContent> render(Section section) {
         log.info("TOC: %s".formatted(section.getName()));
         List<Object> content = new ArrayList<>();
         content.add(docx.textParagraph(""));
@@ -56,11 +57,12 @@ public class TocDocxRenderer
         htmlManuscript.sections()
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)
-                .forEach(s -> content.add(
+                .flatMap(s ->
                         findRenderer(s.getType(), tocItemRenderers)
-                                .render(s)));
+                                .render(s))
+                .forEach(content::add);
         content.add(docx.breakToOddPage());
-        return new DocxContent(content);
+        return Stream.of(new DocxContent(content));
     }
 
 }

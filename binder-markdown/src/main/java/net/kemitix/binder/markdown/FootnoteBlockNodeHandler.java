@@ -16,15 +16,13 @@ public interface FootnoteBlockNodeHandler<T>
 
     @Override
     default Stream<T> body(Node node, Stream<T> content, Section section) {
-        return footnoteBlockBody(
-                ((FootnoteBlock) node),
-                content);
+        FootnoteBlock footnoteBlock = (FootnoteBlock) node;
+        FootnoteBody<T> footnoteBody =
+                FootnoteBody.create(footnoteBlock, content, section);
+        return footnoteBlockBody(footnoteBody);
     }
 
-    default Stream<T> footnoteBlockBody(
-            FootnoteBlock footnoteBlock,
-            Stream<T> content
-    ) {
+    default Stream<T> footnoteBlockBody(FootnoteBody<T> footnoteBody) {
         return Stream.empty();
     }
 }

@@ -42,7 +42,7 @@ public class MarkdownDocxRenderer
     }
 
     @Override
-    public DocxContent render(Section source) {
+    public Stream<DocxContent> render(Section source) {
         List<Object> contents = new ArrayList<>();
         if ("story".equals(source.getType())) {
             contents.addAll(docx.leaders());
@@ -57,7 +57,7 @@ public class MarkdownDocxRenderer
 
         contents.addAll(objects.collect(Collectors.toList()));
         contents.add(docx.breakToOddPage());
-        return new DocxContent(contents);
+        return Stream.of(new DocxContent(contents));
     }
 
     private void addTitle(Section sec, List<Object> contents) {

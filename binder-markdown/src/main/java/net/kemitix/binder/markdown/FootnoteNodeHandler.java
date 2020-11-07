@@ -19,15 +19,9 @@ public interface FootnoteNodeHandler<T>
             Stream<T> content,
             Section section
     ) {
-        Footnote footnote = (Footnote) node;
-        return footnoteBody(
-                footnote.getText().unescape(),
-                footnote.getFootnoteBlock().getFootnote().unescape()
-        );
+        return footnoteBody(FootnoteAnchor.create((Footnote) node, section));
     }
 
-    Stream<T> footnoteBody(
-            String oridinal,
-            String text);
+    Stream<T> footnoteBody(FootnoteAnchor footnoteAnchor);
 
 }

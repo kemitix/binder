@@ -51,7 +51,7 @@ public class EpubFactory {
                 "<img src=\"cover.jpg\" style=\"height:100%\"/>");
         htmlManuscript.sections()
                 .filter(HtmlSection::isEpub)
-                .map(epubSectionRenderer::render)
+                .flatMap(epubSectionRenderer::render)
                 .forEach(epub::addContent);
         return epub;
     }

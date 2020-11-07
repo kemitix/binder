@@ -9,6 +9,7 @@ import net.kemitix.binder.spi.HtmlSection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.stream.Stream;
 
 @Log
 @ApplicationScoped
@@ -24,7 +25,7 @@ public class EpubSectionRenderer
         this.epubRenderers = epubRenderers;
     }
 
-    public Content render(HtmlSection htmlSection) {
+    public Stream<Content> render(HtmlSection htmlSection) {
         return findRenderer(htmlSection.getType(), epubRenderers)
                 .render(htmlSection);
     }

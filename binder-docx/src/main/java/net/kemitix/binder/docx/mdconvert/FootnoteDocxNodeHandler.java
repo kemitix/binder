@@ -1,8 +1,8 @@
 package net.kemitix.binder.docx.mdconvert;
 
-import com.vladsch.flexmark.ext.footnotes.Footnote;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.docx.DocxFacade;
+import net.kemitix.binder.markdown.FootnoteAnchor;
 import net.kemitix.binder.markdown.FootnoteNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -23,13 +23,15 @@ public class FootnoteDocxNodeHandler
 
     @Override
     public Class<? extends Node> getNodeClass() {
-        return Footnote.class;
+        return com.vladsch.flexmark.ext.footnotes.Footnote.class;
     }
 
     @Override
-    public Stream<Object> footnoteBody(String id, String footnoteBody) {
+    public Stream<Object> footnoteBody(FootnoteAnchor footnoteAnchor) {
+        String oridinal = footnoteAnchor.getOridinal();
+        String text = "footnoteAnchor.getText()";
         return Stream.of(
-                docx.footnote(id, footnoteBody)
+                docx.footnote(oridinal, text)
         );
     }
 

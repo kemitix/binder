@@ -10,6 +10,7 @@ import net.kemitix.binder.spi.HtmlSection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.stream.Stream;
 
 @Log
 @Epub
@@ -36,7 +37,7 @@ public class TocEpubRenderer
     }
 
     @Override
-    public Content render(HtmlSection htmlSection) {
+    public Stream<Content> render(HtmlSection htmlSection) {
         StringBuilder html = new StringBuilder("<h1>Contents</h1>");
         html.append("<ul>");
         htmlManuscript.sections()
@@ -47,7 +48,7 @@ public class TocEpubRenderer
                                 .render(section)));
         html.append("</ul>");
         String href = htmlSection.getHref();
-        return htmlContent(href, html.toString());
+        return Stream.of(htmlContent(href, html.toString()));
     }
 
 }
