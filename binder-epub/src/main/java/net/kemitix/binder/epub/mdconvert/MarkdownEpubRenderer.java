@@ -10,6 +10,7 @@ import net.kemitix.binder.spi.HtmlSection;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.Tuple;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Function;
@@ -55,19 +56,14 @@ public class MarkdownEpubRenderer
     private Stream<Content> createFootnotes(HtmlSection section) {
         return section.getFootnotes(String.class).stream()
                 .flatMap(store -> store.entrySet().stream())
-                .map(entry -> {
-                    List<String> value = (List<String>) entry.getValue();
-                    String collect = String.join("", value);
-                    return Tuple.of(entry.getKey(),
-                            """
-<p><a href="../../%3$s#back-link-%1$s">←%1$s</a></p>
-%2$s
-"""
-                                    .formatted(entry.getKey(), collect, section.getHref()));
-                })
-                .map(tBody -> tBody.mapRight(body -> body.getBytes(StandardCharsets.UTF_8)))
-                .map(tBytes -> tBytes.mapLeft(("footnotes/" + section.getName() + "/footnote-%s.html")::formatted))
-                .map(tBytes -> new Content(tBytes.getA(), tBytes.getB()));
+                .map(e -> Tuple.of(e.getKey(), e.getValue()))
+                .map(t -> t.mapRight(list -> (List<String>)list))
+                .map(t -> t.mapRight(list -> String.join("", list)))
+                .map(t -> t.mapRight(body -> body.getBytes(StandardCharsets.UTF_8)))
+                .map(t -> t.mapLeft(("footnotes/" + section.getName() + "/footnote-%s.html")::formatted))
+                .map(t -> new Content(t.getA(), t.getB()))
+                .peek(content -> content.setSpine(false))
+                .peek(content -> content.setToc(false));
     }
 
     @Getter
