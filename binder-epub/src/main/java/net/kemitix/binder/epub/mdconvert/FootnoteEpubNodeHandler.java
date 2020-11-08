@@ -17,9 +17,9 @@ public class FootnoteEpubNodeHandler
         String oridinal = footnoteAnchor.getOridinal();
         return Stream.of("""
                         <sup class="footnoteAnchor-anchor"><a
-                            href="%2$s#note-%1$s"
+                            href="%2$s"
                             title="%1$s" 
-                            id="back-link=%1$s">%1$s</a></sup> """
+                            id="back-link-%1$s">%1$s</a></sup> """
                 .formatted(oridinal, storeName)
         );
     }

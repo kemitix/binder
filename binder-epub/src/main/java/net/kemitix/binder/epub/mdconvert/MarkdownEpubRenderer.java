@@ -60,12 +60,10 @@ public class MarkdownEpubRenderer
                     String collect = String.join("", value);
                     return Tuple.of(entry.getKey(),
                             """
-<dl>
-<dt><a id="note-%1$s"/>%1$s</dt>
-<dd>%2$s</dd>
-</dl>
+<p><a href="../../%3$s#back-link-%1$s">←%1$s</a></p>
+%2$s
 """
-                                    .formatted(entry.getKey(), collect));
+                                    .formatted(entry.getKey(), collect, section.getHref()));
                 })
                 .map(tBody -> tBody.mapRight(body -> body.getBytes(StandardCharsets.UTF_8)))
                 .map(tBytes -> tBytes.mapLeft(("footnotes/" + section.getName() + "/footnote-%s.html")::formatted))
