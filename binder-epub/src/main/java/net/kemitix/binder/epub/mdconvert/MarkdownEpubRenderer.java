@@ -42,7 +42,7 @@ public class MarkdownEpubRenderer
     public Stream<Content> render(HtmlSection source) {
         Stream<String> converted = converter.convert(source);
         byte[] content = converted.collect(joining()).getBytes(StandardCharsets.UTF_8);
-        //TODO - add an optional footnote section
+        //TODO - Put each foot note in it's own Content
         return Stream.concat(
                 createContent(source, content),
                 createFootnotes(source)
@@ -61,7 +61,7 @@ public class MarkdownEpubRenderer
                 .map(e ->
                 {
                     List<String> value = (List<String>) e.getValue();
-                    String collect = value.stream().collect(joining());
+                    String collect = String.join("", value);
                     return """
 <dl>
 <dt><a id="note-%1$s"/>%1$s</dt>
