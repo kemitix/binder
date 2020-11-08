@@ -43,9 +43,10 @@ public class TocEpubRenderer
         htmlManuscript.sections()
                 .filter(HtmlSection::isEpub)
                 .filter(HtmlSection::isToc)
-                .forEach(section -> html.append(
+                .flatMap(section ->
                         findRenderer(section.getType(), tocItemRenderers)
-                                .render(section)));
+                                .render(section))
+                .forEach(render -> html.append(render));
         html.append("</ul>");
         String href = htmlSection.getHref();
         return Stream.of(htmlContent(href, html.toString()));
