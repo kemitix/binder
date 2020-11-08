@@ -1,19 +1,18 @@
 package net.kemitix.binder.epub.mdconvert;
 
 import coza.opencollab.epub.creator.model.Content;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.kemitix.binder.epub.EpubRenderer;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.HtmlSection;
-import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -40,9 +39,9 @@ public class MarkdownEpubRenderer
 
     @Override
     public Stream<Content> render(HtmlSection source) {
-        Stream<String> converted = converter.convert(source);
-        byte[] content = converted.collect(joining()).getBytes(StandardCharsets.UTF_8);
-        //TODO - Put each foot note in it's own Content
+        byte[] content = converter.convert(source)
+                .collect(joining())
+                .getBytes(StandardCharsets.UTF_8);
         return Stream.concat(
                 createContent(source, content),
                 createFootnotes(source)
@@ -53,29 +52,41 @@ public class MarkdownEpubRenderer
         return Stream.of(new Content(source.getHref(), content));
     }
 
-    private Stream<Content> createFootnotes(HtmlSection source) {
-        String href = source.getName() + "-footnotes.html";
-        String body = source.getFootnotes(String.class)
-                .stream()
-                .flatMap(stringListMap -> stringListMap.entrySet().stream())
-                .map(e ->
-                {
-                    List<String> value = (List<String>) e.getValue();
+    private Stream<Content> createFootnotes(HtmlSection section) {
+        return section.getFootnotes(String.class).stream()
+                .flatMap(store -> store.entrySet().stream())
+                .map(entry -> {
+                    List<String> value = (List<String>) entry.getValue();
                     String collect = String.join("", value);
-                    return """
+                    return Tuple.of(entry.getKey(),
+                            """
 <dl>
 <dt><a id="note-%1$s"/>%1$s</dt>
 <dd>%2$s</dd>
 </dl>
 """
-                            .formatted(e.getKey(), collect);
+                                    .formatted(entry.getKey(), collect));
                 })
-                .collect(joining());
-        if (body.isEmpty()) {
-            return Stream.empty();
+                .map(tBody -> tBody.mapRight(body -> body.getBytes(StandardCharsets.UTF_8)))
+                .map(tBytes -> tBytes.mapLeft(("footnotes/" + section.getName() + "/footnote-%s.html")::formatted))
+                .map(tBytes -> new Content(tBytes.getA(), tBytes.getB()));
+    }
+
+    @Getter
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static class Tuple<A, B> {
+        private final A a;
+        private final B b;
+
+        public static <A, B> Tuple<A, B> of(A a, B b) {
+            return new Tuple<>(a, b);
         }
-        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-        return Stream.of(new Content(href, bytes));
+        public <C> Tuple<C, B> mapLeft(Function<? super A, ? extends C> fn) {
+            return Tuple.of(fn.apply(a), b);
+        }
+        public <C> Tuple<A, C> mapRight(Function<? super B, ? extends C> fn) {
+            return Tuple.of(a, fn.apply(b));
+        }
     }
 
 }

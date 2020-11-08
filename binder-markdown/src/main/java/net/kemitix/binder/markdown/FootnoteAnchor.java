@@ -16,8 +16,9 @@ public class FootnoteAnchor {
             Footnote footnote,
             Section section
     ) {
-        String storeName = section.getName() + "-footnotes.html";
         String ordinal = footnote.getText().unescape();
+        String storeName = "../footnotes/" + section.getName() + "/footnote-%s.html"
+                .formatted(ordinal);
         return new FootnoteAnchor(storeName, ordinal);
     }
 
