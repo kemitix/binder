@@ -61,7 +61,8 @@ public class MarkdownEpubRenderer
                 .map(t -> t.mapRight(list -> (List<String>)list))
                 .map(t -> t.mapRight(list -> String.join("", list)))
                 .map(t -> t.mapRight(body -> body.getBytes(StandardCharsets.UTF_8)))
-                .map(t -> t.mapLeft(("footnotes/" + section.getName() + "/footnote-%s.html")::formatted))
+                .map(t -> t.mapLeft((Function<String, String>)
+                        ("footnotes/" + section.getName() + "/footnote-%s.html")::formatted))
                 .map(t -> new Content(t.getA(), t.getB()))
                 .peek(content -> content.setSpine(false))
                 .peek(content -> content.setToc(false));
