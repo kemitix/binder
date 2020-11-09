@@ -72,7 +72,8 @@ public class EpubFactory {
         log.info("Language: " + language);
         String id = Objects.requireNonNull(metadata.getId(), "metadata id");
         log.info("Id: " + id);
-        String title = metadata.getTitle();
+        String title = "%s - Issue %d".formatted(
+                metadata.getTitle(), metadata.getIssue());
         log.info("Title: " + title);
         String editor = metadata.getEditor();
         log.info("Editor: " + editor);
