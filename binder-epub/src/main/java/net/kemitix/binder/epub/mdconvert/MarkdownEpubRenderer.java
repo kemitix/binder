@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.persistence.Tuple;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -78,8 +79,14 @@ public class MarkdownEpubRenderer
         public <C> Tuple<C, B> mapLeft(Function<? super A, ? extends C> fn) {
             return Tuple.of(fn.apply(a), b);
         }
+        public <C> Tuple<C, B> mapLeft(BiFunction<? super A, ? super B, ? extends C> fn) {
+            return Tuple.of(fn.apply(a, b), b);
+        }
         public <C> Tuple<A, C> mapRight(Function<? super B, ? extends C> fn) {
             return Tuple.of(a, fn.apply(b));
+        }
+        public <C> Tuple<A, C> mapRight(BiFunction<? super A, ? super B, ? extends C> fn) {
+            return Tuple.of(a, fn.apply(a, b));
         }
     }
 
