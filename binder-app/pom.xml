@@ -36,8 +36,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.vladsch.flexmark</groupId>
-            <artifactId>flexmark-all</artifactId>
+            <groupId>net.kemitix.binder</groupId>
+            <artifactId>binder-markdown</artifactId>
         </dependency>
 
         <dependency>

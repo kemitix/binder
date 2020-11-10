@@ -1,10 +1,10 @@
 package net.kemitix.binder.docx;
 
-import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class StoryDocxTocItemRenderer
@@ -23,7 +23,7 @@ public class StoryDocxTocItemRenderer
     }
 
     @Override
-    public Object render(Section source) {
-        return docx.tocItem(Integer.toString(source.getPage()), source.getTitle());
+    public Stream<Object> render(Section source) {
+        return Stream.of(docx.tocItem(Integer.toString(source.getPage()), source.getTitle()));
     }
 }

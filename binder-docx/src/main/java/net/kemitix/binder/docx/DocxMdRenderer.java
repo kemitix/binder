@@ -6,10 +6,11 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class DocxMdRenderer
-    implements AggregateRenderer<DocxRenderer, Section, DocxContent> {
+        implements AggregateRenderer<DocxRenderer, Section, DocxContent> {
 
     private final Instance<DocxRenderer> renderers;
 
@@ -18,7 +19,7 @@ public class DocxMdRenderer
         this.renderers = renderers;
     }
 
-    public DocxContent render(Section section) {
+    public Stream<DocxContent> render(Section section) {
         return findRenderer(section.getType(), renderers)
                 .render(section);
     }

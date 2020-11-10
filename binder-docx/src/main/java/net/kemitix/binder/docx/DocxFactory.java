@@ -22,7 +22,7 @@ public class DocxFactory {
         return mdManuscript.getContents()
                 .stream()
                 .filter(Section::isDocx)
-                .map(docxMdRenderer::render)
+                .flatMap(docxMdRenderer::render)
                 .collect(Collectors.toList());
     }
 

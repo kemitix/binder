@@ -51,6 +51,10 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>net.kemitix.binder</groupId>
+            <artifactId>binder-markdown</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

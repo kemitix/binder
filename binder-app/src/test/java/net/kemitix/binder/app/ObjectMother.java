@@ -2,6 +2,7 @@ package net.kemitix.binder.app;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
+import net.kemitix.binder.markdown.FlexmarkProducers;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.MdManuscript;

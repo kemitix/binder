@@ -7,6 +7,7 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 @Log
 @ApplicationScoped
@@ -31,7 +32,7 @@ public class PlateDocxRenderer
     }
 
     @Override
-    public DocxContent render(Section section) {
+    public Stream<DocxContent> render(Section section) {
         log.info("PLATE: %s".formatted(section.getName()));
         ArrayList<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
@@ -52,7 +53,7 @@ public class PlateDocxRenderer
                                 FontSize.of(240))));
         contents.add(docx.textParagraph(""));
         contents.add(docx.breakToOddPage());
-        return new DocxContent(contents);
+        return Stream.of(new DocxContent(contents));
     }
 
 }

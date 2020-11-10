@@ -4,6 +4,7 @@ import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class DefaultDocxTocItemRenderer
@@ -23,7 +24,7 @@ public class DefaultDocxTocItemRenderer
     }
 
     @Override
-    public Object render(Section source) {
-        return docx.tocItem("", source.getTitle());
+    public Stream<Object> render(Section source) {
+        return Stream.of(docx.tocItem("", source.getTitle()));
     }
 }

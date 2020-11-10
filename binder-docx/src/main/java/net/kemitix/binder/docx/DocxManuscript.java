@@ -84,7 +84,6 @@ public class DocxManuscript {
     private void styleDefinitionsPart(MainDocumentPart mainDocument) {
         var part = mainDocument.getStyleDefinitionsPart(true);
         Styles styles = part.getContents();
-        System.out.println("styles = " + styles);
         styles.getStyle().add(styleFootnote());
         styles.getStyle().add(styleFootnoteAnchor());
         styles.getStyle().add(styleFootnoteCharacters());
