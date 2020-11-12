@@ -27,8 +27,8 @@ public class PlateDocxRenderer
     }
 
     @Override
-    public boolean canHandle(String type) {
-        return "plate".equals(type);
+    public boolean canHandle(Section.Type type) {
+        return Section.Type.plate.equals(type);
     }
 
     @Override

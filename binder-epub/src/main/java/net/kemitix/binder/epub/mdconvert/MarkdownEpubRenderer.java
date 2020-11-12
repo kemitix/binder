@@ -4,6 +4,7 @@ import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.epub.EpubRenderer;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.HtmlSection;
+import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -31,9 +32,9 @@ public class MarkdownEpubRenderer
     }
 
     @Override
-    public boolean canHandle(String type) {
-        return "html".equals(type)
-                || "story".equals(type);
+    public boolean canHandle(Section.Type type) {
+        return Section.Type.html.equals(type)
+                || Section.Type.story.equals(type);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class MarkdownEpubRenderer
         List<String> contents = converter.convert(source)
                 .collect(Collectors.toList());
 
-        if ("story".equals(source.getType())) {
+        if (Section.Type.story.equals(source.getType())) {
             //TODO add previously published section if required
             //TODO add about the Author sections
             //contents.addAll(//TODO);

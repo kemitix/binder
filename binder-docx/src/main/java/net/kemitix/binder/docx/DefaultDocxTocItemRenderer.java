@@ -18,9 +18,9 @@ public class DefaultDocxTocItemRenderer
     }
 
     @Override
-    public boolean canHandle(String type) {
+    public boolean canHandle(Section.Type type) {
         // anything except story
-        return !"story".equals(type);
+        return !Section.Type.story.equals(type);
     }
 
     @Override

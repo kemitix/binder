@@ -39,8 +39,8 @@ public class TocDocxRenderer
     }
 
     @Override
-    public boolean canHandle(String type) {
-        return "toc".equals(type);
+    public boolean canHandle(Section.Type type) {
+        return Section.Type.toc.equals(type);
     }
 
     @Override

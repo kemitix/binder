@@ -22,7 +22,7 @@ public interface DocumentNodeHandler<T>
             Section section
     ) {
         String title = Objects.requireNonNullElse(section.getTitle(), "");
-        if ("story".equals(section.getType())) {
+        if (Section.Type.story.equals(section.getType())) {
             String author = Objects.requireNonNull(section.getAuthor(), "No author for " + section.getName());
             return documentStoryBody(title, author, content);
         }

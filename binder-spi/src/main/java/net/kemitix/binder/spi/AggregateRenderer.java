@@ -5,7 +5,7 @@ import javax.enterprise.inject.Instance;
 public interface AggregateRenderer<R extends Renderer<T, O>, T, O> {
 
     default R findRenderer(
-            String type,
+            Section.Type type,
             Instance<R> renderers
     ) {
         return renderers.stream()

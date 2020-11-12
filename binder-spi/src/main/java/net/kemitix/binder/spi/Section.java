@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Section {
 
-    private String type; // prelude, content or coda
+    private Type type;
     private boolean toc = true; // show in table of contents
     private boolean template = false; // should expand template variables
     private boolean epub = true; // include in epub output
@@ -50,5 +50,16 @@ public class Section {
 
     public Optional<Map<String, List<?>>> getFootnotes(Class<?> aClass) {
         return Optional.ofNullable(footnoteStore.get(aClass));
+    }
+
+    public enum Type {
+
+        plate,
+        title,
+        toc,
+        html,
+        story,
+        ;
+
     }
 }
