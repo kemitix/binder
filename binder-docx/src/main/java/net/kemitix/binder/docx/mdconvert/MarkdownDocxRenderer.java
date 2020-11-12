@@ -56,6 +56,12 @@ public class MarkdownDocxRenderer
         Stream<Object> objects = converter.convert(source);
 
         contents.addAll(objects.collect(Collectors.toList()));
+
+        if ("story".equals(source.getType())) {
+            //TODO add previously published section if required
+            //TODO add about the Author sections
+        }
+
         contents.add(docx.breakToOddPage());
         return Stream.of(new DocxContent(contents));
     }

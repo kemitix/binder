@@ -8,6 +8,8 @@ import net.kemitix.binder.spi.HtmlSection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -36,8 +38,16 @@ public class MarkdownEpubRenderer
 
     @Override
     public Stream<Content> render(HtmlSection source) {
-        byte[] content = converter.convert(source)
-                .collect(joining())
+        List<String> contents = converter.convert(source)
+                .collect(Collectors.toList());
+
+        if ("story".equals(source.getType())) {
+            //TODO add previously published section if required
+            //TODO add about the Author sections
+            //contents.addAll(//TODO);
+        }
+
+        byte[] content = String.join("", contents)
                 .getBytes(StandardCharsets.UTF_8);
         return Stream.concat(
                 createContent(source, content),
