@@ -12,7 +12,7 @@ public class SoftLineBreakEpubNodeHandler
     @Override
     public Stream<String> softLineBreakBody() {
         return Stream.of(
-                "<br/>"
+                " "
         );
     }
 }
