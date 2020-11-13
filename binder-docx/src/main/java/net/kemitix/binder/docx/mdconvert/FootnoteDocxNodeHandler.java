@@ -4,9 +4,12 @@ import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.markdown.FootnoteAnchor;
 import net.kemitix.binder.markdown.FootnoteNodeHandler;
+import net.kemitix.binder.spi.FootnoteStore;
+import org.docx4j.wml.P;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Docx
@@ -15,10 +18,15 @@ public class FootnoteDocxNodeHandler
         implements FootnoteNodeHandler<Object> {
 
     private final DocxFacade docx;
+    private final FootnoteStore<P> footnoteStore;
 
     @Inject
-    public FootnoteDocxNodeHandler(DocxFacade docx) {
+    public FootnoteDocxNodeHandler(
+            DocxFacade docx,
+            @Docx FootnoteStore<P> footnoteStore
+    ) {
         this.docx = docx;
+        this.footnoteStore = footnoteStore;
     }
 
     @Override
@@ -29,9 +37,9 @@ public class FootnoteDocxNodeHandler
     @Override
     public Stream<Object> footnoteBody(FootnoteAnchor footnoteAnchor) {
         String oridinal = footnoteAnchor.getOridinal();
-        String text = "footnoteAnchor.getText()";
+        List<P> paras = footnoteStore.get(footnoteAnchor.getName(), oridinal);
         return Stream.of(
-                docx.footnote(oridinal, text)
+                docx.footnote(oridinal, paras)
         );
     }
 

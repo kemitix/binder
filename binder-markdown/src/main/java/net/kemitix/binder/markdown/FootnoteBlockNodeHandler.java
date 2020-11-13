@@ -18,7 +18,7 @@ public interface FootnoteBlockNodeHandler<T>
     default Stream<T> body(Node node, Stream<T> content, Section section) {
         FootnoteBlock footnoteBlock = (FootnoteBlock) node;
         FootnoteBody<T> footnoteBody =
-                FootnoteBody.create(footnoteBlock, content, section);
+                FootnoteBody.create(footnoteBlock, content);
         return footnoteBlockBody(footnoteBody);
     }
 

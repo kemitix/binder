@@ -4,35 +4,44 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class FootnoteStore {
+public class FootnoteStore<T> {
 
-    private final Map<Class, Map<String, List<?>>> stores = new HashMap<>();
+    // name -> ordinal -> LIST
+    private final Map<String, Map<String, List<T>>> stores = new HashMap<>();
 
-    public static FootnoteStore create() {
-        return new FootnoteStore();
+    public static <T> FootnoteStore<T> create(Class<? extends T> aClass) {
+        return new FootnoteStore<T>();
     }
 
-    public void add(String oridinal, List<?> content) {
-        Class<?> aClass =
-                Objects.requireNonNull(content.get(0),
-                        "Adding footnote with no content!")
-                        .getClass();
-        Map<String, List<?>> store = stores.computeIfAbsent(aClass, (ac) -> new HashMap<>());
-        store.put(oridinal, content);
+    public void add(String name, String oridinal, List<T> content) {
+        getStore(name)
+                .put(oridinal, content);
     }
 
-    public <T> Map<String, List<?>> get(Class<T> aClass) {
-        Map<String, List<?>> stringListMap = stores.get(aClass);
-        return stringListMap;
+    private Map<String, List<T>> getStore(String name) {
+        return stores.computeIfAbsent(name, x -> new HashMap<>());
+    }
+
+    public List<T> get(String name, String ordinal) {
+        return Objects.requireNonNullElseGet(
+                getStore(name)
+                        .get(ordinal),
+                Collections::emptyList);
+    }
+
+    public Stream<Map.Entry<String, List<T>>> streamByName(String name) {
+        return getStore(name)
+                .entrySet()
+                .stream();
     }
 }

@@ -10,8 +10,6 @@ import lombok.With;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,16 +39,6 @@ public class Section {
     private int copyright; // the year the story was copyrighted
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
-    private FootnoteStore footnoteStore = FootnoteStore.create();
-
-    public <T> void addFootnote(String oridinal, Stream<T> content) {
-        List<T> collect = content.collect(Collectors.toList());
-        footnoteStore.add(oridinal, collect);
-    }
-
-    public Optional<Map<String, List<?>>> getFootnotes(Class<?> aClass) {
-        return Optional.ofNullable(footnoteStore.get(aClass));
-    }
 
     public boolean isType(Type type) {
         return this.type.equals(type);

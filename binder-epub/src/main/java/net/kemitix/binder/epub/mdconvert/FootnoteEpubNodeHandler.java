@@ -13,14 +13,14 @@ public class FootnoteEpubNodeHandler
 
     @Override
     public Stream<String> footnoteBody(FootnoteAnchor footnoteAnchor) {
-        String storeName = footnoteAnchor.getStoreName();
+        String htmlFile = footnoteAnchor.getHtmlFile();
         String oridinal = footnoteAnchor.getOridinal();
         return Stream.of("""
                         <sup class="footnoteAnchor-anchor"><a
                             href="%2$s"
                             title="%1$s" 
                             id="back-link-%1$s">%1$s</a></sup> """
-                .formatted(oridinal, storeName)
+                .formatted(oridinal, htmlFile)
         );
     }
 }

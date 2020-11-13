@@ -361,14 +361,14 @@ public class DocxFacade {
                 );
     }
 
-    public Object footnote(String id, String footnoteBody) {
+    public Object footnote(String ordinal, List<P> footnoteBody) {
         //TODO add footnote bodies from FootnoteBlockDocxNodeHandler
         // this will provide styles footnotes
         return footnoteReference(footnoteBody);
     }
 
     @SneakyThrows
-    private Object footnoteReference(String footnoteBody) {
+    private Object footnoteReference(List<P> footnoteBody) {
         // in document.xml:
         //      <w:r>
         //        <w:rPr>
@@ -452,7 +452,7 @@ public class DocxFacade {
         return ctFootnotes;
     }
 
-    private Object[] footnoteBody(String footnoteBody) {
+    private Object[] footnoteBody(List<P> footnoteParas) {
         // in footnotes.xml:
         //  <w:footnote w:id="2">
         //    <w:p>
@@ -486,14 +486,9 @@ public class DocxFacade {
                 objectFactory.createRFootnoteRef()
         ));
         objects.addAll(
-                Arrays.stream(footnoteBody.split("\n~PARA~\n"))
-                        .map(para -> p(
-                                pPr,
-                                r(
-                                        objectFactory.createRTab(),
-                                        t(para)
-                                )
-                        )).collect(Collectors.toList()));
+                footnoteParas.stream()
+                        .peek(para -> para.setPPr(pPr)
+        ).collect(Collectors.toList()));
         return objects.toArray();
     }
 
