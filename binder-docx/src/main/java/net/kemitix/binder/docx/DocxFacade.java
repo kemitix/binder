@@ -127,19 +127,23 @@ public class DocxFacade {
     }
 
     private PPr ppr(SectPr sectPr) {
-        PPr pPr = objectFactory.createPPr();
+        PPr pPr = pPr();
         pPr.setSectPr(sectPr);
         return pPr;
     }
 
+    private PPr pPr() {
+        return objectFactory.createPPr();
+    }
+
     private PPr ppr(Jc jc) {
-        PPr pPr = objectFactory.createPPr();
+        PPr pPr = pPr();
         pPr.setJc(jc);
         return pPr;
     }
 
     private Object ppr(Tabs tabs, PPrBase.Ind tabIndent) {
-        PPr pPr = objectFactory.createPPr();
+        PPr pPr = pPr();
         pPr.setTabs(tabs);
         pPr.setInd(tabIndent);
         return pPr;
@@ -277,7 +281,7 @@ public class DocxFacade {
      * </w:p>
      */
     public Object heading(int level, String text) {
-        PPr pPr = objectFactory.createPPr();
+        PPr pPr = pPr();
 
         PPrBase.PStyle pStyle = pStyle("Normal");
         pPr.setPStyle(pStyle);
@@ -329,7 +333,7 @@ public class DocxFacade {
      * </w:p>
      */
     public Object bulletItem(String text) {
-        PPr pPr = objectFactory.createPPr();
+        PPr pPr = pPr();
         pPr.setPStyle(pStyle("Normal"));
 
         PPrBase.NumPr.Ilvl ilvl = objectFactory.createPPrBaseNumPrIlvl();
@@ -469,7 +473,7 @@ public class DocxFacade {
         //      </w:r>
         //    </w:p>
         //  </w:footnote>
-        PPr pPr = objectFactory.createPPr();
+        PPr pPr = pPr();
         pPr.setPStyle(pStyle("Footnote"));
 
         RPr rPr = objectFactory.createRPr();
