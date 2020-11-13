@@ -1,4 +1,4 @@
 ---
-type: html
+type: markdown
 toc: false
 ---

@@ -61,7 +61,7 @@ public class Section {
         plate,
         title,
         toc,
-        html,
+        markdown,
         story,
         ;
 

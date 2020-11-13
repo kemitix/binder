@@ -37,7 +37,7 @@ public class MarkdownDocxRenderer
 
     @Override
     public boolean canHandle(Section section) {
-        return section.isType(Section.Type.html)
+        return section.isType(Section.Type.markdown)
                 || section.isType(Section.Type.story);
     }
 

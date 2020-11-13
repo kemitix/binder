@@ -1,3 +1,3 @@
 ---
-type: html
+type: markdown
 ---
