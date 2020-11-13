@@ -55,8 +55,8 @@ public class TocDocxRenderer
                                 FontSize.of(240))));
         content.add(docx.textParagraph(""));
         htmlManuscript.sections()
-                .filter(HtmlSection::isDocx)
-                .filter(HtmlSection::isToc)
+                .filter(Section::isDocx)
+                .filter(Section::isToc)
                 .flatMap(s ->
                         findRenderer(s, tocItemRenderers)
                                 .render(s))
