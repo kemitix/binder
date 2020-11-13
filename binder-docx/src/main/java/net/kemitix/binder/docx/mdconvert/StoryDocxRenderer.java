@@ -41,16 +41,16 @@ public class StoryDocxRenderer
     }
 
     @Override
-    public Stream<DocxContent> render(Section source) {
+    public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
-        if (source.isType(Section.Type.story)) {
+        if (section.isType(Section.Type.story)) {
             contents.addAll(docx.leaders());
         }
-        addTitle(source, contents);
-        contents.add(docx.textParagraphCentered(source.getAuthor()));
+        addTitle(section, contents);
+        contents.add(docx.textParagraphCentered(section.getAuthor()));
         contents.addAll(docx.leaders());
 
-        Stream<Object> objects = converter.convert(source);
+        Stream<Object> objects = converter.convert(section);
 
         contents.addAll(objects.collect(Collectors.toList()));
 
