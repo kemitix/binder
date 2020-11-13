@@ -13,18 +13,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
-
 @Epub
 @ApplicationScoped
-public class MarkdownEpubRenderer
+public class StoryEpubRenderer
         implements EpubRenderer {
 
     private final MarkdownConverter<String> converter;
     private final FootnoteGenerator footnoteGenerator;
 
     @Inject
-    public MarkdownEpubRenderer(
+    public StoryEpubRenderer(
             @Epub MarkdownConverter<String> converter,
             FootnoteGenerator footnoteGenerator) {
         this.converter = converter;
@@ -33,13 +31,18 @@ public class MarkdownEpubRenderer
 
     @Override
     public boolean canHandle(Section section) {
-        return section.isType(Section.Type.markdown);
+        return section.isType(Section.Type.story);
     }
 
     @Override
     public Stream<Content> render(HtmlSection source) {
         List<String> contents = converter.convert(source)
                 .collect(Collectors.toList());
+
+        //TODO add previously published section if required
+        //TODO add about the Author sections
+        //contents.addAll(//TODO);
+
         byte[] content = String.join("", contents)
                 .getBytes(StandardCharsets.UTF_8);
         return Stream.concat(
