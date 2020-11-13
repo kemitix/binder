@@ -26,7 +26,7 @@ public class EpubSectionRenderer
     }
 
     public Stream<Content> render(HtmlSection htmlSection) {
-        return findRenderer(htmlSection.getType(), epubRenderers)
+        return findRenderer(htmlSection, epubRenderers)
                 .render(htmlSection);
     }
 }

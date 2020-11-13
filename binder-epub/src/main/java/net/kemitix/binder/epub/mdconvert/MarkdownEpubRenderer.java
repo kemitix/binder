@@ -32,9 +32,9 @@ public class MarkdownEpubRenderer
     }
 
     @Override
-    public boolean canHandle(Section.Type type) {
-        return Section.Type.html.equals(type)
-                || Section.Type.story.equals(type);
+    public boolean canHandle(Section section) {
+        return section.isType(Section.Type.html)
+                || section.isType(Section.Type.story);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class MarkdownEpubRenderer
         List<String> contents = converter.convert(source)
                 .collect(Collectors.toList());
 
-        if (Section.Type.story.equals(source.getType())) {
+        if (source.isType(Section.Type.story)) {
             //TODO add previously published section if required
             //TODO add about the Author sections
             //contents.addAll(//TODO);

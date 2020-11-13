@@ -52,6 +52,10 @@ public class Section {
         return Optional.ofNullable(footnoteStore.get(aClass));
     }
 
+    public boolean isType(Type type) {
+        return this.type.equals(type);
+    }
+
     public enum Type {
 
         plate,
@@ -60,6 +64,10 @@ public class Section {
         html,
         story,
         ;
+
+        public boolean isA(Section section) {
+            return section.getType().equals(this);
+        }
 
     }
 }

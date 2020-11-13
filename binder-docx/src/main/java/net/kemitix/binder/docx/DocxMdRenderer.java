@@ -20,7 +20,7 @@ public class DocxMdRenderer
     }
 
     public Stream<DocxContent> render(Section section) {
-        return findRenderer(section.getType(), renderers)
+        return findRenderer(section, renderers)
                 .render(section);
     }
 

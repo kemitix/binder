@@ -12,8 +12,8 @@ public class StoryEpubTocItemRenderer
         implements EpubTocItemRenderer {
 
     @Override
-    public boolean canHandle(Section.Type type) {
-        return Section.Type.story.equals(type);
+    public boolean canHandle(Section section) {
+        return section.isType(Section.Type.story);
     }
 
     @Override

@@ -39,8 +39,8 @@ public class TocDocxRenderer
     }
 
     @Override
-    public boolean canHandle(Section.Type type) {
-        return Section.Type.toc.equals(type);
+    public boolean canHandle(Section section) {
+        return section.isType(Section.Type.toc);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class TocDocxRenderer
                 .filter(HtmlSection::isDocx)
                 .filter(HtmlSection::isToc)
                 .flatMap(s ->
-                        findRenderer(s.getType(), tocItemRenderers)
+                        findRenderer(s, tocItemRenderers)
                                 .render(s))
                 .forEach(content::add);
         content.add(docx.breakToOddPage());

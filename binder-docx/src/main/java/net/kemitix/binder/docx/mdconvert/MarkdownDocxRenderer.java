@@ -36,19 +36,19 @@ public class MarkdownDocxRenderer
     }
 
     @Override
-    public boolean canHandle(Section.Type type) {
-        return Section.Type.html.equals(type)
-                || Section.Type.story.equals(type);
+    public boolean canHandle(Section section) {
+        return section.isType(Section.Type.html)
+                || section.isType(Section.Type.story);
     }
 
     @Override
     public Stream<DocxContent> render(Section source) {
         List<Object> contents = new ArrayList<>();
-        if (Section.Type.story.equals(source.getType())) {
+        if (source.isType(Section.Type.story)) {
             contents.addAll(docx.leaders());
         }
         addTitle(source, contents);
-        if (Section.Type.story.equals(source.getType())) {
+        if (source.isType(Section.Type.story)) {
             contents.add(docx.textParagraphCentered(source.getAuthor()));
             contents.addAll(docx.leaders());
         }
@@ -57,7 +57,7 @@ public class MarkdownDocxRenderer
 
         contents.addAll(objects.collect(Collectors.toList()));
 
-        if (Section.Type.story.equals(source.getType())) {
+        if (source.isType(Section.Type.story)) {
             //TODO add previously published section if required
             //TODO add about the Author sections
         }

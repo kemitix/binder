@@ -33,8 +33,8 @@ public class TocEpubRenderer
     }
 
     @Override
-    public boolean canHandle(Section.Type type) {
-        return Section.Type.toc.equals(type);
+    public boolean canHandle(Section section) {
+        return section.isType(Section.Type.toc);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class TocEpubRenderer
                 .filter(HtmlSection::isEpub)
                 .filter(HtmlSection::isToc)
                 .flatMap(section ->
-                        findRenderer(section.getType(), tocItemRenderers)
+                        findRenderer(section, tocItemRenderers)
                                 .render(section))
                 .forEach(render -> html.append(render));
         html.append("</ul>");
