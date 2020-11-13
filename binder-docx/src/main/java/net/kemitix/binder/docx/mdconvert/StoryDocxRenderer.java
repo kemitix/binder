@@ -11,6 +11,8 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -54,11 +56,24 @@ public class StoryDocxRenderer
 
         contents.addAll(objects.collect(Collectors.toList()));
 
-        //TODO add previously published section if required
-        //TODO add about the Author sections
+        contents.addAll(aboutAuthor(section));
 
         contents.add(docx.breakToOddPage());
         return Stream.of(new DocxContent(contents));
+    }
+
+    private Collection<?> aboutAuthor(Section section) {
+        return Arrays.asList(
+                docx.keepWithNext(docx.p()),
+                docx.keepWithNext(docx.textParagraphCentered(
+                        "© %4d %s".formatted(
+                                section.getCopyright(), section.getAuthor()
+                        ))),
+                docx.keepWithNext(docx.p()),
+                // TODO: history - if present
+                docx.keepWithNext(docx.textParagraphCentered("About the Author")),
+                docx.keepTogether(docx.textParagraph(section.getBio()))
+        );
     }
 
     private void addTitle(Section sec, List<Object> contents) {

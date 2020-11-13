@@ -508,4 +508,19 @@ public class DocxFacade {
         rStyle.setVal(val);
         return rStyle;
     }
+
+    //p/pPr/keepNext[val="true"]
+    public Object keepWithNext(P p) {
+        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), objectFactory::createPPr);
+        pPr.setKeepNext(objectFactory.createBooleanDefaultTrue());
+        p.setPPr(pPr);
+        return p;
+    }
+
+    public Object keepTogether(P p) {
+        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), objectFactory::createPPr);
+        pPr.setKeepLines(objectFactory.createBooleanDefaultTrue());
+        p.setPPr(pPr);
+        return p;
+    }
 }
