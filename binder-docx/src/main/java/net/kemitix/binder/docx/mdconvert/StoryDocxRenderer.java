@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @ApplicationScoped
-public class MarkdownDocxRenderer
+public class StoryDocxRenderer
         implements DocxRenderer {
 
     private final DocxFacade docx;
@@ -25,7 +25,7 @@ public class MarkdownDocxRenderer
     private final MarkdownConverter<Object> converter;
 
     @Inject
-    public MarkdownDocxRenderer(
+    public StoryDocxRenderer(
             DocxFacade docx,
             DocxImageFacade docxImage,
             @Docx MarkdownConverter<Object> converter
@@ -37,7 +37,7 @@ public class MarkdownDocxRenderer
 
     @Override
     public boolean canHandle(Section section) {
-        return section.isType(Section.Type.markdown);
+        return section.isType(Section.Type.story);
     }
 
     @Override
@@ -47,13 +47,15 @@ public class MarkdownDocxRenderer
             contents.addAll(docx.leaders());
         }
         addTitle(source, contents);
-        if (source.isType(Section.Type.story)) {
-            contents.add(docx.textParagraphCentered(source.getAuthor()));
-            contents.addAll(docx.leaders());
-        }
+        contents.add(docx.textParagraphCentered(source.getAuthor()));
+        contents.addAll(docx.leaders());
 
-        contents.addAll(converter.convert(source)
-                .collect(Collectors.toList()));
+        Stream<Object> objects = converter.convert(source);
+
+        contents.addAll(objects.collect(Collectors.toList()));
+
+        //TODO add previously published section if required
+        //TODO add about the Author sections
 
         contents.add(docx.breakToOddPage());
         return Stream.of(new DocxContent(contents));
