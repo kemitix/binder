@@ -66,6 +66,7 @@ public class StoryDocxRenderer
     }
 
     private Collection<?> aboutAuthor(Section section) {
+        Object[] convert = converter.convert(Context.create(), section.getBio()).toArray();
         return Arrays.asList(
                 docx.keepWithNext(docx.p()),
                 docx.keepWithNext(docx.textParagraphCentered(
@@ -75,7 +76,7 @@ public class StoryDocxRenderer
                 docx.keepWithNext(docx.p()),
                 // TODO: history - if present
                 docx.keepWithNext(docx.textParagraphCentered("About the Author")),
-                docx.keepTogether(docx.textParagraph(section.getBio()))
+                docx.keepTogether(docx.p(convert))// convert is already and array containing a single P
         );
     }
 

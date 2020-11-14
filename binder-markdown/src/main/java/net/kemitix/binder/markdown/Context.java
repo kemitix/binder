@@ -34,6 +34,30 @@ public interface Context {
         };
     }
 
+    static Context create() {
+        return new Context() {
+            @Override
+            public boolean isType(Section.Type type) {
+                return false;
+            }
+
+            @Override
+            public String getTitle() {
+                return "";
+            }
+
+            @Override
+            public String getAuthor() {
+                return "";
+            }
+
+            @Override
+            public String getName() {
+                return "";
+            }
+        };
+    }
+
     boolean isType(Section.Type type);
 
     String getTitle();
