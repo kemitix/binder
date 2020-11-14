@@ -2,6 +2,7 @@ package net.kemitix.binder.epub.mdconvert;
 
 import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.epub.EpubRenderer;
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
@@ -37,14 +38,16 @@ public class MarkdownEpubRenderer
     }
 
     @Override
-    public Stream<Content> render(HtmlSection source) {
-        List<String> contents = converter.convert(source)
-                .collect(Collectors.toList());
-        byte[] content = String.join("", contents)
-                .getBytes(StandardCharsets.UTF_8);
+    public Stream<Content> render(HtmlSection section) {
+        String contents =
+                converter.convert(
+                        Context.create(section),
+                        section.getMarkdown()
+                ).collect(joining());
+        byte[] content = contents.getBytes(StandardCharsets.UTF_8);
         return Stream.concat(
-                createContent(source, content),
-                footnoteGenerator.createFootnotes(source)
+                createContent(section, content),
+                footnoteGenerator.createFootnotes(section)
         );
     }
 

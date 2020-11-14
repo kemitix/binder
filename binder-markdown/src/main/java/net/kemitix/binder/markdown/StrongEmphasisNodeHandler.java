@@ -17,7 +17,7 @@ public interface StrongEmphasisNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content, Section section) {
+    default Stream<T> body(Node node, Stream<T> content, Context context) {
         List<T> collect = content.collect(Collectors.toList());
         if (collect.size() != 1) {
             throw new RuntimeException("Not passed a single content item: %d sent"

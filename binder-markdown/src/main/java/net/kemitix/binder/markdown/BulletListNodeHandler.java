@@ -15,7 +15,7 @@ public interface BulletListNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content, Section section) {
+    default Stream<T> body(Node node, Stream<T> content, Context context) {
         return bulletListBody(content);
     }
 

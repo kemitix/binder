@@ -15,7 +15,7 @@ public interface FootnoteBlockNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content, Section section) {
+    default Stream<T> body(Node node, Stream<T> content, Context context) {
         FootnoteBlock footnoteBlock = (FootnoteBlock) node;
         FootnoteBody<T> footnoteBody =
                 FootnoteBody.create(footnoteBlock, content);

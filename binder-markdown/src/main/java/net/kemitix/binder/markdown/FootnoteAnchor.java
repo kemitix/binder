@@ -4,7 +4,6 @@ import com.vladsch.flexmark.ext.footnotes.Footnote;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.kemitix.binder.spi.Section;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -15,11 +14,11 @@ public class FootnoteAnchor {
 
     public static FootnoteAnchor create(
             Footnote footnote,
-            Section section
+            Context context
     ) {
-        String name = section.getName();
+        String name = context.getName();
         String ordinal = footnote.getText().unescape();
-        String htmlFile = "../footnotes/" + section.getName() + "/footnote-%s.html"
+        String htmlFile = "../footnotes/" + name + "/footnote-%s.html"
                 .formatted(ordinal);
         return new FootnoteAnchor(name, ordinal, htmlFile);
     }

@@ -4,6 +4,7 @@ import net.kemitix.binder.docx.DocxContent;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.docx.DocxImageFacade;
 import net.kemitix.binder.docx.DocxRenderer;
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
@@ -50,7 +51,11 @@ public class StoryDocxRenderer
         contents.add(docx.textParagraphCentered(section.getAuthor()));
         contents.addAll(docx.leaders());
 
-        Stream<Object> objects = converter.convert(section);
+        Stream<Object> objects =
+                converter.convert(
+                        Context.create(section),
+                        section.getMarkdown()
+                );
 
         contents.addAll(objects.collect(Collectors.toList()));
 

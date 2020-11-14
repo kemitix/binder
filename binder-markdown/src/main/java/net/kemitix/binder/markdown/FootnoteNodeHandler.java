@@ -17,9 +17,9 @@ public interface FootnoteNodeHandler<T>
     default Stream<T> body(
             Node node,
             Stream<T> content,
-            Section section
+            Context context
     ) {
-        return footnoteBody(FootnoteAnchor.create((Footnote) node, section));
+        return footnoteBody(FootnoteAnchor.create((Footnote) node, context));
     }
 
     Stream<T> footnoteBody(FootnoteAnchor footnoteAnchor);

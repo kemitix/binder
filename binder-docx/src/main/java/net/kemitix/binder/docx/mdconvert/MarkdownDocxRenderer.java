@@ -4,6 +4,7 @@ import net.kemitix.binder.docx.DocxContent;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.docx.DocxImageFacade;
 import net.kemitix.binder.docx.DocxRenderer;
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
@@ -41,11 +42,14 @@ public class MarkdownDocxRenderer
     }
 
     @Override
-    public Stream<DocxContent> render(Section source) {
+    public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
-        addTitle(source, contents);
-        contents.addAll(converter.convert(source)
-                .collect(Collectors.toList()));
+        addTitle(section, contents);
+        contents.addAll(
+                converter.convert(
+                        Context.create(section),
+                        section.getMarkdown()
+                ).collect(Collectors.toList()));
         contents.add(docx.breakToOddPage());
         return Stream.of(new DocxContent(contents));
     }
