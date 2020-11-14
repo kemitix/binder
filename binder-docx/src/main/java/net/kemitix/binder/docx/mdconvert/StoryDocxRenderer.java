@@ -45,9 +45,7 @@ public class StoryDocxRenderer
     @Override
     public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
-        if (section.isType(Section.Type.story)) {
-            contents.addAll(docx.leaders());
-        }
+        contents.addAll(docx.leaders());
         addTitle(section, contents);
         contents.add(docx.textParagraphCentered(section.getAuthor()));
         contents.addAll(docx.leaders());

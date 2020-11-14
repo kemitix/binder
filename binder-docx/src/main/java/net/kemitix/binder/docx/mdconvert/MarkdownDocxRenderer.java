@@ -43,18 +43,9 @@ public class MarkdownDocxRenderer
     @Override
     public Stream<DocxContent> render(Section source) {
         List<Object> contents = new ArrayList<>();
-        if (source.isType(Section.Type.story)) {
-            contents.addAll(docx.leaders());
-        }
         addTitle(source, contents);
-        if (source.isType(Section.Type.story)) {
-            contents.add(docx.textParagraphCentered(source.getAuthor()));
-            contents.addAll(docx.leaders());
-        }
-
         contents.addAll(converter.convert(source)
                 .collect(Collectors.toList()));
-
         contents.add(docx.breakToOddPage());
         return Stream.of(new DocxContent(contents));
     }
