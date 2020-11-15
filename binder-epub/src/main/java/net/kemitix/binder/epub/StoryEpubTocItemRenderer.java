@@ -2,6 +2,7 @@ package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.spi.HtmlSection;
+import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.stream.Stream;
@@ -11,8 +12,8 @@ public class StoryEpubTocItemRenderer
         implements EpubTocItemRenderer {
 
     @Override
-    public boolean canHandle(String type) {
-        return "story".equals(type);
+    public boolean canHandle(Section section) {
+        return section.isType(Section.Type.story);
     }
 
     @Override

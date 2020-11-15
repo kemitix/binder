@@ -39,8 +39,8 @@ public class TocDocxRenderer
     }
 
     @Override
-    public boolean canHandle(String type) {
-        return "toc".equals(type);
+    public boolean canHandle(Section section) {
+        return section.isType(Section.Type.toc);
     }
 
     @Override
@@ -55,10 +55,10 @@ public class TocDocxRenderer
                                 FontSize.of(240))));
         content.add(docx.textParagraph(""));
         htmlManuscript.sections()
-                .filter(HtmlSection::isDocx)
-                .filter(HtmlSection::isToc)
+                .filter(Section::isDocx)
+                .filter(Section::isToc)
                 .flatMap(s ->
-                        findRenderer(s.getType(), tocItemRenderers)
+                        findRenderer(s, tocItemRenderers)
                                 .render(s))
                 .forEach(content::add);
         content.add(docx.breakToOddPage());

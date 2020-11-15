@@ -18,8 +18,8 @@ public class StoryDocxTocItemRenderer
     }
 
     @Override
-    public boolean canHandle(String type) {
-        return "story".equals(type);
+    public boolean canHandle(Section section) {
+        return section.isType(Section.Type.story);
     }
 
     @Override

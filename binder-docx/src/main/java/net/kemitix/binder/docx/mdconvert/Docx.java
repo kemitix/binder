@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 @Documented
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.PARAMETER})
+@Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.METHOD})
 public @interface Docx {
 }

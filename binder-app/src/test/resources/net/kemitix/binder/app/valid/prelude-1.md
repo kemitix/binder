@@ -1,5 +1,5 @@
 ---
-type: html
+type: markdown
 title: test prelude 1 title
 toc: false
 ---

@@ -4,7 +4,6 @@ import com.vladsch.flexmark.ext.footnotes.FootnoteBlock;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.kemitix.binder.spi.Section;
 
 import java.util.stream.Stream;
 
@@ -17,11 +16,9 @@ public class FootnoteBody<T> {
 
     public static <T> FootnoteBody<T> create(
             FootnoteBlock footnoteBlock,
-            Stream<T> content,
-            Section section
+            Stream<T> content
     ) {
         String oridinal = footnoteBlock.getText().unescape();
-        section.addFootnote(oridinal, content);
         return new FootnoteBody<>(oridinal, content);
     }
 

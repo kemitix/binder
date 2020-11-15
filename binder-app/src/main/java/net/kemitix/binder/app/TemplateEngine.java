@@ -59,7 +59,7 @@ public class TemplateEngine {
 
     private Function<Section, String> tocEntry() {
         return section -> {
-            if ("story".equals(section.getType())) {
+            if (section.isType(Section.Type.story)) {
                 // entry with page number
                 return "%s\t%s".formatted(
                         section.getPage(),
@@ -73,7 +73,7 @@ public class TemplateEngine {
 
     private String copyrights(MdManuscript mdManuscript) {
         return mdManuscript.getContents().stream()
-                .filter(section -> "story".equals(section.getType()))
+                .filter(Section.Type.story::isA)
                 .map(section -> "%s ©%s by%s%s".formatted(
                         section.getTitle(),
                         section.getCopyright(),

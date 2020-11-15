@@ -10,8 +10,6 @@ import lombok.With;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,7 +25,7 @@ import java.util.stream.Stream;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Section {
 
-    private String type; // prelude, content or coda
+    private Type type;
     private boolean toc = true; // show in table of contents
     private boolean template = false; // should expand template variables
     private boolean epub = true; // include in epub output
@@ -35,19 +33,29 @@ public class Section {
     private String title; // the title, taken from the yaml header
     private String name; // the base filename
     private String author;
+    private String bio = "TODO"; // the author bio
     private int page = 0; // page in paperback to toc
     private Date date; // when/if should be published to website
     private int copyright; // the year the story was copyrighted
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
-    private FootnoteStore footnoteStore = FootnoteStore.create();
 
-    public <T> void addFootnote(String oridinal, Stream<T> content) {
-        List<T> collect = content.collect(Collectors.toList());
-        footnoteStore.add(oridinal, collect);
+    public boolean isType(Type type) {
+        return this.type.equals(type);
     }
 
-    public Optional<Map<String, List<?>>> getFootnotes(Class<?> aClass) {
-        return Optional.ofNullable(footnoteStore.get(aClass));
+    public enum Type {
+
+        plate,
+        title,
+        toc,
+        markdown,
+        story,
+        ;
+
+        public boolean isA(Section section) {
+            return section.getType().equals(this);
+        }
+
     }
 }

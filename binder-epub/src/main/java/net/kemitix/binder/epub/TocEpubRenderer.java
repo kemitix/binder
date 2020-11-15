@@ -6,6 +6,7 @@ import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
+import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -32,8 +33,8 @@ public class TocEpubRenderer
     }
 
     @Override
-    public boolean canHandle(String type) {
-        return "toc".equals(type);
+    public boolean canHandle(Section section) {
+        return section.isType(Section.Type.toc);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class TocEpubRenderer
                 .filter(HtmlSection::isEpub)
                 .filter(HtmlSection::isToc)
                 .flatMap(section ->
-                        findRenderer(section.getType(), tocItemRenderers)
+                        findRenderer(section, tocItemRenderers)
                                 .render(section))
                 .forEach(render -> html.append(render));
         html.append("</ul>");

@@ -1,10 +1,12 @@
 package net.kemitix.binder.epub.mdconvert;
 
 import coza.opencollab.epub.creator.model.Content;
+import net.kemitix.binder.spi.FootnoteStore;
 import net.kemitix.binder.spi.HtmlSection;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -14,9 +16,16 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class FootnoteGenerator {
 
+    private final FootnoteStore<String> footnoteStore;
+
+    @Inject
+    public FootnoteGenerator(@Epub FootnoteStore<String> footnoteStore) {
+        this.footnoteStore = footnoteStore;
+    }
+
     public Stream<Content> createFootnotes(HtmlSection section) {
-        return section.getFootnotes(String.class).stream()
-                .flatMap(store -> store.entrySet().stream())
+        return footnoteStore
+                .streamByName(section.getName())
                 .map(Tuple::of)
                 .map(t -> t.mapFirst(backlink(section.getName())))
                 .map(t -> t.mapSecond(l -> (List<String>)l))

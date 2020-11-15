@@ -13,15 +13,15 @@ public interface MarkdownConverter<T> {
 
     Stream<NodeHandler<T>> getNodeHandlers();
 
-    default Stream<T> convert(Section section) {
-        Document document = getParser().parse(section.getMarkdown());
-        Stream<T> accepted = accept(document, section);
+    default Stream<T> convert(Context context, String markdown) {
+        Document document = getParser().parse(markdown);
+        Stream<T> accepted = accept(document, context);
         return accepted;
     }
 
-    default Stream<T> accept(Node node, Section section) {
+    default Stream<T> accept(Node node, Context context) {
         NodeHandler<T> handler = findHandler(node.getClass());
-        Stream<T> objects = handler.handle(node, this, section);
+        Stream<T> objects = handler.handle(node, this, context);
         return objects;
     }
 
@@ -41,11 +41,12 @@ public interface MarkdownConverter<T> {
                     }
 
                     @Override
-                    public Stream<T> handle(Node node, MarkdownConverter<T> converter, Section section) {
+                    public Stream<T> handle(Node node, MarkdownConverter<T> converter, Context context) {
                         throw new RuntimeException(
                                 "Unhandled Markdown Type: %s".formatted(
                                         aClass.getSimpleName()));
                     }
                 });
     }
+
 }
