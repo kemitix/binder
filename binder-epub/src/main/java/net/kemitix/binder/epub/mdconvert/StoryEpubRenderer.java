@@ -10,7 +10,7 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,25 +37,49 @@ public class StoryEpubRenderer
 
     @Override
     public Stream<Content> render(HtmlSection section) {
-        String contents =
-                converter.convert(
-                        Context.create(section),
-                        section.getMarkdown()
-                ).collect(Collectors.joining());
+        Stream<String> contents =
+                Stream.of(
+                        converter.convert(
+                                Context.create(section),
+                                section.getMarkdown()
+                        ),
+                        aboutAuthor(section)
+                ).flatMap(Function.identity());
 
-        //TODO add previously published section if required
-        //TODO add about the Author sections
-        //contents.addAll(//TODO);
 
-        byte[] content = contents.getBytes(StandardCharsets.UTF_8);
+        byte[] content = contents.collect(Collectors.joining())
+                .getBytes(StandardCharsets.UTF_8);
         return Stream.concat(
-                createContent(section, content),
+                Stream.of(new Content(section.getHref(), content)),
                 footnoteGenerator.createFootnotes(section)
         );
     }
 
-    private Stream<Content> createContent(HtmlSection source, byte[] content) {
-        return Stream.of(new Content(source.getHref(), content));
+    private Stream<String> aboutAuthor(Section section) {
+        String authorBio =
+                converter.convert(
+                        Context.create(),
+                        section.getBio()
+                ).collect(Collectors.joining());
+        return Stream.of(
+                """
+                        <p>&nbsp;</p>
+                        <blockquote>
+                          <p>
+                            <em>&copy; %4d %s</em>
+                          </p>
+                        </blockquote>
+                        <p>&nbsp;</p>
+                        <hr/>
+                        <p>&nbsp;</p>
+                        <p style="text-align: center;">
+                          About the Author
+                        </p>
+                        """
+                        .formatted(
+                                section.getCopyright(),
+                                section.getAuthor()
+                        ), authorBio);
     }
 
 }
