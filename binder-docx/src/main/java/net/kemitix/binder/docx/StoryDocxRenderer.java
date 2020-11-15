@@ -48,22 +48,26 @@ public class StoryDocxRenderer
     @Override
     public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
+        P page = docx.breakToOddPage();
+        docx.addDefaultPageFooter(docx.getSectPr(page), "PAGE FOOTER");
+        contents.add(page);
+
+        //TODO set odd page header - is this set for document?
+        //TODO set even page header
+        //contents.add(docx.evenPageHeader(section.getTitle()));
+        //TODO set all page footer? - is this set for document?
+
         contents.addAll(docx.leaders());
         addTitle(section, contents);
         contents.add(docx.textParagraphCentered(section.getAuthor()));
         contents.addAll(docx.leaders());
-
         Stream<Object> objects =
                 converter.convert(
                         Context.create(section),
                         section.getMarkdown()
                 );
-
         contents.addAll(objects.collect(Collectors.toList()));
-
         contents.addAll(aboutAuthor(section));
-
-        contents.add(docx.breakToOddPage());
         return Stream.of(new DocxContent(contents));
     }
 

@@ -47,6 +47,7 @@ public class TocDocxRenderer
     public Stream<DocxContent> render(Section section) {
         log.info("TOC: %s".formatted(section.getName()));
         List<Object> content = new ArrayList<>();
+        content.add(docx.breakToOddPage());
         content.add(docx.textParagraph(""));
         content.add(
                 docx.drawings(
@@ -61,7 +62,6 @@ public class TocDocxRenderer
                         findRenderer(s, tocItemRenderers)
                                 .render(s))
                 .forEach(content::add);
-        content.add(docx.breakToOddPage());
         return Stream.of(new DocxContent(content));
     }
 

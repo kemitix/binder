@@ -5,15 +5,22 @@ import lombok.SneakyThrows;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.jaxb.Context;
+import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.CTFootnotes;
 import org.docx4j.wml.CTFtnEdn;
 import org.docx4j.wml.CTFtnEdnRef;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.Drawing;
+import org.docx4j.wml.FooterReference;
+import org.docx4j.wml.Ftr;
+import org.docx4j.wml.Hdr;
+import org.docx4j.wml.HdrFtrRef;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.Jc;
 import org.docx4j.wml.JcEnumeration;
@@ -64,6 +71,31 @@ public class DocxFacade {
 
     public P breakToOddPage() {
         return p(ppr(sectPr(sectPrType("oddPage"))));
+    }
+
+    public SectPr getSectPr(P p) {
+        return p.getPPr().getSectPr();
+    }
+
+    @SneakyThrows
+    public void addDefaultPageFooter(
+            SectPr sectPr,
+            String text
+    ) {
+        FooterPart footerPart = new FooterPart();
+        Relationship relationship = mainDocumentPart().addTargetPart(footerPart);
+        Ftr ftr = factory.createFtr();
+        footerPart.setJaxbElement(ftr);
+        ftr.getContent()
+                .add(textParagraphCentered(text));
+        FooterReference footerReference = factory.createFooterReference();
+        footerReference.setId(relationship.getId());
+        footerReference.setType(HdrFtrRef.DEFAULT);
+        sectPr.getEGHdrFtrReferences().add(footerReference);
+    }
+
+    private MainDocumentPart mainDocumentPart() {
+        return mlPackage.getMainDocumentPart();
     }
 
     public P tocItem(String pageNumber, String title) {
@@ -193,6 +225,12 @@ public class DocxFacade {
 
     public P textParagraphCentered(String text) {
         return pCentered(r(t(text)));
+    }
+
+    public P p(PPr pPr) {
+        P p = factory.createP();
+        p.setPPr(pPr);
+        return p;
     }
 
     public P p(Object... o) {
@@ -405,14 +443,13 @@ public class DocxFacade {
     }
 
     private FootnotesPart getFootnotesPart() {
-        MainDocumentPart mainDocumentPart = mlPackage.getMainDocumentPart();
         return Objects.requireNonNullElseGet(
-                mainDocumentPart.getFootnotesPart(),
+                mainDocumentPart().getFootnotesPart(),
                 () -> {
                     try {
                         FootnotesPart part = new FootnotesPart();
                         part.setContents(initFootnotes());
-                        mainDocumentPart.addTargetPart(part);
+                        mainDocumentPart().addTargetPart(part);
                         return part;
                     } catch (InvalidFormatException e) {
                         throw new RuntimeException(e);
@@ -516,4 +553,21 @@ public class DocxFacade {
         p.setPPr(pPr);
         return p;
     }
+
+    public Hdr createPageHeader(String title) {
+        PPr pPr = pPr();
+        pPr.setPStyle(pStyle("Header"));
+        pPr.setJc(jc(JcEnumeration.CENTER));
+
+        P p = p(r(t(title)));
+        p.setPPr(pPr);
+
+        Hdr hdr = factory.createHdr();
+        hdr.getContent().add(p);
+
+        
+
+        return hdr;
+    }
+
 }

@@ -4,23 +4,27 @@ import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.jaxb.Context;
+import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.NumberingDefinitionsPart;
+import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.CTVerticalAlignRun;
+import org.docx4j.wml.FooterReference;
+import org.docx4j.wml.Ftr;
+import org.docx4j.wml.HdrFtrRef;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.PPr;
 import org.docx4j.wml.PPrBase;
-import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.RFonts;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.STVerticalAlignRun;
+import org.docx4j.wml.SectPr;
 import org.docx4j.wml.Style;
-import org.docx4j.wml.Styles;
-import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -31,6 +35,7 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Log
