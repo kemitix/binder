@@ -1,9 +1,10 @@
-package net.kemitix.binder.docx.mdconvert;
+package net.kemitix.binder.docx;
 
 import net.kemitix.binder.docx.DocxContent;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.docx.DocxImageFacade;
 import net.kemitix.binder.docx.DocxRenderer;
+import net.kemitix.binder.docx.mdconvert.Docx;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
