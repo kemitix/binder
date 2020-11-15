@@ -83,10 +83,10 @@ public class DocxManuscript {
     @SneakyThrows
     private void styleDefinitionsPart(MainDocumentPart mainDocument) {
         var part = mainDocument.getStyleDefinitionsPart(true);
-        Styles styles = part.getContents();
-        styles.getStyle().add(styleFootnote());
-        styles.getStyle().add(styleFootnoteAnchor());
-        styles.getStyle().add(styleFootnoteCharacters());
+        List<Style> styles = part.getContents().getStyle();
+        styles.add(styleFootnote());
+        styles.add(styleFootnoteAnchor());
+        styles.add(styleFootnoteCharacters());
     }
 
     // The character that appears in the body of the text indicating
