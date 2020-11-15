@@ -2,7 +2,6 @@ package net.kemitix.binder.docx;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.val;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.jaxb.Context;
@@ -51,8 +50,7 @@ public class DocxFacade {
     @Getter
     private final WordprocessingMLPackage mlPackage;
 
-    private final ObjectFactory objectFactory =
-            Context.getWmlObjectFactory();
+    private final ObjectFactory factory = Context.getWmlObjectFactory();
     private final AtomicInteger myFootnoteRef = new AtomicInteger(0);
 
     @Inject
@@ -91,7 +89,7 @@ public class DocxFacade {
             @Nullable Integer right,
             int hanging
     ) {
-        PPrBase.Ind ind = objectFactory.createPPrBaseInd();
+        PPrBase.Ind ind = factory.createPPrBaseInd();
         if (left != null) ind.setLeft(BigInteger.valueOf(left));
         if (right != null) ind.setRight(BigInteger.valueOf(right));
         ind.setHanging(BigInteger.valueOf(hanging));
@@ -99,7 +97,7 @@ public class DocxFacade {
     }
 
     private Tabs tabs(CTTabStop... positions) {
-        Tabs tabs = objectFactory.createTabs();
+        Tabs tabs = factory.createTabs();
         tabs.getTab().addAll(Arrays.asList(positions));
         return tabs;
     }
@@ -109,21 +107,21 @@ public class DocxFacade {
     }
 
     private CTTabStop tabLeft(int position) {
-        CTTabStop tabStop = objectFactory.createCTTabStop();
+        CTTabStop tabStop = factory.createCTTabStop();
         tabStop.setPos(BigInteger.valueOf(position));
         tabStop.setVal(STTabJc.LEFT);
         return tabStop;
     }
 
     private CTTabStop tabRight(int position) {
-        CTTabStop tabStop = objectFactory.createCTTabStop();
+        CTTabStop tabStop = factory.createCTTabStop();
         tabStop.setPos(BigInteger.valueOf(position));
         tabStop.setVal(STTabJc.RIGHT);
         return tabStop;
     }
 
     private Object tab() {
-        return objectFactory.createRTab();
+        return factory.createRTab();
     }
 
     private PPr ppr(SectPr sectPr) {
@@ -133,7 +131,7 @@ public class DocxFacade {
     }
 
     private PPr pPr() {
-        return objectFactory.createPPr();
+        return factory.createPPr();
     }
 
     private PPr ppr(Jc jc) {
@@ -150,7 +148,7 @@ public class DocxFacade {
     }
 
     private SectPr sectPr(SectPr.Type type) {
-        SectPr sectPr = objectFactory.createSectPr();
+        SectPr sectPr = factory.createSectPr();
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
         sectPr.setType(type);
@@ -158,7 +156,7 @@ public class DocxFacade {
     }
 
     private SectPr.PgMar pgMar() {
-        SectPr.PgMar pgMar = objectFactory.createSectPrPgMar();
+        SectPr.PgMar pgMar = factory.createSectPrPgMar();
         BigInteger sides = BigInteger.valueOf(
                 UnitsOfMeasurement.inchToTwip(
                         metadata.getPaperbackMarginSides()));
@@ -173,7 +171,7 @@ public class DocxFacade {
     }
 
     private SectPr.PgSz pgSz() {
-        SectPr.PgSz pgSz = objectFactory.createSectPrPgSz();
+        SectPr.PgSz pgSz = factory.createSectPrPgSz();
         pgSz.setH(BigInteger.valueOf(
                 UnitsOfMeasurement.inchToTwip(
                         metadata.getPaperbackPageHeightInches())));
@@ -198,32 +196,32 @@ public class DocxFacade {
     }
 
     public P p(Object... o) {
-        P p = objectFactory.createP();
+        P p = factory.createP();
         p.getContent().addAll(Arrays.asList(o));
         return p;
     }
 
     private P pCentered(Object... o) {
-        P p = objectFactory.createP();
+        P p = factory.createP();
         p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
         p.getContent().addAll(Arrays.asList(o));
         return p;
     }
 
     private Jc jc(JcEnumeration value) {
-        Jc jc = objectFactory.createJc();
+        Jc jc = factory.createJc();
         jc.setVal(value);
         return jc;
     }
 
     public R r(Object... o) {
-        R r = objectFactory.createR();
+        R r = factory.createR();
         r.getContent().addAll(Arrays.asList(o));
         return r;
     }
 
     public Text t(String value) {
-        Text text = objectFactory.createText();
+        Text text = factory.createText();
         text.setValue(value);
         text.setSpace("preserve");// contains significant whitespace
         return text;
@@ -245,8 +243,8 @@ public class DocxFacade {
     }
 
     public Object italic(Object... content) {
-        RPr rPr = objectFactory.createRPr();
-        rPr.setI(objectFactory.createBooleanDefaultTrue());
+        RPr rPr = factory.createRPr();
+        rPr.setI(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
         o.add(rPr);
         o.addAll(Arrays.asList(content));
@@ -254,8 +252,8 @@ public class DocxFacade {
     }
 
     public Object bold(Object... content) {
-        RPr rPr = objectFactory.createRPr();
-        rPr.setB(objectFactory.createBooleanDefaultTrue());
+        RPr rPr = factory.createRPr();
+        rPr.setB(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
         o.add(rPr);
         o.addAll(Arrays.asList(content));
@@ -286,14 +284,14 @@ public class DocxFacade {
         PPrBase.PStyle pStyle = pStyle("Normal");
         pPr.setPStyle(pStyle);
 
-        HpsMeasure sz = objectFactory.createHpsMeasure();
+        HpsMeasure sz = factory.createHpsMeasure();
         sz.setVal(BigInteger.valueOf(szForLevel(level)));
 
-        RPr rPr = objectFactory.createRPr();
+        RPr rPr = factory.createRPr();
         rPr.setSz(sz);
         rPr.setSzCs(sz);
 
-        ParaRPr paraRPr = objectFactory.createParaRPr();
+        ParaRPr paraRPr = factory.createParaRPr();
         paraRPr.setSz(sz);
         paraRPr.setSzCs(sz);
         pPr.setRPr(paraRPr);
@@ -336,21 +334,21 @@ public class DocxFacade {
         PPr pPr = pPr();
         pPr.setPStyle(pStyle("Normal"));
 
-        PPrBase.NumPr.Ilvl ilvl = objectFactory.createPPrBaseNumPrIlvl();
+        PPrBase.NumPr.Ilvl ilvl = factory.createPPrBaseNumPrIlvl();
         ilvl.setVal(BigInteger.ZERO);
 
-        PPrBase.NumPr numPr = objectFactory.createPPrBaseNumPr();
+        PPrBase.NumPr numPr = factory.createPPrBaseNumPr();
         numPr.setIlvl(ilvl);
 
-        PPrBase.NumPr.NumId numId = objectFactory.createPPrBaseNumPrNumId();
+        PPrBase.NumPr.NumId numId = factory.createPPrBaseNumPrNumId();
         numId.setVal(BigInteger.TWO);
         numPr.setNumId(numId);
 
         pPr.setNumPr(numPr);
 
-        pPr.setRPr(objectFactory.createParaRPr());
+        pPr.setRPr(factory.createParaRPr());
 
-        RPr rPr = objectFactory.createRPr();
+        RPr rPr = factory.createRPr();
         return
                 p(
                         pPr,
@@ -381,14 +379,14 @@ public class DocxFacade {
         List<CTFtnEdn> footnotes = contents.getFootnote();
         CTFtnEdn ctFtnEdn = getNextCtFtnEdn(footnotes);
         ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(footnoteBody)));
-        CTFtnEdnRef ctFtnEdnRef = objectFactory.createCTFtnEdnRef();
+        CTFtnEdnRef ctFtnEdnRef = factory.createCTFtnEdnRef();
         ctFtnEdnRef.setId(ctFtnEdn.getId());
 
-        RPr rPr = objectFactory.createRPr();
+        RPr rPr = factory.createRPr();
         rPr.setRStyle(rStyle("FootnoteAnchor"));
         return r(
                 rPr,
-                objectFactory.createRFootnoteReference(ctFtnEdnRef),
+                factory.createRFootnoteReference(ctFtnEdnRef),
                 t(ctFtnEdn.getId().toString())
         );
     }
@@ -399,7 +397,7 @@ public class DocxFacade {
                 .filter(o -> o.getId().equals(id))
                 .findFirst()
                 .orElseGet(() -> {
-                    CTFtnEdn edn = objectFactory.createCTFtnEdn();
+                    CTFtnEdn edn = factory.createCTFtnEdn();
                     edn.setId(id);
                     footnotes.add(edn);
                     return edn;
@@ -424,7 +422,7 @@ public class DocxFacade {
     }
 
     private CTFootnotes initFootnotes() {
-        CTFootnotes ctFootnotes = objectFactory.createCTFootnotes();
+        CTFootnotes ctFootnotes = factory.createCTFootnotes();
         List<CTFtnEdn> footnotes = ctFootnotes.getFootnote();
 
         //    <w:footnote w:id="0" w:type="separator">
@@ -436,7 +434,7 @@ public class DocxFacade {
         //    </w:footnote>
         CTFtnEdn separator = getNextCtFtnEdn(footnotes);
         separator.setType(STFtnEdn.SEPARATOR);
-        separator.getContent().add(p(r(objectFactory.createRSeparator())));
+        separator.getContent().add(p(r(factory.createRSeparator())));
 
 //        //    <w:footnote w:id="1" w:type="continuationSeparator">
 //        //        <w:p>
@@ -476,14 +474,14 @@ public class DocxFacade {
         PPr pPr = pPr();
         pPr.setPStyle(pStyle("Footnote"));
 
-        RPr rPr = objectFactory.createRPr();
+        RPr rPr = factory.createRPr();
         rPr.setRStyle(rStyle("FootnoteCharacters"));
 
         List<Object> objects = new ArrayList<>();
         objects.add(pPr);
         objects.add(r(
                 rPr,
-                objectFactory.createRFootnoteRef()
+                factory.createRFootnoteRef()
         ));
         objects.addAll(
                 footnoteParas.stream()
@@ -493,28 +491,28 @@ public class DocxFacade {
     }
 
     private PPrBase.PStyle pStyle(String val) {
-        var pStyle = objectFactory.createPPrBasePStyle();
+        var pStyle = factory.createPPrBasePStyle();
         pStyle.setVal(val);
         return pStyle;
     }
 
     private RStyle rStyle(String val) {
-        var rStyle = objectFactory.createRStyle();
+        var rStyle = factory.createRStyle();
         rStyle.setVal(val);
         return rStyle;
     }
 
     //p/pPr/keepNext[val="true"]
     public Object keepWithNext(P p) {
-        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), objectFactory::createPPr);
-        pPr.setKeepNext(objectFactory.createBooleanDefaultTrue());
+        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), factory::createPPr);
+        pPr.setKeepNext(factory.createBooleanDefaultTrue());
         p.setPPr(pPr);
         return p;
     }
 
     public Object keepTogether(P p) {
-        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), objectFactory::createPPr);
-        pPr.setKeepLines(objectFactory.createBooleanDefaultTrue());
+        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), factory::createPPr);
+        pPr.setKeepLines(factory.createBooleanDefaultTrue());
         p.setPPr(pPr);
         return p;
     }
