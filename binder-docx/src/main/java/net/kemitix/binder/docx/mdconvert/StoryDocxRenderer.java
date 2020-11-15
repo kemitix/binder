@@ -8,6 +8,7 @@ import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
+import org.docx4j.wml.P;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -67,6 +68,13 @@ public class StoryDocxRenderer
 
     private Collection<?> aboutAuthor(Section section) {
         Object[] convert = converter.convert(Context.create(), section.getBio()).toArray();
+        if (convert.length > 1) {
+            throw new RuntimeException("More than one paragraph in Author Bio");
+        }
+        if (!(convert[0] instanceof P)) {
+            throw new RuntimeException("Author Bio markdown should be a paragraph");
+        }
+        P authorBio = (P) convert[0];
         return Arrays.asList(
                 docx.keepWithNext(docx.p()),
                 docx.keepWithNext(docx.textParagraphCentered(
@@ -76,7 +84,7 @@ public class StoryDocxRenderer
                 docx.keepWithNext(docx.p()),
                 // TODO: history - if present
                 docx.keepWithNext(docx.textParagraphCentered("About the Author")),
-                docx.keepTogether(docx.p(convert))// convert is already and array containing a single P
+                docx.keepTogether(authorBio)
         );
     }
 
