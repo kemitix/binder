@@ -67,6 +67,9 @@ public class DocxFacade {
         this.metadata = metadata;
 
         mlPackage = WordprocessingMLPackage.createPackage();
+        SectPr sectPr = mlPackage.getDocumentModel().getSections().get(0).getSectPr();
+        sectPr.setPgSz(pgSz());
+        sectPr.setPgMar(pgMar());
     }
 
     public P breakToOddPage() {
