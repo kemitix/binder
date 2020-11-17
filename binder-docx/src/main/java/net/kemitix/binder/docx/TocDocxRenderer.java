@@ -45,23 +45,23 @@ public class TocDocxRenderer
     @Override
     public Stream<DocxContent> render(Section section) {
         log.info("TOC: %s".formatted(section.getName()));
-        List<Object> content = new ArrayList<>();
-        content.add(docx.startNewSection(section.getName()));
-        content.add(docx.textParagraph(""));
-        content.add(
+        List<Object> contents = new ArrayList<>();
+        contents.add(docx.textParagraph(""));
+        contents.add(
                 docx.drawings(
                         docxImage.textImages(
                                 "Contents",
                                 FontSize.of(240))));
-        content.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
         htmlManuscript.sections()
                 .filter(Section::isDocx)
                 .filter(Section::isToc)
                 .flatMap(s ->
                         findRenderer(s, tocItemRenderers)
                                 .render(s))
-                .forEach(content::add);
-        return Stream.of(new DocxContent(content));
+                .forEach(contents::add);
+        contents.add(docx.finaliseTitlePage(section.getName()));
+        return Stream.of(new DocxContent(contents));
     }
 
 }

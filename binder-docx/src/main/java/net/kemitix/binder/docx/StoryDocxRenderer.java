@@ -44,7 +44,6 @@ public class StoryDocxRenderer
     @Override
     public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
-        contents.add(docx.startNewSection(section.getName()));
 
         //TODO set odd page header - is this set for document?
         //TODO set even page header
@@ -62,6 +61,7 @@ public class StoryDocxRenderer
                 );
         contents.addAll(objects.collect(Collectors.toList()));
         contents.addAll(aboutAuthor(section));
+        contents.add(docx.finaliseSection(section.getName(), section.getTitle()));
         return Stream.of(new DocxContent(contents));
     }
 

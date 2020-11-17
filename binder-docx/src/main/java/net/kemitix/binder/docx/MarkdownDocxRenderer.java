@@ -41,13 +41,13 @@ public class MarkdownDocxRenderer
     @Override
     public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
-        contents.add(docx.startNewSection(section.getName()));
         addTitle(section, contents);
         contents.addAll(
                 converter.convert(
                         Context.create(section),
                         section.getMarkdown()
                 ).collect(Collectors.toList()));
+        contents.add(docx.finaliseTitlePage(section.getName()));
         return Stream.of(new DocxContent(contents));
     }
 

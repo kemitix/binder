@@ -4,12 +4,14 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
+import org.docx4j.convert.out.flatOpcXml.FlatOpcXmlCreator;
 import org.docx4j.jaxb.Context;
-import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.CTFootnotes;
@@ -17,10 +19,12 @@ import org.docx4j.wml.CTFtnEdn;
 import org.docx4j.wml.CTFtnEdnRef;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.Drawing;
+import org.docx4j.wml.FldChar;
 import org.docx4j.wml.FooterReference;
 import org.docx4j.wml.Ftr;
 import org.docx4j.wml.Hdr;
 import org.docx4j.wml.HdrFtrRef;
+import org.docx4j.wml.HeaderReference;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.Jc;
 import org.docx4j.wml.JcEnumeration;
@@ -32,6 +36,7 @@ import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.RStyle;
+import org.docx4j.wml.STFldCharType;
 import org.docx4j.wml.STFtnEdn;
 import org.docx4j.wml.STTabJc;
 import org.docx4j.wml.SectPr;
@@ -41,6 +46,9 @@ import org.docx4j.wml.Text;
 import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.xml.bind.JAXBElement;
+import java.io.File;
+import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,27 +80,74 @@ public class DocxFacade {
         sectPr.setPgMar(pgMar());
     }
 
-    public P startNewSection(String name) {
+    public P finaliseTitlePage(String name) {
         SectPr sectPr = sectPr(sectPrType("oddPage"));
-        //TODO - add even page header with the value of name as its contents
+        addDefaultPageHeader(sectPr, name, p());
+        addDefaultPageFooter(sectPr, name, p());
         return p(ppr(sectPr));
     }
 
-    @SneakyThrows
-    public void addDefaultPageFooter(
-            SectPr sectPr,
-            String text
-    ) {
-        FooterPart footerPart = new FooterPart();
-        Relationship relationship = mainDocumentPart().addTargetPart(footerPart);
-        Ftr ftr = factory.createFtr();
-        footerPart.setJaxbElement(ftr);
-        ftr.getContent()
-                .add(textParagraphCentered(text));
-        FooterReference footerReference = factory.createFooterReference();
-        footerReference.setId(relationship.getId());
-        footerReference.setType(HdrFtrRef.DEFAULT);
-        sectPr.getEGHdrFtrReferences().add(footerReference);
+    public P finaliseSection(String name, String title) {
+        SectPr sectPr = sectPr(sectPrType("oddPage"));
+
+        addEvenPageHeader(sectPr, name, textParagraphCentered(title));
+        addDefaultPageHeader(sectPr, name,
+                textParagraphCentered("%s Issue %s"
+                        .formatted(
+                                metadata.getTitle(),
+                                metadata.getIssue())));
+
+        P pageNumberPlaceholder = pCentered(pageNumberPlaceholder());
+        addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
+        addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
+        return p(ppr(sectPr));
+    }
+
+    public R[] pageNumberPlaceholder() {
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:fldChar w:fldCharType="begin"/>
+        //    </w:r>
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:instrText> PAGE </w:instrText>
+        //    </w:r>
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:fldChar w:fldCharType="separate"/>
+        //    </w:r>
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:t>2</w:t>
+        //    </w:r>
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:fldChar w:fldCharType="end"/>
+        //    </w:r>
+        FldChar begin = factory.createFldChar();
+        begin.setFldCharType(STFldCharType.BEGIN);
+
+        return new R[]{
+                r(rPr(), fldChar(STFldCharType.BEGIN)),
+                r(rPr(), instrText(" PAGE ")),
+                r(rPr(), fldChar(STFldCharType.SEPARATE)),
+                r(rPr(), t("2")),
+                r(rPr(), fldChar(STFldCharType.END))
+        };
+    }
+
+    private JAXBElement<Text> instrText(String text) {
+        return factory.createRInstrText(t(text));
+    }
+
+    private RPr rPr() {
+        return factory.createRPr();
+    }
+
+    private FldChar fldChar(STFldCharType type) {
+        FldChar fldChar = factory.createFldChar();
+        fldChar.setFldCharType(type);
+        return fldChar;
     }
 
     private MainDocumentPart mainDocumentPart() {
@@ -241,6 +296,13 @@ public class DocxFacade {
     }
 
     private P pCentered(Object... o) {
+        P p = factory.createP();
+        p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
+        p.getContent().addAll(Arrays.asList(o));
+        return p;
+    }
+
+    private P pCentered(R[] o) {
         P p = factory.createP();
         p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
         p.getContent().addAll(Arrays.asList(o));
@@ -555,20 +617,110 @@ public class DocxFacade {
         return p;
     }
 
-    public Hdr createPageHeader(String title) {
-        PPr pPr = pPr();
-        pPr.setPStyle(pStyle("Header"));
-        pPr.setJc(jc(JcEnumeration.CENTER));
+    @SneakyThrows
+    public void addDefaultPageFooter(
+            SectPr sectPr,
+            String name,
+            P pageFooter
+    ) {
+        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, pageFooter);
+    }
 
-        P p = p(r(t(title)));
-        p.setPPr(pPr);
+    @SneakyThrows
+    public void addEvenPageFooter(
+            SectPr sectPr,
+            String name,
+            P pageFooter
+    ) {
+        addPageFooter(sectPr, name, HdrFtrRef.EVEN, pageFooter);
+    }
 
+    @SneakyThrows
+    public void addFirstPageFooter(
+            SectPr sectPr,
+            String name,
+            P pageFooter
+    ) {
+        addPageFooter(sectPr, name, HdrFtrRef.FIRST, pageFooter);
+    }
+
+    @SneakyThrows
+    public void addDefaultPageHeader(
+            SectPr sectPr,
+            String name,
+            P pageHeader
+    ) {
+        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, pageHeader);
+    }
+
+    @SneakyThrows
+    public void addEvenPageHeader(
+            SectPr sectPr,
+            String name,
+            P pageHeader
+    ) {
+        addPageHeader(sectPr, name, HdrFtrRef.EVEN, pageHeader);
+    }
+
+    @SneakyThrows
+    public void addFirstPageHeader(
+            SectPr sectPr,
+            String name,
+            P pageHeader
+    ) {
+        addPageHeader(sectPr, name, HdrFtrRef.FIRST, pageHeader);
+    }
+
+    @SneakyThrows
+    public void addPageFooter(
+            SectPr sectPr,
+            String name,
+            HdrFtrRef hdrFtrRef,
+            P footerContent
+    ) {
+        FooterPart footerPart = new FooterPart();
+        PartName partName = new PartName("/word/footer-%s-%s.xml".formatted(
+                hdrFtrRef.value(), name));
+        footerPart.setPartName(partName);
+        Relationship relationship = mainDocumentPart().addTargetPart(footerPart);
+        Ftr ftr = factory.createFtr();
+        footerPart.setJaxbElement(ftr);
+        ftr.getContent().add(p());
+        ftr.getContent().add(footerContent);
+        FooterReference footerReference = factory.createFooterReference();
+        footerReference.setId(relationship.getId());
+        footerReference.setType(hdrFtrRef);
+        sectPr.getEGHdrFtrReferences().add(footerReference);
+    }
+
+    @SneakyThrows
+    public void addPageHeader(
+            SectPr sectPr,
+            String name,
+            HdrFtrRef hdrFtrRef,
+            P headerContent
+    ) {
+        HeaderPart headerPart = new HeaderPart();
+        PartName partName = new PartName("/word/header-%s-%s.xml".formatted(
+                hdrFtrRef.value(), name));
+        headerPart.setPartName(partName);
+        Relationship relationship = mainDocumentPart().addTargetPart(headerPart);
         Hdr hdr = factory.createHdr();
-        hdr.getContent().add(p);
+        headerPart.setJaxbElement(hdr);
+        hdr.getContent().add(headerContent);
+        hdr.getContent().add(p());
+        HeaderReference headerReference = factory.createHeaderReference();
+        headerReference.setId(relationship.getId());
+        headerReference.setType(hdrFtrRef);
+        sectPr.getEGHdrFtrReferences().add(headerReference);
+    }
 
-        
-
-        return hdr;
+    @SneakyThrows
+    public void dump() {
+        FlatOpcXmlCreator worker = new FlatOpcXmlCreator(mlPackage);
+        File file = new File("binder-pkg.xml");
+        worker.marshal(new PrintStream(file));
+        System.out.println("Wrote: " + file.getAbsolutePath());
     }
 
 }

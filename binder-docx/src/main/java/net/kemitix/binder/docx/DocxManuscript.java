@@ -8,10 +8,13 @@ import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.DocumentSettingsPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.NumberingDefinitionsPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.WebSettingsPart;
 import org.docx4j.relationships.Relationship;
+import org.docx4j.wml.CTSettings;
 import org.docx4j.wml.CTVerticalAlignRun;
 import org.docx4j.wml.FooterReference;
 import org.docx4j.wml.Ftr;
@@ -81,8 +84,17 @@ public class DocxManuscript {
         var mainDocument = wordMLPackage.getMainDocumentPart();
         mainDocument.addTargetPart(numberingDefinitionPart());
         styleDefinitionsPart(mainDocument);
+        enabledEvenAndOddHeaders(mainDocument);
         mainDocument.getContent().addAll(getContents());
         return wordMLPackage;
+    }
+
+    // headers: add "<w:evenAndOddHeaders/>" to settings.xml
+    private void enabledEvenAndOddHeaders(MainDocumentPart mainDocument) {
+        mainDocument
+                .getDocumentSettingsPart()
+                .getJaxbElement()
+                .setEvenAndOddHeaders(factory.createBooleanDefaultTrue());
     }
 
     @SneakyThrows
