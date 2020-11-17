@@ -4,7 +4,6 @@ import lombok.extern.java.Log;
 import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlManuscript;
-import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -47,7 +46,7 @@ public class TocDocxRenderer
     public Stream<DocxContent> render(Section section) {
         log.info("TOC: %s".formatted(section.getName()));
         List<Object> content = new ArrayList<>();
-        content.add(docx.breakToOddPage());
+        content.add(docx.startNewSection(section.getName()));
         content.add(docx.textParagraph(""));
         content.add(
                 docx.drawings(

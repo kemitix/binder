@@ -1,9 +1,5 @@
 package net.kemitix.binder.docx;
 
-import net.kemitix.binder.docx.DocxContent;
-import net.kemitix.binder.docx.DocxFacade;
-import net.kemitix.binder.docx.DocxImageFacade;
-import net.kemitix.binder.docx.DocxRenderer;
 import net.kemitix.binder.docx.mdconvert.Docx;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
@@ -48,9 +44,7 @@ public class StoryDocxRenderer
     @Override
     public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
-        P page = docx.breakToOddPage();
-        docx.addDefaultPageFooter(docx.getSectPr(page), "PAGE FOOTER");
-        contents.add(page);
+        contents.add(docx.startNewSection(section.getName()));
 
         //TODO set odd page header - is this set for document?
         //TODO set even page header

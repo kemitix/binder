@@ -1,9 +1,5 @@
 package net.kemitix.binder.docx;
 
-import net.kemitix.binder.docx.DocxContent;
-import net.kemitix.binder.docx.DocxFacade;
-import net.kemitix.binder.docx.DocxImageFacade;
-import net.kemitix.binder.docx.DocxRenderer;
 import net.kemitix.binder.docx.mdconvert.Docx;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
@@ -45,7 +41,7 @@ public class MarkdownDocxRenderer
     @Override
     public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
-        contents.add(docx.breakToOddPage());
+        contents.add(docx.startNewSection(section.getName()));
         addTitle(section, contents);
         contents.addAll(
                 converter.convert(

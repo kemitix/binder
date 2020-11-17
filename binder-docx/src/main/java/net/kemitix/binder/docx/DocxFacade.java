@@ -72,12 +72,10 @@ public class DocxFacade {
         sectPr.setPgMar(pgMar());
     }
 
-    public P breakToOddPage() {
-        return p(ppr(sectPr(sectPrType("oddPage"))));
-    }
-
-    public SectPr getSectPr(P p) {
-        return p.getPPr().getSectPr();
+    public P startNewSection(String name) {
+        SectPr sectPr = sectPr(sectPrType("oddPage"));
+        //TODO - add even page header with the value of name as its contents
+        return p(ppr(sectPr));
     }
 
     @SneakyThrows
