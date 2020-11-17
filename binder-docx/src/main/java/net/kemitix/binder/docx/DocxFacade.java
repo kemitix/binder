@@ -135,7 +135,7 @@ public class DocxFacade {
         return tabs;
     }
 
-    private Object tabDefinition(Tabs tabs, PPrBase.Ind tabIndent) {
+    private PPr tabDefinition(Tabs tabs, PPrBase.Ind tabIndent) {
         return ppr(tabs, tabIndent);
     }
 
@@ -153,7 +153,7 @@ public class DocxFacade {
         return tabStop;
     }
 
-    private Object tab() {
+    private R.Tab tab() {
         return factory.createRTab();
     }
 
@@ -173,7 +173,7 @@ public class DocxFacade {
         return pPr;
     }
 
-    private Object ppr(Tabs tabs, PPrBase.Ind tabIndent) {
+    private PPr ppr(Tabs tabs, PPrBase.Ind tabIndent) {
         PPr pPr = pPr();
         pPr.setTabs(tabs);
         pPr.setInd(tabIndent);
@@ -281,7 +281,7 @@ public class DocxFacade {
         );
     }
 
-    public Object italic(Object... content) {
+    public R italic(Object... content) {
         RPr rPr = factory.createRPr();
         rPr.setI(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
@@ -290,7 +290,7 @@ public class DocxFacade {
         return r(o.toArray());
     }
 
-    public Object bold(Object... content) {
+    public R bold(Object... content) {
         RPr rPr = factory.createRPr();
         rPr.setB(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
@@ -317,7 +317,7 @@ public class DocxFacade {
      *   </w:r>
      * </w:p>
      */
-    public Object heading(int level, String text) {
+    public P heading(int level, String text) {
         PPr pPr = pPr();
 
         PPrBase.PStyle pStyle = pStyle("Normal");
@@ -369,7 +369,7 @@ public class DocxFacade {
      *   </w:r>
      * </w:p>
      */
-    public Object bulletItem(String text) {
+    public P bulletItem(String text) {
         PPr pPr = pPr();
         pPr.setPStyle(pStyle("Normal"));
 
@@ -398,14 +398,14 @@ public class DocxFacade {
                 );
     }
 
-    public Object footnote(String ordinal, List<P> footnoteBody) {
+    public R footnote(String ordinal, List<P> footnoteBody) {
         //TODO add footnote bodies from FootnoteBlockDocxNodeHandler
         // this will provide styles footnotes
         return footnoteReference(footnoteBody);
     }
 
     @SneakyThrows
-    private Object footnoteReference(List<P> footnoteBody) {
+    private R footnoteReference(List<P> footnoteBody) {
         // in document.xml:
         //      <w:r>
         //        <w:rPr>
@@ -541,14 +541,14 @@ public class DocxFacade {
     }
 
     //p/pPr/keepNext[val="true"]
-    public Object keepWithNext(P p) {
+    public P keepWithNext(P p) {
         PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), factory::createPPr);
         pPr.setKeepNext(factory.createBooleanDefaultTrue());
         p.setPPr(pPr);
         return p;
     }
 
-    public Object keepTogether(P p) {
+    public P keepTogether(P p) {
         PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), factory::createPPr);
         pPr.setKeepLines(factory.createBooleanDefaultTrue());
         p.setPPr(pPr);
