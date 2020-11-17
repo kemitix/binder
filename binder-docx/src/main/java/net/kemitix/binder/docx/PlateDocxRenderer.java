@@ -52,7 +52,7 @@ public class PlateDocxRenderer
                                 section.getMarkdown(),
                                 FontSize.of(240))));
         contents.add(docx.textParagraph(""));
-        contents.add(docx.breakToOddPage());
+        contents.add(docx.finaliseTitlePage(section.getName()));
         return Stream.of(new DocxContent(contents));
     }
 

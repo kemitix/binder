@@ -2,19 +2,29 @@ package net.kemitix.binder.docx;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.val;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
+import org.docx4j.convert.out.flatOpcXml.FlatOpcXmlCreator;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.PartName;
+import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
+import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.CTFootnotes;
 import org.docx4j.wml.CTFtnEdn;
 import org.docx4j.wml.CTFtnEdnRef;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.Drawing;
+import org.docx4j.wml.FldChar;
+import org.docx4j.wml.FooterReference;
+import org.docx4j.wml.Ftr;
+import org.docx4j.wml.Hdr;
+import org.docx4j.wml.HdrFtrRef;
+import org.docx4j.wml.HeaderReference;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.Jc;
 import org.docx4j.wml.JcEnumeration;
@@ -26,6 +36,7 @@ import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.RStyle;
+import org.docx4j.wml.STFldCharType;
 import org.docx4j.wml.STFtnEdn;
 import org.docx4j.wml.STTabJc;
 import org.docx4j.wml.SectPr;
@@ -35,6 +46,9 @@ import org.docx4j.wml.Text;
 import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.xml.bind.JAXBElement;
+import java.io.File;
+import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,8 +65,7 @@ public class DocxFacade {
     @Getter
     private final WordprocessingMLPackage mlPackage;
 
-    private final ObjectFactory objectFactory =
-            Context.getWmlObjectFactory();
+    private final ObjectFactory factory = Context.getWmlObjectFactory();
     private final AtomicInteger myFootnoteRef = new AtomicInteger(0);
 
     @Inject
@@ -62,10 +75,83 @@ public class DocxFacade {
         this.metadata = metadata;
 
         mlPackage = WordprocessingMLPackage.createPackage();
+        SectPr sectPr = mlPackage.getDocumentModel().getSections().get(0).getSectPr();
+        sectPr.setPgSz(pgSz());
+        sectPr.setPgMar(pgMar());
     }
 
-    public P breakToOddPage() {
-        return p(ppr(sectPr(sectPrType("oddPage"))));
+    public P finaliseTitlePage(String name) {
+        SectPr sectPr = sectPr(sectPrType("oddPage"));
+        addDefaultPageHeader(sectPr, name, p());
+        addDefaultPageFooter(sectPr, name, p());
+        return p(ppr(sectPr));
+    }
+
+    public P finaliseSection(String name, String title) {
+        SectPr sectPr = sectPr(sectPrType("oddPage"));
+
+        addEvenPageHeader(sectPr, name, textParagraphCentered(title));
+        addDefaultPageHeader(sectPr, name,
+                textParagraphCentered("%s Issue %s"
+                        .formatted(
+                                metadata.getTitle(),
+                                metadata.getIssue())));
+
+        P pageNumberPlaceholder = pCentered(pageNumberPlaceholder());
+        addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
+        addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
+        return p(ppr(sectPr));
+    }
+
+    public R[] pageNumberPlaceholder() {
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:fldChar w:fldCharType="begin"/>
+        //    </w:r>
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:instrText> PAGE </w:instrText>
+        //    </w:r>
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:fldChar w:fldCharType="separate"/>
+        //    </w:r>
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:t>2</w:t>
+        //    </w:r>
+        //    <w:r>
+        //      <w:rPr/>
+        //      <w:fldChar w:fldCharType="end"/>
+        //    </w:r>
+        FldChar begin = factory.createFldChar();
+        begin.setFldCharType(STFldCharType.BEGIN);
+
+        return new R[]{
+                r(rPr(), fldChar(STFldCharType.BEGIN)),
+                r(rPr(), instrText(" PAGE ")),
+                r(rPr(), fldChar(STFldCharType.SEPARATE)),
+                r(rPr(), t("2")),
+                r(rPr(), fldChar(STFldCharType.END))
+        };
+    }
+
+    private JAXBElement<Text> instrText(String text) {
+        return factory.createRInstrText(t(text));
+    }
+
+    private RPr rPr() {
+        return factory.createRPr();
+    }
+
+    private FldChar fldChar(STFldCharType type) {
+        FldChar fldChar = factory.createFldChar();
+        fldChar.setFldCharType(type);
+        return fldChar;
+    }
+
+    private MainDocumentPart mainDocumentPart() {
+        return mlPackage.getMainDocumentPart();
     }
 
     public P tocItem(String pageNumber, String title) {
@@ -91,7 +177,7 @@ public class DocxFacade {
             @Nullable Integer right,
             int hanging
     ) {
-        PPrBase.Ind ind = objectFactory.createPPrBaseInd();
+        PPrBase.Ind ind = factory.createPPrBaseInd();
         if (left != null) ind.setLeft(BigInteger.valueOf(left));
         if (right != null) ind.setRight(BigInteger.valueOf(right));
         ind.setHanging(BigInteger.valueOf(hanging));
@@ -99,31 +185,31 @@ public class DocxFacade {
     }
 
     private Tabs tabs(CTTabStop... positions) {
-        Tabs tabs = objectFactory.createTabs();
+        Tabs tabs = factory.createTabs();
         tabs.getTab().addAll(Arrays.asList(positions));
         return tabs;
     }
 
-    private Object tabDefinition(Tabs tabs, PPrBase.Ind tabIndent) {
+    private PPr tabDefinition(Tabs tabs, PPrBase.Ind tabIndent) {
         return ppr(tabs, tabIndent);
     }
 
     private CTTabStop tabLeft(int position) {
-        CTTabStop tabStop = objectFactory.createCTTabStop();
+        CTTabStop tabStop = factory.createCTTabStop();
         tabStop.setPos(BigInteger.valueOf(position));
         tabStop.setVal(STTabJc.LEFT);
         return tabStop;
     }
 
     private CTTabStop tabRight(int position) {
-        CTTabStop tabStop = objectFactory.createCTTabStop();
+        CTTabStop tabStop = factory.createCTTabStop();
         tabStop.setPos(BigInteger.valueOf(position));
         tabStop.setVal(STTabJc.RIGHT);
         return tabStop;
     }
 
-    private Object tab() {
-        return objectFactory.createRTab();
+    private R.Tab tab() {
+        return factory.createRTab();
     }
 
     private PPr ppr(SectPr sectPr) {
@@ -133,7 +219,7 @@ public class DocxFacade {
     }
 
     private PPr pPr() {
-        return objectFactory.createPPr();
+        return factory.createPPr();
     }
 
     private PPr ppr(Jc jc) {
@@ -142,7 +228,7 @@ public class DocxFacade {
         return pPr;
     }
 
-    private Object ppr(Tabs tabs, PPrBase.Ind tabIndent) {
+    private PPr ppr(Tabs tabs, PPrBase.Ind tabIndent) {
         PPr pPr = pPr();
         pPr.setTabs(tabs);
         pPr.setInd(tabIndent);
@@ -150,7 +236,7 @@ public class DocxFacade {
     }
 
     private SectPr sectPr(SectPr.Type type) {
-        SectPr sectPr = objectFactory.createSectPr();
+        SectPr sectPr = factory.createSectPr();
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
         sectPr.setType(type);
@@ -158,7 +244,7 @@ public class DocxFacade {
     }
 
     private SectPr.PgMar pgMar() {
-        SectPr.PgMar pgMar = objectFactory.createSectPrPgMar();
+        SectPr.PgMar pgMar = factory.createSectPrPgMar();
         BigInteger sides = BigInteger.valueOf(
                 UnitsOfMeasurement.inchToTwip(
                         metadata.getPaperbackMarginSides()));
@@ -173,7 +259,7 @@ public class DocxFacade {
     }
 
     private SectPr.PgSz pgSz() {
-        SectPr.PgSz pgSz = objectFactory.createSectPrPgSz();
+        SectPr.PgSz pgSz = factory.createSectPrPgSz();
         pgSz.setH(BigInteger.valueOf(
                 UnitsOfMeasurement.inchToTwip(
                         metadata.getPaperbackPageHeightInches())));
@@ -197,33 +283,46 @@ public class DocxFacade {
         return pCentered(r(t(text)));
     }
 
+    public P p(PPr pPr) {
+        P p = factory.createP();
+        p.setPPr(pPr);
+        return p;
+    }
+
     public P p(Object... o) {
-        P p = objectFactory.createP();
+        P p = factory.createP();
         p.getContent().addAll(Arrays.asList(o));
         return p;
     }
 
     private P pCentered(Object... o) {
-        P p = objectFactory.createP();
+        P p = factory.createP();
+        p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
+        p.getContent().addAll(Arrays.asList(o));
+        return p;
+    }
+
+    private P pCentered(R[] o) {
+        P p = factory.createP();
         p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
         p.getContent().addAll(Arrays.asList(o));
         return p;
     }
 
     private Jc jc(JcEnumeration value) {
-        Jc jc = objectFactory.createJc();
+        Jc jc = factory.createJc();
         jc.setVal(value);
         return jc;
     }
 
     public R r(Object... o) {
-        R r = objectFactory.createR();
+        R r = factory.createR();
         r.getContent().addAll(Arrays.asList(o));
         return r;
     }
 
     public Text t(String value) {
-        Text text = objectFactory.createText();
+        Text text = factory.createText();
         text.setValue(value);
         text.setSpace("preserve");// contains significant whitespace
         return text;
@@ -244,18 +343,18 @@ public class DocxFacade {
         );
     }
 
-    public Object italic(Object... content) {
-        RPr rPr = objectFactory.createRPr();
-        rPr.setI(objectFactory.createBooleanDefaultTrue());
+    public R italic(Object... content) {
+        RPr rPr = factory.createRPr();
+        rPr.setI(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
         o.add(rPr);
         o.addAll(Arrays.asList(content));
         return r(o.toArray());
     }
 
-    public Object bold(Object... content) {
-        RPr rPr = objectFactory.createRPr();
-        rPr.setB(objectFactory.createBooleanDefaultTrue());
+    public R bold(Object... content) {
+        RPr rPr = factory.createRPr();
+        rPr.setB(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
         o.add(rPr);
         o.addAll(Arrays.asList(content));
@@ -280,20 +379,20 @@ public class DocxFacade {
      *   </w:r>
      * </w:p>
      */
-    public Object heading(int level, String text) {
+    public P heading(int level, String text) {
         PPr pPr = pPr();
 
         PPrBase.PStyle pStyle = pStyle("Normal");
         pPr.setPStyle(pStyle);
 
-        HpsMeasure sz = objectFactory.createHpsMeasure();
+        HpsMeasure sz = factory.createHpsMeasure();
         sz.setVal(BigInteger.valueOf(szForLevel(level)));
 
-        RPr rPr = objectFactory.createRPr();
+        RPr rPr = factory.createRPr();
         rPr.setSz(sz);
         rPr.setSzCs(sz);
 
-        ParaRPr paraRPr = objectFactory.createParaRPr();
+        ParaRPr paraRPr = factory.createParaRPr();
         paraRPr.setSz(sz);
         paraRPr.setSzCs(sz);
         pPr.setRPr(paraRPr);
@@ -332,25 +431,25 @@ public class DocxFacade {
      *   </w:r>
      * </w:p>
      */
-    public Object bulletItem(String text) {
+    public P bulletItem(String text) {
         PPr pPr = pPr();
         pPr.setPStyle(pStyle("Normal"));
 
-        PPrBase.NumPr.Ilvl ilvl = objectFactory.createPPrBaseNumPrIlvl();
+        PPrBase.NumPr.Ilvl ilvl = factory.createPPrBaseNumPrIlvl();
         ilvl.setVal(BigInteger.ZERO);
 
-        PPrBase.NumPr numPr = objectFactory.createPPrBaseNumPr();
+        PPrBase.NumPr numPr = factory.createPPrBaseNumPr();
         numPr.setIlvl(ilvl);
 
-        PPrBase.NumPr.NumId numId = objectFactory.createPPrBaseNumPrNumId();
+        PPrBase.NumPr.NumId numId = factory.createPPrBaseNumPrNumId();
         numId.setVal(BigInteger.TWO);
         numPr.setNumId(numId);
 
         pPr.setNumPr(numPr);
 
-        pPr.setRPr(objectFactory.createParaRPr());
+        pPr.setRPr(factory.createParaRPr());
 
-        RPr rPr = objectFactory.createRPr();
+        RPr rPr = factory.createRPr();
         return
                 p(
                         pPr,
@@ -361,14 +460,14 @@ public class DocxFacade {
                 );
     }
 
-    public Object footnote(String ordinal, List<P> footnoteBody) {
+    public R footnote(String ordinal, List<P> footnoteBody) {
         //TODO add footnote bodies from FootnoteBlockDocxNodeHandler
         // this will provide styles footnotes
         return footnoteReference(footnoteBody);
     }
 
     @SneakyThrows
-    private Object footnoteReference(List<P> footnoteBody) {
+    private R footnoteReference(List<P> footnoteBody) {
         // in document.xml:
         //      <w:r>
         //        <w:rPr>
@@ -381,14 +480,14 @@ public class DocxFacade {
         List<CTFtnEdn> footnotes = contents.getFootnote();
         CTFtnEdn ctFtnEdn = getNextCtFtnEdn(footnotes);
         ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(footnoteBody)));
-        CTFtnEdnRef ctFtnEdnRef = objectFactory.createCTFtnEdnRef();
+        CTFtnEdnRef ctFtnEdnRef = factory.createCTFtnEdnRef();
         ctFtnEdnRef.setId(ctFtnEdn.getId());
 
-        RPr rPr = objectFactory.createRPr();
+        RPr rPr = factory.createRPr();
         rPr.setRStyle(rStyle("FootnoteAnchor"));
         return r(
                 rPr,
-                objectFactory.createRFootnoteReference(ctFtnEdnRef),
+                factory.createRFootnoteReference(ctFtnEdnRef),
                 t(ctFtnEdn.getId().toString())
         );
     }
@@ -399,7 +498,7 @@ public class DocxFacade {
                 .filter(o -> o.getId().equals(id))
                 .findFirst()
                 .orElseGet(() -> {
-                    CTFtnEdn edn = objectFactory.createCTFtnEdn();
+                    CTFtnEdn edn = factory.createCTFtnEdn();
                     edn.setId(id);
                     footnotes.add(edn);
                     return edn;
@@ -407,14 +506,13 @@ public class DocxFacade {
     }
 
     private FootnotesPart getFootnotesPart() {
-        MainDocumentPart mainDocumentPart = mlPackage.getMainDocumentPart();
         return Objects.requireNonNullElseGet(
-                mainDocumentPart.getFootnotesPart(),
+                mainDocumentPart().getFootnotesPart(),
                 () -> {
                     try {
                         FootnotesPart part = new FootnotesPart();
                         part.setContents(initFootnotes());
-                        mainDocumentPart.addTargetPart(part);
+                        mainDocumentPart().addTargetPart(part);
                         return part;
                     } catch (InvalidFormatException e) {
                         throw new RuntimeException(e);
@@ -424,7 +522,7 @@ public class DocxFacade {
     }
 
     private CTFootnotes initFootnotes() {
-        CTFootnotes ctFootnotes = objectFactory.createCTFootnotes();
+        CTFootnotes ctFootnotes = factory.createCTFootnotes();
         List<CTFtnEdn> footnotes = ctFootnotes.getFootnote();
 
         //    <w:footnote w:id="0" w:type="separator">
@@ -436,7 +534,7 @@ public class DocxFacade {
         //    </w:footnote>
         CTFtnEdn separator = getNextCtFtnEdn(footnotes);
         separator.setType(STFtnEdn.SEPARATOR);
-        separator.getContent().add(p(r(objectFactory.createRSeparator())));
+        separator.getContent().add(p(r(factory.createRSeparator())));
 
 //        //    <w:footnote w:id="1" w:type="continuationSeparator">
 //        //        <w:p>
@@ -476,46 +574,153 @@ public class DocxFacade {
         PPr pPr = pPr();
         pPr.setPStyle(pStyle("Footnote"));
 
-        RPr rPr = objectFactory.createRPr();
+        RPr rPr = factory.createRPr();
         rPr.setRStyle(rStyle("FootnoteCharacters"));
 
         List<Object> objects = new ArrayList<>();
         objects.add(pPr);
         objects.add(r(
                 rPr,
-                objectFactory.createRFootnoteRef()
+                factory.createRFootnoteRef()
         ));
         objects.addAll(
                 footnoteParas.stream()
                         .peek(para -> para.setPPr(pPr)
-        ).collect(Collectors.toList()));
+                        ).collect(Collectors.toList()));
         return objects.toArray();
     }
 
     private PPrBase.PStyle pStyle(String val) {
-        var pStyle = objectFactory.createPPrBasePStyle();
+        var pStyle = factory.createPPrBasePStyle();
         pStyle.setVal(val);
         return pStyle;
     }
 
     private RStyle rStyle(String val) {
-        var rStyle = objectFactory.createRStyle();
+        var rStyle = factory.createRStyle();
         rStyle.setVal(val);
         return rStyle;
     }
 
     //p/pPr/keepNext[val="true"]
-    public Object keepWithNext(P p) {
-        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), objectFactory::createPPr);
-        pPr.setKeepNext(objectFactory.createBooleanDefaultTrue());
+    public P keepWithNext(P p) {
+        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), factory::createPPr);
+        pPr.setKeepNext(factory.createBooleanDefaultTrue());
         p.setPPr(pPr);
         return p;
     }
 
-    public Object keepTogether(P p) {
-        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), objectFactory::createPPr);
-        pPr.setKeepLines(objectFactory.createBooleanDefaultTrue());
+    public P keepTogether(P p) {
+        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), factory::createPPr);
+        pPr.setKeepLines(factory.createBooleanDefaultTrue());
         p.setPPr(pPr);
         return p;
     }
+
+    @SneakyThrows
+    public void addDefaultPageFooter(
+            SectPr sectPr,
+            String name,
+            P pageFooter
+    ) {
+        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, pageFooter);
+    }
+
+    @SneakyThrows
+    public void addEvenPageFooter(
+            SectPr sectPr,
+            String name,
+            P pageFooter
+    ) {
+        addPageFooter(sectPr, name, HdrFtrRef.EVEN, pageFooter);
+    }
+
+    @SneakyThrows
+    public void addFirstPageFooter(
+            SectPr sectPr,
+            String name,
+            P pageFooter
+    ) {
+        addPageFooter(sectPr, name, HdrFtrRef.FIRST, pageFooter);
+    }
+
+    @SneakyThrows
+    public void addDefaultPageHeader(
+            SectPr sectPr,
+            String name,
+            P pageHeader
+    ) {
+        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, pageHeader);
+    }
+
+    @SneakyThrows
+    public void addEvenPageHeader(
+            SectPr sectPr,
+            String name,
+            P pageHeader
+    ) {
+        addPageHeader(sectPr, name, HdrFtrRef.EVEN, pageHeader);
+    }
+
+    @SneakyThrows
+    public void addFirstPageHeader(
+            SectPr sectPr,
+            String name,
+            P pageHeader
+    ) {
+        addPageHeader(sectPr, name, HdrFtrRef.FIRST, pageHeader);
+    }
+
+    @SneakyThrows
+    public void addPageFooter(
+            SectPr sectPr,
+            String name,
+            HdrFtrRef hdrFtrRef,
+            P footerContent
+    ) {
+        FooterPart footerPart = new FooterPart();
+        PartName partName = new PartName("/word/footer-%s-%s.xml".formatted(
+                hdrFtrRef.value(), name));
+        footerPart.setPartName(partName);
+        Relationship relationship = mainDocumentPart().addTargetPart(footerPart);
+        Ftr ftr = factory.createFtr();
+        footerPart.setJaxbElement(ftr);
+        ftr.getContent().add(p());
+        ftr.getContent().add(footerContent);
+        FooterReference footerReference = factory.createFooterReference();
+        footerReference.setId(relationship.getId());
+        footerReference.setType(hdrFtrRef);
+        sectPr.getEGHdrFtrReferences().add(footerReference);
+    }
+
+    @SneakyThrows
+    public void addPageHeader(
+            SectPr sectPr,
+            String name,
+            HdrFtrRef hdrFtrRef,
+            P headerContent
+    ) {
+        HeaderPart headerPart = new HeaderPart();
+        PartName partName = new PartName("/word/header-%s-%s.xml".formatted(
+                hdrFtrRef.value(), name));
+        headerPart.setPartName(partName);
+        Relationship relationship = mainDocumentPart().addTargetPart(headerPart);
+        Hdr hdr = factory.createHdr();
+        headerPart.setJaxbElement(hdr);
+        hdr.getContent().add(headerContent);
+        hdr.getContent().add(p());
+        HeaderReference headerReference = factory.createHeaderReference();
+        headerReference.setId(relationship.getId());
+        headerReference.setType(hdrFtrRef);
+        sectPr.getEGHdrFtrReferences().add(headerReference);
+    }
+
+    @SneakyThrows
+    public void dump() {
+        FlatOpcXmlCreator worker = new FlatOpcXmlCreator(mlPackage);
+        File file = new File("binder-pkg.xml");
+        worker.marshal(new PrintStream(file));
+        System.out.println("Wrote: " + file.getAbsolutePath());
+    }
+
 }
