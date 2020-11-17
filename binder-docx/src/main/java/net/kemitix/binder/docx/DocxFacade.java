@@ -524,7 +524,7 @@ public class DocxFacade {
         objects.addAll(
                 footnoteParas.stream()
                         .peek(para -> para.setPPr(pPr)
-        ).collect(Collectors.toList()));
+                        ).collect(Collectors.toList()));
         return objects.toArray();
     }
 
