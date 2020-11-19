@@ -1,7 +1,6 @@
 package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.Content;
-import net.kemitix.binder.epub.EpubRenderer;
 import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.FootnoteGenerator;
 import net.kemitix.binder.markdown.Context;
@@ -12,7 +11,10 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,7 +45,7 @@ public class StoryEpubRenderer
                 Stream.of(
                         converter.convert(
                                 Context.create(section),
-                                section.getMarkdown()
+                                injectSectionBreaks(section.getMarkdown())
                         ),
                         aboutAuthor(section)
                 ).flatMap(Function.identity());
@@ -82,6 +84,34 @@ public class StoryEpubRenderer
                                 section.getCopyright(),
                                 section.getAuthor()
                         ), authorBio);
+    }
+
+    private static final Pattern NAMED_SECTION = Pattern.compile(
+            "^#\\s*(?<name>.*?)\\s*$"
+    );
+    private static final String BLANK_SECTION_BREAK = """
+            <p style="text-align: center">&mdash;*&mdash;</p>""";
+
+    private String injectSectionBreaks(String markdown) {
+        return Arrays.stream(markdown.split(System.lineSeparator()))
+                .map(line -> {
+                    Matcher matcher = NAMED_SECTION.matcher(line);
+                    if (matcher.matches()) {
+                        String name = matcher.group("name").strip();
+                        if (name.isBlank()) {
+                            return BLANK_SECTION_BREAK;
+                        }
+                        return """
+                                <p>&nbsp;</p>
+                                <p style="text-align: center; page-break-after: avoid;">
+                                  &mdash;&nbsp;%s&nbsp;&mdash;
+                                </p>
+                                """.formatted(name);
+                    } else {
+                        return line;
+                    }
+                })
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 
 }
