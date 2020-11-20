@@ -18,9 +18,30 @@ public interface HeadingNodeHandler<T>
         Heading heading = (Heading) node;
         return headingBody(
                 heading.getLevel(),
-                heading.getText().unescape());
+                heading.getText().unescape(),
+                context);
     }
 
-    Stream<T> headingBody(int level, String text);
+    default Stream<T> headingBody(
+            int level,
+            String text,
+            Context context
+    ) {
+        if (context.isType(Section.Type.story)) {
+            return breakHeader(text);
+        }
+        return hierarchicalHeader(level, text);
+    }
+
+    Stream<T> hierarchicalHeader(int level, String text);
+
+    default Stream<T> breakHeader(String text) {
+        if (text.isBlank()) return blankBreak();
+        return namedBreak(text);
+    }
+
+    Stream<T> blankBreak();
+
+    Stream<T> namedBreak(String text);
 
 }

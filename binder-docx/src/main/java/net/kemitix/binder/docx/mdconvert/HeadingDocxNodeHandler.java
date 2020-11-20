@@ -5,6 +5,7 @@ import net.kemitix.binder.markdown.HeadingNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 @Docx
@@ -20,8 +21,33 @@ public class HeadingDocxNodeHandler
     }
 
     @Override
-    public Stream<Object> headingBody(int level, String text) {
+    public Stream<Object> hierarchicalHeader(int level, String text) {
         return Stream.of(docx.heading(level, text));
+    }
+
+    @Override
+    public Stream<Object> blankBreak() {
+        return Stream.of(
+                docx.textParagraphCentered(EM_DASH + EM_DASH + EM_DASH)
+        );
+    }
+
+    private static final String EM_DASH = "\u2014";
+    private static final String NO_BREAK_SPACE = "\u00A0";
+
+    @Override
+    public Stream<Object> namedBreak(String name) {
+        return Stream.of(
+                docx.p(),
+                docx.keepWithNext(
+                        docx.textParagraphCentered(
+                                String.join("", Arrays.asList(
+                                        EM_DASH,
+                                        NO_BREAK_SPACE,
+                                        name,
+                                        NO_BREAK_SPACE,
+                                        EM_DASH
+                                )))));
     }
 
 }
