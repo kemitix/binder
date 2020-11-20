@@ -3,7 +3,6 @@ package net.kemitix.binder.docx.mdconvert;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.ParagraphNodeHandler;
-import org.docx4j.wml.P;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,10 +21,19 @@ public class ParagraphDocxNodeHandler
     }
 
     @Override
-    public Stream<Object> paragraphBody(Stream<Object> content, Context context) {
+    public Stream<Object> paragraphBody(
+            Stream<Object> content,
+            Context context
+    ) {
+        if (context.isJustified()) {
+            return Stream.of(
+                    docx.pJustified(
+                            docx.p(content.toArray()))
+            );
+        }
         return Stream.of(
-                docx.pJustified(
-                        docx.p(content.toArray())));
+                docx.p(content.toArray())
+        );
     }
 
 }
