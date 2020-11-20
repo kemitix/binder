@@ -30,6 +30,11 @@ public interface Context {
             public String getName() {
                 return section.getName();
             }
+
+            @Override
+            public boolean isJustified() {
+                return section.isJustified();
+            }
             //TODO access values in Section as required
         };
     }
@@ -55,6 +60,11 @@ public interface Context {
             public String getName() {
                 return "";
             }
+
+            @Override
+            public boolean isJustified() {
+                return true;
+            }
         };
     }
 
@@ -65,4 +75,6 @@ public interface Context {
     String getAuthor();
 
     String getName();
+
+    boolean isJustified();
 }

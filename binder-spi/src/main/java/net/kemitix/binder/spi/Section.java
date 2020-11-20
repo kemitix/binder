@@ -39,6 +39,7 @@ public class Section {
     private int copyright; // the year the story was copyrighted
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
+    private boolean justified = true; // full justify paragraphs
 
     public boolean isType(Type type) {
         return this.type.equals(type);

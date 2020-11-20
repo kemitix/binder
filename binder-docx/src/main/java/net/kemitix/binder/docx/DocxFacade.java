@@ -52,6 +52,7 @@ import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -97,7 +98,7 @@ public class DocxFacade {
                                 metadata.getTitle(),
                                 metadata.getIssue())));
 
-        P pageNumberPlaceholder = pCentered(pageNumberPlaceholder());
+        P pageNumberPlaceholder = pCentered(p(pageNumberPlaceholder()));
         addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
         addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
         return p(ppr(sectPr));
@@ -128,11 +129,11 @@ public class DocxFacade {
         begin.setFldCharType(STFldCharType.BEGIN);
 
         return new R[]{
-                r(rPr(), fldChar(STFldCharType.BEGIN)),
-                r(rPr(), instrText(" PAGE ")),
-                r(rPr(), fldChar(STFldCharType.SEPARATE)),
-                r(rPr(), t("2")),
-                r(rPr(), fldChar(STFldCharType.END))
+                r(fldChar(STFldCharType.BEGIN)),
+                r(instrText(" PAGE ")),
+                r(fldChar(STFldCharType.SEPARATE)),
+                r(t("2")),
+                r(fldChar(STFldCharType.END))
         };
     }
 
@@ -140,8 +141,13 @@ public class DocxFacade {
         return factory.createRInstrText(t(text));
     }
 
-    private RPr rPr() {
-        return factory.createRPr();
+    private RPr rPr(R r) {
+        RPr rPr = Objects.requireNonNullElseGet(
+                r.getRPr(),
+                factory::createRPr
+        );
+        r.setRPr(rPr);
+        return rPr;
     }
 
     private FldChar fldChar(STFldCharType type) {
@@ -155,21 +161,21 @@ public class DocxFacade {
     }
 
     public P tocItem(String pageNumber, String title) {
-        return p(
+        return p(new Object[]{
                 tabDefinition(
-                        tabs(
+                        tabs(new CTTabStop[]{
                                 tabLeft(0),
                                 tabRight(576),
                                 tabLeft(720)
-                        ),
+                        }),
                         tabIndent(720, null, 720)),
-                r(
+                r(new Object[]{
                         tab(),
                         t(pageNumber),
                         tab(),
                         t(title)
-                )
-        );
+                })
+        });
     }
 
     private PPrBase.Ind tabIndent(
@@ -184,7 +190,7 @@ public class DocxFacade {
         return ind;
     }
 
-    private Tabs tabs(CTTabStop... positions) {
+    private Tabs tabs(CTTabStop[] positions) {
         Tabs tabs = factory.createTabs();
         tabs.getTab().addAll(Arrays.asList(positions));
         return tabs;
@@ -280,7 +286,7 @@ public class DocxFacade {
     }
 
     public P textParagraphCentered(String text) {
-        return pCentered(r(t(text)));
+        return pCentered(p(r(t(text))));
     }
 
     public P p(PPr pPr) {
@@ -289,24 +295,37 @@ public class DocxFacade {
         return p;
     }
 
-    public P p(Object... o) {
+    public P p() {
+        return p(new Object[]{});
+    }
+
+    public P p(Object o) {
+        return p(new Object[]{o});
+    }
+
+    public P p(Object[] o) {
         P p = factory.createP();
         p.getContent().addAll(Arrays.asList(o));
         return p;
     }
 
-    private P pCentered(Object... o) {
-        P p = factory.createP();
-        p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
-        p.getContent().addAll(Arrays.asList(o));
+    public P pCentered(P p) {
+        pPr(p).setJc(jc(JcEnumeration.CENTER));
         return p;
     }
 
-    private P pCentered(R[] o) {
-        P p = factory.createP();
-        p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
-        p.getContent().addAll(Arrays.asList(o));
+    public P pJustified(P p) {
+        pPr(p).setJc(jc(JcEnumeration.BOTH));
         return p;
+    }
+
+    private PPr pPr(P p) {
+        PPr pPr = Objects.requireNonNullElseGet(
+                p.getPPr(),
+                factory::createPPr
+        );
+        p.setPPr(pPr);
+        return pPr;
     }
 
     private Jc jc(JcEnumeration value) {
@@ -315,7 +334,15 @@ public class DocxFacade {
         return jc;
     }
 
-    public R r(Object... o) {
+    public R r() {
+        return r(new Object[]{});
+    }
+
+    public R r(Object o) {
+        return r(new Object[]{o});
+    }
+
+    public R r(Object[] o) {
         R r = factory.createR();
         r.getContent().addAll(Arrays.asList(o));
         return r;
@@ -330,10 +357,9 @@ public class DocxFacade {
 
     public P drawings(Drawing[] drawings) {
         R r = r();
-        for (Drawing drawing : drawings) {
-            r.getContent().add(drawing);
-        }
-        return pCentered(r);
+        List<Object> content = r.getContent();
+        Collections.addAll(content, drawings);
+        return pCentered(p(r));
     }
 
     public List<P> leaders() {
@@ -343,7 +369,7 @@ public class DocxFacade {
         );
     }
 
-    public R italic(Object... content) {
+    public R italic(Object[] content) {
         RPr rPr = factory.createRPr();
         rPr.setI(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
@@ -352,7 +378,7 @@ public class DocxFacade {
         return r(o.toArray());
     }
 
-    public R bold(Object... content) {
+    public R bold(Object[] content) {
         RPr rPr = factory.createRPr();
         rPr.setB(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
@@ -380,30 +406,25 @@ public class DocxFacade {
      * </w:p>
      */
     public P heading(int level, String text) {
-        PPr pPr = pPr();
-
-        PPrBase.PStyle pStyle = pStyle("Normal");
-        pPr.setPStyle(pStyle);
-
+        R r = r(t(text));
+        RPr rPr = rPr(r);
         HpsMeasure sz = factory.createHpsMeasure();
         sz.setVal(BigInteger.valueOf(szForLevel(level)));
-
-        RPr rPr = factory.createRPr();
         rPr.setSz(sz);
         rPr.setSzCs(sz);
+
+        P p = p(r);
+        PPr pPr = pPr(p);
 
         ParaRPr paraRPr = factory.createParaRPr();
         paraRPr.setSz(sz);
         paraRPr.setSzCs(sz);
         pPr.setRPr(paraRPr);
-        return
-                p(
-                        pPr,
-                        r(
-                                rPr,
-                                t(text)
-                        )
-                );
+
+        PPrBase.PStyle pStyle = pStyle("Normal");
+        pPr.setPStyle(pStyle);
+
+        return p;
     }
 
     // h1 = 24pt
@@ -432,32 +453,21 @@ public class DocxFacade {
      * </w:p>
      */
     public P bulletItem(String text) {
-        PPr pPr = pPr();
+        P p = p(r(t(text)));
+
+        PPr pPr = pPr(p);
         pPr.setPStyle(pStyle("Normal"));
-
-        PPrBase.NumPr.Ilvl ilvl = factory.createPPrBaseNumPrIlvl();
-        ilvl.setVal(BigInteger.ZERO);
-
-        PPrBase.NumPr numPr = factory.createPPrBaseNumPr();
-        numPr.setIlvl(ilvl);
 
         PPrBase.NumPr.NumId numId = factory.createPPrBaseNumPrNumId();
         numId.setVal(BigInteger.TWO);
+        PPrBase.NumPr numPr = factory.createPPrBaseNumPr();
+        PPrBase.NumPr.Ilvl ilvl = factory.createPPrBaseNumPrIlvl();
+        ilvl.setVal(BigInteger.ZERO);
+        numPr.setIlvl(ilvl);
         numPr.setNumId(numId);
-
         pPr.setNumPr(numPr);
 
-        pPr.setRPr(factory.createParaRPr());
-
-        RPr rPr = factory.createRPr();
-        return
-                p(
-                        pPr,
-                        r(
-                                rPr,
-                                t(text)
-                        )
-                );
+        return p;
     }
 
     public R footnote(String ordinal, List<P> footnoteBody) {
@@ -482,14 +492,19 @@ public class DocxFacade {
         ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(footnoteBody)));
         CTFtnEdnRef ctFtnEdnRef = factory.createCTFtnEdnRef();
         ctFtnEdnRef.setId(ctFtnEdn.getId());
+        JAXBElement<CTFtnEdnRef> footnoteReference = factory.createRFootnoteReference(ctFtnEdnRef);
 
-        RPr rPr = factory.createRPr();
+        String footnoteOrdinal = ctFtnEdn.getId().toString();
+
+        R r = r(new Object[]{
+                footnoteReference,
+                t(footnoteOrdinal)
+        });
+
+        RPr rPr = rPr(r);
         rPr.setRStyle(rStyle("FootnoteAnchor"));
-        return r(
-                rPr,
-                factory.createRFootnoteReference(ctFtnEdnRef),
-                t(ctFtnEdn.getId().toString())
-        );
+
+        return r;
     }
 
     private CTFtnEdn getNextCtFtnEdn(List<CTFtnEdn> footnotes) {
@@ -574,15 +589,15 @@ public class DocxFacade {
         PPr pPr = pPr();
         pPr.setPStyle(pStyle("Footnote"));
 
-        RPr rPr = factory.createRPr();
-        rPr.setRStyle(rStyle("FootnoteCharacters"));
-
         List<Object> objects = new ArrayList<>();
         objects.add(pPr);
-        objects.add(r(
-                rPr,
+        R r = r(
                 factory.createRFootnoteRef()
-        ));
+        );
+        RPr rPr = rPr(r);
+        rPr.setRStyle(rStyle("FootnoteCharacters"));
+
+        objects.add(r);
         objects.addAll(
                 footnoteParas.stream()
                         .peek(para -> para.setPPr(pPr)
@@ -722,5 +737,4 @@ public class DocxFacade {
         worker.marshal(new PrintStream(file));
         System.out.println("Wrote: " + file.getAbsolutePath());
     }
-
 }

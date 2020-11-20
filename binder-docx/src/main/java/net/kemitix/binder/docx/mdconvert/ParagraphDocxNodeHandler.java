@@ -21,12 +21,19 @@ public class ParagraphDocxNodeHandler
     }
 
     @Override
-    public Stream<Object> paragraphBody(Stream<Object> content, Context context) {
-        //TODO: check if setting alignment is required
-//        for para in paras:
-//        if para.paragraph_format.alignment is None:
-//        para.paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
-        return Stream.of(docx.p(content.toArray()));
+    public Stream<Object> paragraphBody(
+            Stream<Object> content,
+            Context context
+    ) {
+        if (context.isJustified()) {
+            return Stream.of(
+                    docx.pJustified(
+                            docx.p(content.toArray()))
+            );
+        }
+        return Stream.of(
+                docx.p(content.toArray())
+        );
     }
 
 }
