@@ -98,13 +98,13 @@ public class DocxFacade {
                                 metadata.getTitle(),
                                 metadata.getIssue())));
 
-        P pageNumberPlaceholder = pCentered(pageNumberPlaceholder());
+        P pageNumberPlaceholder = pCentered(p(pageNumberPlaceholder()));
         addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
         addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
         return p(ppr(sectPr));
     }
 
-    public P pageNumberPlaceholder() {
+    public R[] pageNumberPlaceholder() {
         //    <w:r>
         //      <w:rPr/>
         //      <w:fldChar w:fldCharType="begin"/>
@@ -128,13 +128,13 @@ public class DocxFacade {
         FldChar begin = factory.createFldChar();
         begin.setFldCharType(STFldCharType.BEGIN);
 
-        return p(new Object[]{
+        return new R[]{
                 r(fldChar(STFldCharType.BEGIN)),
                 r(instrText(" PAGE ")),
                 r(fldChar(STFldCharType.SEPARATE)),
                 r(t("2")),
                 r(fldChar(STFldCharType.END))
-        });
+        };
     }
 
     private JAXBElement<Text> instrText(String text) {
