@@ -21,7 +21,7 @@ public class HeadingEpubNodeHandler
     public Stream<String> blankBreak() {
         return Stream.of(
                 """
-                <p style="text-align: center">&mdash;*&mdash;</p>
+                <p style="text-align: center">&mdash;&mdash;&mdash;</p>
                 """
         );
     }

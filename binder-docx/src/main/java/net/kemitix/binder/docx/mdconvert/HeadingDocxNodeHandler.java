@@ -28,7 +28,7 @@ public class HeadingDocxNodeHandler
     @Override
     public Stream<Object> blankBreak() {
         return Stream.of(
-                docx.textParagraphCentered("—*—")
+                docx.textParagraphCentered(EM_DASH + EM_DASH + EM_DASH)
         );
     }
 
