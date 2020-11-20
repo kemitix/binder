@@ -128,12 +128,12 @@ public class DocxFacade {
         FldChar begin = factory.createFldChar();
         begin.setFldCharType(STFldCharType.BEGIN);
 
-        return p(new R[]{
-                r(rPr(), fldChar(STFldCharType.BEGIN)),
-                r(rPr(), instrText(" PAGE ")),
-                r(rPr(), fldChar(STFldCharType.SEPARATE)),
-                r(rPr(), t("2")),
-                r(rPr(), fldChar(STFldCharType.END))
+        return p(new Object[]{
+                r(fldChar(STFldCharType.BEGIN)),
+                r(instrText(" PAGE ")),
+                r(fldChar(STFldCharType.SEPARATE)),
+                r(t("2")),
+                r(fldChar(STFldCharType.END))
         });
     }
 
@@ -141,8 +141,13 @@ public class DocxFacade {
         return factory.createRInstrText(t(text));
     }
 
-    private RPr rPr() {
-        return factory.createRPr();
+    private RPr rPr(R r) {
+        RPr rPr = Objects.requireNonNullElseGet(
+                r.getRPr(),
+                factory::createRPr
+        );
+        r.setRPr(rPr);
+        return rPr;
     }
 
     private FldChar fldChar(STFldCharType type) {
@@ -156,21 +161,21 @@ public class DocxFacade {
     }
 
     public P tocItem(String pageNumber, String title) {
-        return p(
+        return p(new Object[]{
                 tabDefinition(
-                        tabs(
+                        tabs(new CTTabStop[]{
                                 tabLeft(0),
                                 tabRight(576),
                                 tabLeft(720)
-                        ),
+                        }),
                         tabIndent(720, null, 720)),
-                r(
+                r(new Object[]{
                         tab(),
                         t(pageNumber),
                         tab(),
                         t(title)
-                )
-        );
+                })
+        });
     }
 
     private PPrBase.Ind tabIndent(
@@ -185,7 +190,7 @@ public class DocxFacade {
         return ind;
     }
 
-    private Tabs tabs(CTTabStop... positions) {
+    private Tabs tabs(CTTabStop[] positions) {
         Tabs tabs = factory.createTabs();
         tabs.getTab().addAll(Arrays.asList(positions));
         return tabs;
@@ -329,7 +334,15 @@ public class DocxFacade {
         return jc;
     }
 
-    public R r(Object... o) {
+    public R r() {
+        return r(new Object[]{});
+    }
+
+    public R r(Object o) {
+        return r(new Object[]{o});
+    }
+
+    public R r(Object[] o) {
         R r = factory.createR();
         r.getContent().addAll(Arrays.asList(o));
         return r;
@@ -356,8 +369,7 @@ public class DocxFacade {
         );
     }
 
-    @Deprecated // replace with Object[] content
-    public R italic(Object... content) {
+    public R italic(Object[] content) {
         RPr rPr = factory.createRPr();
         rPr.setI(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
@@ -366,7 +378,7 @@ public class DocxFacade {
         return r(o.toArray());
     }
 
-    public R bold(Object... content) {
+    public R bold(Object[] content) {
         RPr rPr = factory.createRPr();
         rPr.setB(factory.createBooleanDefaultTrue());
         List<Object> o = new ArrayList<>();
@@ -394,30 +406,25 @@ public class DocxFacade {
      * </w:p>
      */
     public P heading(int level, String text) {
-        PPr pPr = pPr();
-
-        PPrBase.PStyle pStyle = pStyle("Normal");
-        pPr.setPStyle(pStyle);
-
+        R r = r(t(text));
+        RPr rPr = rPr(r);
         HpsMeasure sz = factory.createHpsMeasure();
         sz.setVal(BigInteger.valueOf(szForLevel(level)));
-
-        RPr rPr = factory.createRPr();
         rPr.setSz(sz);
         rPr.setSzCs(sz);
+
+        P p = p(r);
+        PPr pPr = pPr(p);
 
         ParaRPr paraRPr = factory.createParaRPr();
         paraRPr.setSz(sz);
         paraRPr.setSzCs(sz);
         pPr.setRPr(paraRPr);
-        return
-                p(
-                        pPr,
-                        r(
-                                rPr,
-                                t(text)
-                        )
-                );
+
+        PPrBase.PStyle pStyle = pStyle("Normal");
+        pPr.setPStyle(pStyle);
+
+        return p;
     }
 
     // h1 = 24pt
@@ -446,32 +453,21 @@ public class DocxFacade {
      * </w:p>
      */
     public P bulletItem(String text) {
-        PPr pPr = pPr();
+        P p = p(r(t(text)));
+
+        PPr pPr = pPr(p);
         pPr.setPStyle(pStyle("Normal"));
-
-        PPrBase.NumPr.Ilvl ilvl = factory.createPPrBaseNumPrIlvl();
-        ilvl.setVal(BigInteger.ZERO);
-
-        PPrBase.NumPr numPr = factory.createPPrBaseNumPr();
-        numPr.setIlvl(ilvl);
 
         PPrBase.NumPr.NumId numId = factory.createPPrBaseNumPrNumId();
         numId.setVal(BigInteger.TWO);
+        PPrBase.NumPr numPr = factory.createPPrBaseNumPr();
+        PPrBase.NumPr.Ilvl ilvl = factory.createPPrBaseNumPrIlvl();
+        ilvl.setVal(BigInteger.ZERO);
+        numPr.setIlvl(ilvl);
         numPr.setNumId(numId);
-
         pPr.setNumPr(numPr);
 
-        pPr.setRPr(factory.createParaRPr());
-
-        RPr rPr = factory.createRPr();
-        return
-                p(
-                        pPr,
-                        r(
-                                rPr,
-                                t(text)
-                        )
-                );
+        return p;
     }
 
     public R footnote(String ordinal, List<P> footnoteBody) {
@@ -496,14 +492,19 @@ public class DocxFacade {
         ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(footnoteBody)));
         CTFtnEdnRef ctFtnEdnRef = factory.createCTFtnEdnRef();
         ctFtnEdnRef.setId(ctFtnEdn.getId());
+        JAXBElement<CTFtnEdnRef> footnoteReference = factory.createRFootnoteReference(ctFtnEdnRef);
 
-        RPr rPr = factory.createRPr();
+        String footnoteOrdinal = ctFtnEdn.getId().toString();
+
+        R r = r(new Object[]{
+                footnoteReference,
+                t(footnoteOrdinal)
+        });
+
+        RPr rPr = rPr(r);
         rPr.setRStyle(rStyle("FootnoteAnchor"));
-        return r(
-                rPr,
-                factory.createRFootnoteReference(ctFtnEdnRef),
-                t(ctFtnEdn.getId().toString())
-        );
+
+        return r;
     }
 
     private CTFtnEdn getNextCtFtnEdn(List<CTFtnEdn> footnotes) {
@@ -588,15 +589,15 @@ public class DocxFacade {
         PPr pPr = pPr();
         pPr.setPStyle(pStyle("Footnote"));
 
-        RPr rPr = factory.createRPr();
-        rPr.setRStyle(rStyle("FootnoteCharacters"));
-
         List<Object> objects = new ArrayList<>();
         objects.add(pPr);
-        objects.add(r(
-                rPr,
+        R r = r(
                 factory.createRFootnoteRef()
-        ));
+        );
+        RPr rPr = rPr(r);
+        rPr.setRStyle(rStyle("FootnoteCharacters"));
+
+        objects.add(r);
         objects.addAll(
                 footnoteParas.stream()
                         .peek(para -> para.setPPr(pPr)
