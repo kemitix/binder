@@ -309,6 +309,20 @@ public class DocxFacade {
         return p;
     }
 
+    public P pJustified(P p) {
+        pPr(p).setJc(jc(JcEnumeration.BOTH));
+        return p;
+    }
+
+    private PPr pPr(P p) {
+        PPr pPr = Objects.requireNonNullElseGet(
+                p.getPPr(),
+                factory::createPPr
+        );
+        p.setPPr(pPr);
+        return pPr;
+    }
+
     private Jc jc(JcEnumeration value) {
         Jc jc = factory.createJc();
         jc.setVal(value);
@@ -722,5 +736,4 @@ public class DocxFacade {
         worker.marshal(new PrintStream(file));
         System.out.println("Wrote: " + file.getAbsolutePath());
     }
-
 }
