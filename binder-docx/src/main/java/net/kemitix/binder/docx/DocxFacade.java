@@ -52,6 +52,7 @@ import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -103,7 +104,7 @@ public class DocxFacade {
         return p(ppr(sectPr));
     }
 
-    public R[] pageNumberPlaceholder() {
+    public P pageNumberPlaceholder() {
         //    <w:r>
         //      <w:rPr/>
         //      <w:fldChar w:fldCharType="begin"/>
@@ -127,13 +128,13 @@ public class DocxFacade {
         FldChar begin = factory.createFldChar();
         begin.setFldCharType(STFldCharType.BEGIN);
 
-        return new R[]{
+        return p(new R[]{
                 r(rPr(), fldChar(STFldCharType.BEGIN)),
                 r(rPr(), instrText(" PAGE ")),
                 r(rPr(), fldChar(STFldCharType.SEPARATE)),
                 r(rPr(), t("2")),
                 r(rPr(), fldChar(STFldCharType.END))
-        };
+        });
     }
 
     private JAXBElement<Text> instrText(String text) {
@@ -280,7 +281,7 @@ public class DocxFacade {
     }
 
     public P textParagraphCentered(String text) {
-        return pCentered(r(t(text)));
+        return pCentered(p(r(t(text))));
     }
 
     public P p(PPr pPr) {
@@ -289,23 +290,22 @@ public class DocxFacade {
         return p;
     }
 
-    public P p(Object... o) {
+    public P p() {
+        return p(new Object[]{});
+    }
+
+    public P p(Object o) {
+        return p(new Object[]{o});
+    }
+
+    public P p(Object[] o) {
         P p = factory.createP();
         p.getContent().addAll(Arrays.asList(o));
         return p;
     }
 
-    private P pCentered(Object... o) {
-        P p = factory.createP();
-        p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
-        p.getContent().addAll(Arrays.asList(o));
-        return p;
-    }
-
-    private P pCentered(R[] o) {
-        P p = factory.createP();
-        p.getContent().add(ppr(jc(JcEnumeration.CENTER)));
-        p.getContent().addAll(Arrays.asList(o));
+    public P pCentered(P p) {
+        pPr(p).setJc(jc(JcEnumeration.CENTER));
         return p;
     }
 
@@ -344,10 +344,9 @@ public class DocxFacade {
 
     public P drawings(Drawing[] drawings) {
         R r = r();
-        for (Drawing drawing : drawings) {
-            r.getContent().add(drawing);
-        }
-        return pCentered(r);
+        List<Object> content = r.getContent();
+        Collections.addAll(content, drawings);
+        return pCentered(p(r));
     }
 
     public List<P> leaders() {
@@ -357,6 +356,7 @@ public class DocxFacade {
         );
     }
 
+    @Deprecated // replace with Object[] content
     public R italic(Object... content) {
         RPr rPr = factory.createRPr();
         rPr.setI(factory.createBooleanDefaultTrue());
