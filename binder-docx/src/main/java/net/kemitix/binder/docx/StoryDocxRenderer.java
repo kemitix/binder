@@ -44,12 +44,6 @@ public class StoryDocxRenderer
     @Override
     public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
-
-        //TODO set odd page header - is this set for document?
-        //TODO set even page header
-        //contents.add(docx.evenPageHeader(section.getTitle()));
-        //TODO set all page footer? - is this set for document?
-
         contents.addAll(docx.leaders());
         addTitle(section, contents);
         contents.add(docx.textParagraphCentered(section.getAuthor()));

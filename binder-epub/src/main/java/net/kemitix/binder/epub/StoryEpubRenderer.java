@@ -1,7 +1,6 @@
 package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.Content;
-import net.kemitix.binder.epub.EpubRenderer;
 import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.FootnoteGenerator;
 import net.kemitix.binder.markdown.Context;
@@ -12,7 +11,10 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

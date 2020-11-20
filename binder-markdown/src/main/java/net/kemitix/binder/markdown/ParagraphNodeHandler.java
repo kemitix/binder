@@ -16,8 +16,8 @@ public interface ParagraphNodeHandler<T>
 
     @Override
     default Stream<T> body(Node node, Stream<T> content, Context context) {
-        return paragraphBody(content);
+        return paragraphBody(content, context);
     }
 
-    Stream<T> paragraphBody(Stream<T> content);
+    Stream<T> paragraphBody(Stream<T> content, Context context);
 }
