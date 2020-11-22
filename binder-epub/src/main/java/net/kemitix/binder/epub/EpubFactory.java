@@ -1,6 +1,6 @@
 package net.kemitix.binder.epub;
 
-import coza.opencollab.epub.creator.impl.OpfCreatorDefault;
+import coza.opencollab.epub.creator.api.MetadataItem;
 import coza.opencollab.epub.creator.model.Content;
 import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
@@ -17,8 +17,8 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Log
@@ -79,50 +79,30 @@ public class EpubFactory {
         log.info("Language: " + language);
         String id = Objects.requireNonNull(metadata.getId(), "metadata id");
         log.info("Id: " + id);
-        String title = "%s - Issue %d".formatted(
+        String title = "%s Issue %d".formatted(
                 metadata.getTitle(), metadata.getIssue());
         log.info("Title: " + title);
         String editor = metadata.getEditor();
         log.info("Editor: " + editor);
         EpubBook epubBook = new EpubBook(language, id, title, editor);
-        OpfCreatorDefault opfCreator = ((OpfCreatorDefault) epubBook.getEpubCreator().getOpfCreator());
-        String creators = sections
-                .map(Section::getAuthor)
+        MetadataItem.Builder mib = MetadataItem.builder();
+        var meta = mib.name("meta");
+        var dcCreator = mib.name("dc:creator");
+        var metadataItems = Arrays.asList(
+                mib.name("dc:description").value(metadata.getDescription()),
+                mib.name("dc:contributor").id("editor-id").value(metadata.getEditor()),
+                mib.name("dc:date").value(metadata.getDate()+"T00:00:00+00:00"),
+                mib.name("dc:publisher").value(editor),
+                meta.property("role").refines("#editor-id").value("Editor"),
+                meta.id("collection-id").property("belongs-to-collection").value(metadata.getTitle()),
+                meta.property("collection-type").refines("#collection-id").value("series"),
+                meta.property("group-position").refines("#collection-id").value(Integer.toString(metadata.getIssue()))
+        );
+        metadataItems.forEach(epubBook::addMetadata);
+        sections.map(Section::getAuthor)
                 .filter(Objects::nonNull)
-                .map("<dc:creator>%s</dc:creator>"::formatted)
-                .collect(Collectors.joining());
-        opfCreator.setOpfXML("""
-            <?xml version="1.0" encoding="UTF-8"?>
-                <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid">
-                    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
-                        <dc:identifier id="uid"></dc:identifier>
-                        <dc:title></dc:title>
-                        <dc:language></dc:language>
-                        <dc:description>%6$s</dc:description>
-                        <dc:date>%1$s</dc:date>
-                        <dc:publisher>%2$s</dc:publisher>
-                        <dc:contributor id='editor-id'>%2$s</dc:contributor>
-                        <meta property="role" refines="#editor-id">Editor</meta>
-                        <meta property="belongs-to-collection" id="collection-id">%3$s</meta>
-                        <meta property="collection-type" refines="#collection-id">series</meta>
-                        <meta property="group-position" refines="#collection-id">%4$s</opf:meta>
-                        <meta property="dcterms:modified"></meta>
-                        %5$s
-                    </metadata>
-                    <manifest>
-                    </manifest>
-                    <spine>
-                    </spine>
-                </package>
-                """
-                .formatted(
-                        metadata.getDate(),
-                        metadata.getEditor(),
-                        title,
-                        metadata.getIssue(),
-                        creators,
-                        metadata.getDescription()
-                ));
+                .map(dcCreator::value)
+                .forEach(epubBook::addMetadata);
         return epubBook;
     }
 }
