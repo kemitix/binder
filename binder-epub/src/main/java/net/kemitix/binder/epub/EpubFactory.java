@@ -3,6 +3,7 @@ package net.kemitix.binder.epub;
 import coza.opencollab.epub.creator.api.MetadataItem;
 import coza.opencollab.epub.creator.model.Content;
 import coza.opencollab.epub.creator.model.EpubBook;
+import coza.opencollab.epub.creator.model.TocLink;
 import lombok.extern.java.Log;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.HtmlManuscript;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -48,16 +50,39 @@ public class EpubFactory {
     public EpubBook create() {
         Metadata metadata = htmlManuscript.getMetadata();
         EpubBook epub = createEpub(metadata, htmlManuscript.sections());
+        epub.setAutoToc(false);
         epub.addContent(stylesheet);
-        epub.addCoverImage(coverImage(metadata.getCover()),
-                "image/jpeg", "cover.jpg");
-        epub.addTextContent("Cover", "cover.html",
-                "<img src=\"cover.jpg\" style=\"height:100%\"/>");
+        Content cover = addCover(metadata, epub);
+        addSections(epub);
+        addTableOfContents(epub, cover);
+        return epub;
+    }
+
+    private void addSections(EpubBook epub) {
         htmlManuscript.sections()
                 .filter(HtmlSection::isEpub)
                 .flatMap(epubSectionRenderer::render)
                 .forEach(epub::addContent);
-        return epub;
+    }
+
+    private Content addCover(Metadata metadata, EpubBook epub) {
+        epub.addCoverImage(coverImage(metadata.getCover()),
+                "image/jpeg", "cover.jpg");
+        Content cover = epub.addTextContent("Cover", "cover.html",
+                "<img src=\"cover.jpg\" style=\"height:100%\"/>");
+        return cover;
+    }
+
+    private void addTableOfContents(EpubBook epub, Content cover) {
+        //TOC
+        List<TocLink> tocLinks = epub.getTocLinks();
+        epub.setTocLinks(tocLinks);
+        tocLinks.add(new TocLink(cover.getHref(), "Cover", ""));
+        htmlManuscript.sections()
+                .filter(HtmlSection::isEpub)
+                .filter(HtmlSection::isToc)
+                .forEach(section ->
+                        tocLinks.add(new TocLink(section.getHref(), section.getTitle(), "")));
     }
 
     private byte[] coverImage(String cover) {
