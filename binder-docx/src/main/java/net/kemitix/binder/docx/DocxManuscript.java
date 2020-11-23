@@ -4,21 +4,15 @@ import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.jaxb.Context;
-import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.DocumentSettingsPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
+import org.docx4j.openpackaging.parts.PartName;
+import org.docx4j.openpackaging.parts.WordprocessingML.FontTablePart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.NumberingDefinitionsPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.WebSettingsPart;
-import org.docx4j.relationships.Relationship;
-import org.docx4j.wml.CTSettings;
 import org.docx4j.wml.CTVerticalAlignRun;
-import org.docx4j.wml.FooterReference;
-import org.docx4j.wml.Ftr;
-import org.docx4j.wml.HdrFtrRef;
+import org.docx4j.wml.Fonts;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.PPr;
@@ -26,7 +20,6 @@ import org.docx4j.wml.PPrBase;
 import org.docx4j.wml.RFonts;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.STVerticalAlignRun;
-import org.docx4j.wml.SectPr;
 import org.docx4j.wml.Style;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -38,7 +31,6 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Log
@@ -83,6 +75,7 @@ public class DocxManuscript {
         var wordMLPackage = docx.getMlPackage();
         var mainDocument = wordMLPackage.getMainDocumentPart();
         mainDocument.addTargetPart(numberingDefinitionPart());
+        fontDefinitionsPart(mainDocument);
         styleDefinitionsPart(mainDocument);
         enabledEvenAndOddHeaders(mainDocument);
         mainDocument.getContent().addAll(getContents());
@@ -98,12 +91,31 @@ public class DocxManuscript {
     }
 
     @SneakyThrows
+    private void fontDefinitionsPart(MainDocumentPart mainDocument) {
+        FontTablePart part = new FontTablePart(new PartName("/word/fontTable.xml"));
+        mainDocument.addTargetPart(part);
+        Fonts defaultFonts = (Fonts) part.unmarshalDefaultFonts();
+        part.setJaxbElement(defaultFonts);
+    }
+
+    @SneakyThrows
     private void styleDefinitionsPart(MainDocumentPart mainDocument) {
         var part = mainDocument.getStyleDefinitionsPart(true);
         List<Style> styles = part.getContents().getStyle();
         styles.add(styleFootnote());
         styles.add(styleFootnoteAnchor());
         styles.add(styleFootnoteCharacters());
+
+        RFonts rFonts = factory.createRFonts();
+        rFonts.setAscii("Cambria");
+        rFonts.setHAnsi("Cambria");
+
+        RPr rpr = factory.createRPr();
+        rpr.setRFonts(rFonts);
+
+        String normalId = part.getIDForStyleName("Normal");
+        Style normal = part.getStyleById(normalId);
+        normal.setRPr(rpr);
     }
 
     // The character that appears in the body of the text indicating
