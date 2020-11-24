@@ -9,18 +9,15 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class HeadingEpubNodeHandler
-        implements HeadingNodeHandler<String>, EpubNodeHandler {
+        implements HeadingNodeHandler<String>,
+        EpubNodeHandler, AlignableParagraph {
 
     public Stream<String> hierarchicalHeader(
             int level,
             String text,
             Context context
     ) {
-        //TODO: use context.getAlign
-        return Stream.of(
-                "<h%d>%s</h%d>".formatted(
-                level, text, level
-        ));
+        return align("h%d".formatted(level), text, context);
     }
 
     @Override

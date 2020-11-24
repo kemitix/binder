@@ -9,14 +9,14 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class ParagraphEpubNodeHandler
-        implements ParagraphNodeHandler<String>, EpubNodeHandler {
+        implements ParagraphNodeHandler<String>,
+        EpubNodeHandler,
+        AlignableParagraph {
     @Override
     public Stream<String> paragraphBody(
             Stream<String> content,
             Context context
     ) {
-        return Stream.of(
-                "<p>%s</p>\n".formatted(collect(content))
-        );
+        return align("p", "%s\n".formatted(collect(content)), context);
     }
 }
