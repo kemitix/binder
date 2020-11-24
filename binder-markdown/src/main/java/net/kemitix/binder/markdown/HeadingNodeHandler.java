@@ -30,10 +30,10 @@ public interface HeadingNodeHandler<T>
         if (context.isType(Section.Type.story)) {
             return breakHeader(text);
         }
-        return hierarchicalHeader(level, text);
+        return hierarchicalHeader(level, text, context);
     }
 
-    Stream<T> hierarchicalHeader(int level, String text);
+    Stream<T> hierarchicalHeader(int level, String text, Context context);
 
     default Stream<T> breakHeader(String text) {
         if (text.isBlank()) return blankBreak();

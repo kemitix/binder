@@ -1,7 +1,9 @@
 package net.kemitix.binder.docx.mdconvert;
 
 import net.kemitix.binder.docx.DocxFacade;
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.HeadingNodeHandler;
+import org.docx4j.wml.P;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -11,7 +13,8 @@ import java.util.stream.Stream;
 @Docx
 @ApplicationScoped
 public class HeadingDocxNodeHandler
-        implements HeadingNodeHandler<Object> {
+        implements HeadingNodeHandler<Object>,
+        AlignableParagraph {
 
     private final DocxFacade docx;
 
@@ -21,8 +24,15 @@ public class HeadingDocxNodeHandler
     }
 
     @Override
-    public Stream<Object> hierarchicalHeader(int level, String text) {
-        return Stream.of(docx.heading(level, text));
+    public Stream<Object> hierarchicalHeader(
+            int level,
+            String text,
+            Context context
+    ) {
+        return alignP(
+                docx.heading(level, text),
+                docx,
+                context);
     }
 
     @Override

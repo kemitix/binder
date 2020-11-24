@@ -98,7 +98,7 @@ public class DocxFacade {
                                 metadata.getTitle(),
                                 metadata.getIssue())));
 
-        P pageNumberPlaceholder = pCentered(p(pageNumberPlaceholder()));
+        P pageNumberPlaceholder = alignCenter(p(pageNumberPlaceholder()));
         addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
         addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
         return p(ppr(sectPr));
@@ -286,7 +286,7 @@ public class DocxFacade {
     }
 
     public P textParagraphCentered(String text) {
-        return pCentered(p(r(t(text))));
+        return alignCenter(p(r(t(text))));
     }
 
     public P p(PPr pPr) {
@@ -309,13 +309,23 @@ public class DocxFacade {
         return p;
     }
 
-    public P pCentered(P p) {
-        pPr(p).setJc(jc(JcEnumeration.CENTER));
+    public P alignFull(P p) {
+        pPr(p).setJc(jc(JcEnumeration.BOTH));
         return p;
     }
 
-    public P pJustified(P p) {
-        pPr(p).setJc(jc(JcEnumeration.BOTH));
+    public P alignLeft(P p) {
+        pPr(p).setJc(jc(JcEnumeration.LEFT));
+        return p;
+    }
+
+    public P alignRight(P p) {
+        pPr(p).setJc(jc(JcEnumeration.RIGHT));
+        return p;
+    }
+
+    public P alignCenter(P p) {
+        pPr(p).setJc(jc(JcEnumeration.CENTER));
         return p;
     }
 
@@ -359,7 +369,7 @@ public class DocxFacade {
         R r = r();
         List<Object> content = r.getContent();
         Collections.addAll(content, drawings);
-        return pCentered(p(r));
+        return alignCenter(p(r));
     }
 
     public List<P> leaders() {
