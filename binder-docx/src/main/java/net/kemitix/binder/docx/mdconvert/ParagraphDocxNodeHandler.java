@@ -3,6 +3,9 @@ package net.kemitix.binder.docx.mdconvert;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.ParagraphNodeHandler;
+import net.kemitix.binder.spi.Section;
+import org.docx4j.wml.P;
+import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -11,7 +14,8 @@ import java.util.stream.Stream;
 @Docx
 @ApplicationScoped
 public class ParagraphDocxNodeHandler
-        implements ParagraphNodeHandler<Object> {
+        implements ParagraphNodeHandler<Object>,
+        AlignableParagraph {
 
     private final DocxFacade docx;
 
@@ -25,15 +29,10 @@ public class ParagraphDocxNodeHandler
             Stream<Object> content,
             Context context
     ) {
-        if (context.isJustified()) {
-            return Stream.of(
-                    docx.pJustified(
-                            docx.p(content.toArray()))
-            );
-        }
-        return Stream.of(
-                docx.p(content.toArray())
-        );
+        return alignP(
+                docx.p(content.toArray()),
+                docx,
+                context);
     }
 
 }

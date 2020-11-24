@@ -9,9 +9,6 @@ import lombok.With;
 
 import java.io.File;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * A general section of the document. Sourced from a single Markdown file.
@@ -39,7 +36,7 @@ public class Section {
     private int copyright; // the year the story was copyrighted
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
-    private boolean justified = true; // full justify paragraphs
+    private Align align = Align.full; // full justify paragraphs
 
     public boolean isType(Type type) {
         return this.type.equals(type);
@@ -58,5 +55,12 @@ public class Section {
             return section.getType().equals(this);
         }
 
+    }
+
+    public enum Align {
+        left,
+        right,
+        full,
+        centre
     }
 }

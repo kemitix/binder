@@ -32,9 +32,10 @@ public interface Context {
             }
 
             @Override
-            public boolean isJustified() {
-                return section.isJustified();
+            public Section.Align getAlign() {
+                return section.getAlign();
             }
+
             //TODO access values in Section as required
         };
     }
@@ -62,8 +63,8 @@ public interface Context {
             }
 
             @Override
-            public boolean isJustified() {
-                return true;
+            public Section.Align getAlign() {
+                return Section.Align.full;
             }
         };
     }
@@ -76,5 +77,5 @@ public interface Context {
 
     String getName();
 
-    boolean isJustified();
+    Section.Align getAlign();
 }

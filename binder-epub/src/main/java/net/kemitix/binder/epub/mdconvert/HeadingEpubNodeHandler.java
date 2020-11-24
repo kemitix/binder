@@ -1,5 +1,6 @@
 package net.kemitix.binder.epub.mdconvert;
 
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.HeadingNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,7 +11,12 @@ import java.util.stream.Stream;
 public class HeadingEpubNodeHandler
         implements HeadingNodeHandler<String>, EpubNodeHandler {
 
-    public Stream<String> hierarchicalHeader(int level, String text) {
+    public Stream<String> hierarchicalHeader(
+            int level,
+            String text,
+            Context context
+    ) {
+        //TODO: use context.getAlign
         return Stream.of(
                 "<h%d>%s</h%d>".formatted(
                 level, text, level
