@@ -37,7 +37,7 @@ public interface Context {
             }
 
             @Override
-            public int getFontSize() {
+            public float getFontSize() {
                 return section.getFontSize();
             }
 
@@ -88,7 +88,7 @@ public interface Context {
             }
 
             @Override
-            public int getFontSize() {
+            public float getFontSize() {
                 return 0;
             }
 
@@ -119,7 +119,7 @@ public interface Context {
 
     Section.Align getAlign();
 
-    int getFontSize();
+    float getFontSize();
 
     String getParaStyleName();
 

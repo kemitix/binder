@@ -818,9 +818,9 @@ public class DocxFacade {
         return rPr;
     }
 
-    public HpsMeasure sz(int fontSize) {
+    public HpsMeasure sz(float fontSize) {
         HpsMeasure hpsMeasure = factory.createHpsMeasure();
-        hpsMeasure.setVal(BigInteger.valueOf(fontSize * 2));
+        hpsMeasure.setVal(BigInteger.valueOf((long) (fontSize * 2)));
         return hpsMeasure;
     }
 
@@ -865,7 +865,7 @@ public class DocxFacade {
         return style;
     }
 
-    public Style fontSize(int fontSize, Style style) {
+    public Style fontSize(float fontSize, Style style) {
         RPr rPr = rPr(style);
         rPr.setSz(sz(fontSize));
         rPr.setSzCs(sz(fontSize));

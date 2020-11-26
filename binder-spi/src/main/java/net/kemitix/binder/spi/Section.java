@@ -31,7 +31,7 @@ public class Section {
     private String name; // the base filename
     private String author;
     private String bio = "TODO"; // the author bio
-    private int fontSize = 11;
+    private float fontSize = 11;
     private boolean header = true; // should there be a header
     private boolean footer = true; // should there be a footer
     private int page = 0; // page in paperback to toc
