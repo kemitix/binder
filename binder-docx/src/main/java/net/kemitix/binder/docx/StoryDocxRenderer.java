@@ -57,6 +57,7 @@ public class StoryDocxRenderer
         contents.addAll(objects.collect(Collectors.toList()));
         contents.addAll(aboutAuthor(section));
         Context context = Context.create(section);
+        docx.addStyle(docx.paraStyle(context));
         contents.add(docx.finaliseSection(context));
         return Stream.of(new DocxContent(contents));
     }
