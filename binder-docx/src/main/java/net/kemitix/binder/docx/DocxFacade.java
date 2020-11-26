@@ -6,8 +6,6 @@ import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.convert.out.flatOpcXml.FlatOpcXmlCreator;
-import org.docx4j.model.structure.HeaderFooterPolicy;
-import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
@@ -19,7 +17,6 @@ import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.CTFootnotes;
 import org.docx4j.wml.CTFtnEdn;
 import org.docx4j.wml.CTFtnEdnRef;
-import org.docx4j.wml.CTSectPrChange;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.Drawing;
 import org.docx4j.wml.FldChar;
@@ -92,38 +89,52 @@ public class DocxFacade {
         if (context.hasHeader()) {
             addDefaultPageHeader(sectPr, context.getName(), p());
         } else {
-            addBlankPageHeader(sectPr);
+            addBlankPageHeader(sectPr, context.getName());
         }
-
-        //FIXME: don't pull in headers from previous section
-
-
         if (context.hasFooter()) {
             addDefaultPageFooter(sectPr, context.getName(), p());
+        } else {
+            addBlankPageFooter(sectPr, context.getName());
         }
         return p(ppr(sectPr));
     }
 
-    private void addBlankPageHeader(SectPr sectPr) {
-        addPageHeader(sectPr, "", HdrFtrRef.DEFAULT, p());
-        addPageHeader(sectPr, "", HdrFtrRef.EVEN, p());
-        addPageHeader(sectPr, "", HdrFtrRef.FIRST, p());
+    public P finaliseSection(Context context) {
+        SectPr sectPr = sectPr(sectPrType("oddPage"));
+        String name = context.getName();
+        String title = context.getTitle();
+        if (context.hasHeader()) {
+            addEvenPageHeader(sectPr, name, textParagraphCentered(title));
+            addDefaultPageHeader(sectPr, name,
+                    textParagraphCentered("%s Issue %s"
+                            .formatted(
+                                    metadata.getTitle(),
+                                    metadata.getIssue())));
+        } else {
+            addBlankPageHeader(sectPr, context.getName());
+        }
+        if (context.hasFooter()) {
+            P pageNumberPlaceholder = alignCenter(p(pageNumberPlaceholder()));
+            addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
+            addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
+        } else {
+            addBlankPageFooter(sectPr, context.getName());
+        }
+        return p(ppr(sectPr));
     }
 
-    public P finaliseSection(String name, String title) {
-        SectPr sectPr = sectPr(sectPrType("oddPage"));
+    private void addBlankPageHeader(SectPr sectPr, String name) {
+        P[] emptyP = {};
+        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
+        addPageHeader(sectPr, name, HdrFtrRef.EVEN, emptyP);
+        addPageHeader(sectPr, name, HdrFtrRef.FIRST, emptyP);
+    }
 
-        addEvenPageHeader(sectPr, name, textParagraphCentered(title));
-        addDefaultPageHeader(sectPr, name,
-                textParagraphCentered("%s Issue %s"
-                        .formatted(
-                                metadata.getTitle(),
-                                metadata.getIssue())));
-
-        P pageNumberPlaceholder = alignCenter(p(pageNumberPlaceholder()));
-        addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
-        addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
-        return p(ppr(sectPr));
+    private void addBlankPageFooter(SectPr sectPr, String name) {
+        P[] emptyP = {};
+        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
+        addPageFooter(sectPr, name, HdrFtrRef.EVEN, emptyP);
+        addPageFooter(sectPr, name, HdrFtrRef.FIRST, emptyP);
     }
 
     @SneakyThrows
@@ -677,7 +688,9 @@ public class DocxFacade {
             String name,
             P pageFooter
     ) {
-        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, pageFooter);
+        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
+                p(), pageFooter
+        });
     }
 
     @SneakyThrows
@@ -686,7 +699,9 @@ public class DocxFacade {
             String name,
             P pageFooter
     ) {
-        addPageFooter(sectPr, name, HdrFtrRef.EVEN, pageFooter);
+        addPageFooter(sectPr, name, HdrFtrRef.EVEN, new P[]{
+                p(), pageFooter
+        });
     }
 
     @SneakyThrows
@@ -695,7 +710,9 @@ public class DocxFacade {
             String name,
             P pageFooter
     ) {
-        addPageFooter(sectPr, name, HdrFtrRef.FIRST, pageFooter);
+        addPageFooter(sectPr, name, HdrFtrRef.FIRST, new P[]{
+                p(), pageFooter
+        });
     }
 
     @SneakyThrows
@@ -704,7 +721,9 @@ public class DocxFacade {
             String name,
             P pageHeader
     ) {
-        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, pageHeader);
+        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
+                pageHeader, p()
+        });
     }
 
     @SneakyThrows
@@ -713,7 +732,9 @@ public class DocxFacade {
             String name,
             P pageHeader
     ) {
-        addPageHeader(sectPr, name, HdrFtrRef.EVEN, pageHeader);
+        addPageHeader(sectPr, name, HdrFtrRef.EVEN, new P[]{
+                pageHeader, p()
+        });
     }
 
     @SneakyThrows
@@ -722,7 +743,9 @@ public class DocxFacade {
             String name,
             P pageHeader
     ) {
-        addPageHeader(sectPr, name, HdrFtrRef.FIRST, pageHeader);
+        addPageHeader(sectPr, name, HdrFtrRef.FIRST, new P[]{
+                pageHeader, p()
+        });
     }
 
     @SneakyThrows
@@ -730,7 +753,7 @@ public class DocxFacade {
             SectPr sectPr,
             String name,
             HdrFtrRef hdrFtrRef,
-            P footerContent
+            P[] footerContent
     ) {
         FooterPart footerPart = new FooterPart();
         PartName partName = new PartName("/word/footer-%s-%s.xml".formatted(
@@ -739,8 +762,7 @@ public class DocxFacade {
         Relationship relationship = mainDocumentPart().addTargetPart(footerPart);
         Ftr ftr = factory.createFtr();
         footerPart.setJaxbElement(ftr);
-        ftr.getContent().add(p());
-        ftr.getContent().add(footerContent);
+        ftr.getContent().addAll(Arrays.asList(footerContent));
         FooterReference footerReference = factory.createFooterReference();
         footerReference.setId(relationship.getId());
         footerReference.setType(hdrFtrRef);
@@ -752,7 +774,7 @@ public class DocxFacade {
             SectPr sectPr,
             String name,
             HdrFtrRef hdrFtrRef,
-            P headerContent
+            P[] headerContent
     ) {
         HeaderPart headerPart = new HeaderPart();
         PartName partName = new PartName("/word/header-%s-%s.xml".formatted(
@@ -761,8 +783,8 @@ public class DocxFacade {
         Relationship relationship = mainDocumentPart().addTargetPart(headerPart);
         Hdr hdr = factory.createHdr();
         headerPart.setJaxbElement(hdr);
-        hdr.getContent().add(headerContent);
-        hdr.getContent().add(p());
+        hdr.getContent().addAll(Arrays.asList(headerContent));
+        //hdr.getContent().add(p());
         HeaderReference headerReference = factory.createHeaderReference();
         headerReference.setId(relationship.getId());
         headerReference.setType(hdrFtrRef);
