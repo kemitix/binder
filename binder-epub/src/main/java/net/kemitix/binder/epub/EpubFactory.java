@@ -4,7 +4,6 @@ import coza.opencollab.epub.creator.api.MetadataItem;
 import coza.opencollab.epub.creator.model.Content;
 import coza.opencollab.epub.creator.model.EpubBook;
 import coza.opencollab.epub.creator.model.TocLink;
-import lombok.extern.java.Log;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-@Log
 @ApplicationScoped
 public class EpubFactory {
 
@@ -68,9 +66,8 @@ public class EpubFactory {
     private Content addCover(Metadata metadata, EpubBook epub) {
         epub.addCoverImage(coverImage(metadata.getCover()),
                 "image/jpeg", "cover.jpg");
-        Content cover = epub.addTextContent("Cover", "cover.html",
+        return epub.addTextContent("Cover", "cover.html",
                 "<img src=\"cover.jpg\" style=\"height:100%\"/>");
-        return cover;
     }
 
     private void addTableOfContents(EpubBook epub, Content cover) {
@@ -101,18 +98,13 @@ public class EpubFactory {
             Stream<HtmlSection> sections
     ) {
         String language = metadata.getLanguage();
-        log.info("Language: " + language);
         String id = Objects.requireNonNull(metadata.getId(), "metadata id");
-        log.info("Id: " + id);
         String title = "%s Issue %d".formatted(
                 metadata.getTitle(), metadata.getIssue());
-        log.info("Title: " + title);
         String editor = metadata.getEditor();
-        log.info("Editor: " + editor);
         EpubBook epubBook = new EpubBook(language, id, title, editor);
         MetadataItem.Builder mib = MetadataItem.builder();
         var meta = mib.name("meta");
-        var dcCreator = mib.name("dc:creator");
         var metadataItems = Arrays.asList(
                 mib.name("dc:description").value(metadata.getDescription()),
                 mib.name("dc:contributor").id("editor-id").value(metadata.getEditor()),
@@ -124,6 +116,7 @@ public class EpubFactory {
                 meta.property("group-position").refines("#collection-id").value(Integer.toString(metadata.getIssue()))
         );
         metadataItems.forEach(epubBook::addMetadata);
+        var dcCreator = mib.name("dc:creator");
         sections.map(Section::getAuthor)
                 .filter(Objects::nonNull)
                 .map(dcCreator::value)

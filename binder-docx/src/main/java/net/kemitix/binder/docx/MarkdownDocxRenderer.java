@@ -5,6 +5,7 @@ import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
+import org.docx4j.wml.Style;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -42,13 +43,28 @@ public class MarkdownDocxRenderer
     public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
         addTitle(section, contents);
+        Context context = Context.create(section);
         contents.addAll(
                 converter.convert(
-                        Context.create(section),
+                        context,
                         section.getMarkdown()
                 ).collect(Collectors.toList()));
-        contents.add(docx.finaliseTitlePage(section.getName()));
+        contents.add(docx.finaliseTitlePage(context));
+        docx.addStyle(paraStyle(context));
         return Stream.of(new DocxContent(contents));
+    }
+
+    private Style paraStyle(Context context) {
+        return docx.fontSize(
+                context.getFontSize(),
+                docx.createParaStyleBasedOn(
+                        context.getParaStyleName(),
+                        "Normal"));
+    }
+
+    private Style charStyle(Section section) {
+        String styleName = "section-%s-char".formatted(section.getName());
+        return docx.createCharStyleBasedOn(styleName, "D");
     }
 
     private void addTitle(Section sec, List<Object> contents) {

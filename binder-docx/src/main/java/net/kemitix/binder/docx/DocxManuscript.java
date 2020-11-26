@@ -2,6 +2,7 @@ package net.kemitix.binder.docx;
 
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
+import net.kemitix.binder.spi.Metadata;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
@@ -40,19 +41,21 @@ public class DocxManuscript {
     private final List<DocxContent> contents;
 
     private final DocxFacade docx;
+    private final Metadata metadata;
     private final ObjectFactory factory = new ObjectFactory();
 
     @Inject
     public DocxManuscript(
             List<DocxContent> contents,
-            DocxFacade docx
+            DocxFacade docx,
+            Metadata metadata
     ) {
         this.contents = contents;
         this.docx = docx;
+        this.metadata = metadata;
     }
 
     public void writeToFile(String fileName) {
-        log.info("Write: " + fileName);
         configureFontMapping();
         try {
             File file = new File(fileName);
@@ -155,8 +158,7 @@ public class DocxManuscript {
 
         // Font size 11pt (i.e. 22 /2)
         RPr rPr = factory.createRPr();
-        HpsMeasure sz = factory.createHpsMeasure();
-        sz.setVal(BigInteger.valueOf(22));
+        HpsMeasure sz = docx.sz(metadata.getPaperbackFootnoteFontSize());
         rPr.setSz(sz);
         rPr.setSzCs(sz);
         style.setRPr(rPr);
@@ -197,8 +199,7 @@ public class DocxManuscript {
 
         // Font size 10pt (i.e. 20 /2)
         RPr rPr = factory.createRPr();
-        HpsMeasure sz = factory.createHpsMeasure();
-        sz.setVal(BigInteger.valueOf(20));
+        HpsMeasure sz = docx.sz(metadata.getPaperbackFootnoteFontSize());
         rPr.setSz(sz);
         rPr.setSzCs(sz);
         style.setRPr(rPr);

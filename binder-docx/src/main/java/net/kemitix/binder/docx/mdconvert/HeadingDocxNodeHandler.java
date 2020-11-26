@@ -3,7 +3,6 @@ package net.kemitix.binder.docx.mdconvert;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.HeadingNodeHandler;
-import org.docx4j.wml.P;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,6 +28,13 @@ public class HeadingDocxNodeHandler
             String text,
             Context context
     ) {
+        if (text.isBlank()) {
+            return Stream.of(
+                    docx.styledP(
+                            context.getParaStyleName(),
+                            docx.textParagraph(""))
+            );
+        }
         return alignP(
                 docx.heading(level, text),
                 docx,

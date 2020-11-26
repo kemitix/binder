@@ -35,6 +35,6 @@ public class DocxWriter
                     "Error creating docx file %s: %s",
                     docxFile, e.getMessage()), e);
         }
-
+        log.info("Wrote: " + docxFile);
     }
 }

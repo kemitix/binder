@@ -26,6 +26,8 @@ public class Metadata {
     private String cover;
     private String coverArtist;
     private File titleFont;
+    private int paperbackFontSize;
+    private int paperbackFootnoteFontSize;
     private float paperbackPageWidthInches;
     private float paperbackPageHeightInches;
     private float paperbackMarginSides;

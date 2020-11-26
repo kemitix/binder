@@ -3,9 +3,7 @@ package net.kemitix.binder.docx.mdconvert;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.ParagraphNodeHandler;
-import net.kemitix.binder.spi.Section;
 import org.docx4j.wml.P;
-import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,8 +27,11 @@ public class ParagraphDocxNodeHandler
             Stream<Object> content,
             Context context
     ) {
+        ;
         return alignP(
-                docx.p(content.toArray()),
+                docx.styledP(
+                        context.getParaStyleName(),
+                        docx.p(content.toArray())),
                 docx,
                 context);
     }

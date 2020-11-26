@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
 
@@ -52,7 +53,8 @@ public class PlateDocxRenderer
                                 section.getMarkdown(),
                                 FontSize.of(240))));
         contents.add(docx.textParagraph(""));
-        contents.add(docx.finaliseTitlePage(section.getName()));
+        Context context = Context.create(section);
+        contents.add(docx.finaliseTitlePage(context));
         return Stream.of(new DocxContent(contents));
     }
 

@@ -2,10 +2,10 @@ package net.kemitix.binder.docx;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.convert.out.flatOpcXml.FlatOpcXmlCreator;
-import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
@@ -40,6 +40,7 @@ import org.docx4j.wml.STFldCharType;
 import org.docx4j.wml.STFtnEdn;
 import org.docx4j.wml.STTabJc;
 import org.docx4j.wml.SectPr;
+import org.docx4j.wml.Style;
 import org.docx4j.wml.Tabs;
 import org.docx4j.wml.Text;
 
@@ -58,6 +59,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static org.docx4j.jaxb.Context.*;
+
 @ApplicationScoped
 public class DocxFacade {
 
@@ -66,7 +69,7 @@ public class DocxFacade {
     @Getter
     private final WordprocessingMLPackage mlPackage;
 
-    private final ObjectFactory factory = Context.getWmlObjectFactory();
+    private final ObjectFactory factory = getWmlObjectFactory();
     private final AtomicInteger myFootnoteRef = new AtomicInteger(0);
 
     @Inject
@@ -81,27 +84,65 @@ public class DocxFacade {
         sectPr.setPgMar(pgMar());
     }
 
-    public P finaliseTitlePage(String name) {
+    public P finaliseTitlePage(Context context) {
         SectPr sectPr = sectPr(sectPrType("oddPage"));
-        addDefaultPageHeader(sectPr, name, p());
-        addDefaultPageFooter(sectPr, name, p());
+        if (context.hasHeader()) {
+            addDefaultPageHeader(sectPr, context.getName(), p());
+        } else {
+            addBlankPageHeader(sectPr, context.getName());
+        }
+        if (context.hasFooter()) {
+            addDefaultPageFooter(sectPr, context.getName(), p());
+        } else {
+            addBlankPageFooter(sectPr, context.getName());
+        }
         return p(ppr(sectPr));
     }
 
-    public P finaliseSection(String name, String title) {
+    public P finaliseSection(Context context) {
         SectPr sectPr = sectPr(sectPrType("oddPage"));
-
-        addEvenPageHeader(sectPr, name, textParagraphCentered(title));
-        addDefaultPageHeader(sectPr, name,
-                textParagraphCentered("%s Issue %s"
-                        .formatted(
-                                metadata.getTitle(),
-                                metadata.getIssue())));
-
-        P pageNumberPlaceholder = alignCenter(p(pageNumberPlaceholder()));
-        addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
-        addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
+        String name = context.getName();
+        String title = context.getTitle();
+        if (context.hasHeader()) {
+            addEvenPageHeader(sectPr, name, textParagraphCentered(title));
+            addDefaultPageHeader(sectPr, name,
+                    textParagraphCentered("%s Issue %s"
+                            .formatted(
+                                    metadata.getTitle(),
+                                    metadata.getIssue())));
+        } else {
+            addBlankPageHeader(sectPr, context.getName());
+        }
+        if (context.hasFooter()) {
+            P pageNumberPlaceholder = alignCenter(p(pageNumberPlaceholder()));
+            addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
+            addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
+        } else {
+            addBlankPageFooter(sectPr, context.getName());
+        }
         return p(ppr(sectPr));
+    }
+
+    private void addBlankPageHeader(SectPr sectPr, String name) {
+        P[] emptyP = {};
+        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
+        addPageHeader(sectPr, name, HdrFtrRef.EVEN, emptyP);
+        addPageHeader(sectPr, name, HdrFtrRef.FIRST, emptyP);
+    }
+
+    private void addBlankPageFooter(SectPr sectPr, String name) {
+        P[] emptyP = {};
+        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
+        addPageFooter(sectPr, name, HdrFtrRef.EVEN, emptyP);
+        addPageFooter(sectPr, name, HdrFtrRef.FIRST, emptyP);
+    }
+
+    @SneakyThrows
+    public void addStyle(Style style) {
+        var part = mlPackage.getMainDocumentPart()
+                .getStyleDefinitionsPart(true);
+        List<Style> styles = part.getContents().getStyle();
+        styles.add(style);
     }
 
     public R[] pageNumberPlaceholder() {
@@ -329,7 +370,7 @@ public class DocxFacade {
         return p;
     }
 
-    private PPr pPr(P p) {
+    public PPr pPr(P p) {
         PPr pPr = Objects.requireNonNullElseGet(
                 p.getPPr(),
                 factory::createPPr
@@ -648,7 +689,9 @@ public class DocxFacade {
             String name,
             P pageFooter
     ) {
-        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, pageFooter);
+        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
+                p(), pageFooter
+        });
     }
 
     @SneakyThrows
@@ -657,7 +700,9 @@ public class DocxFacade {
             String name,
             P pageFooter
     ) {
-        addPageFooter(sectPr, name, HdrFtrRef.EVEN, pageFooter);
+        addPageFooter(sectPr, name, HdrFtrRef.EVEN, new P[]{
+                p(), pageFooter
+        });
     }
 
     @SneakyThrows
@@ -666,7 +711,9 @@ public class DocxFacade {
             String name,
             P pageFooter
     ) {
-        addPageFooter(sectPr, name, HdrFtrRef.FIRST, pageFooter);
+        addPageFooter(sectPr, name, HdrFtrRef.FIRST, new P[]{
+                p(), pageFooter
+        });
     }
 
     @SneakyThrows
@@ -675,7 +722,9 @@ public class DocxFacade {
             String name,
             P pageHeader
     ) {
-        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, pageHeader);
+        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
+                pageHeader, p()
+        });
     }
 
     @SneakyThrows
@@ -684,7 +733,9 @@ public class DocxFacade {
             String name,
             P pageHeader
     ) {
-        addPageHeader(sectPr, name, HdrFtrRef.EVEN, pageHeader);
+        addPageHeader(sectPr, name, HdrFtrRef.EVEN, new P[]{
+                pageHeader, p()
+        });
     }
 
     @SneakyThrows
@@ -693,7 +744,9 @@ public class DocxFacade {
             String name,
             P pageHeader
     ) {
-        addPageHeader(sectPr, name, HdrFtrRef.FIRST, pageHeader);
+        addPageHeader(sectPr, name, HdrFtrRef.FIRST, new P[]{
+                pageHeader, p()
+        });
     }
 
     @SneakyThrows
@@ -701,7 +754,7 @@ public class DocxFacade {
             SectPr sectPr,
             String name,
             HdrFtrRef hdrFtrRef,
-            P footerContent
+            P[] footerContent
     ) {
         FooterPart footerPart = new FooterPart();
         PartName partName = new PartName("/word/footer-%s-%s.xml".formatted(
@@ -710,8 +763,7 @@ public class DocxFacade {
         Relationship relationship = mainDocumentPart().addTargetPart(footerPart);
         Ftr ftr = factory.createFtr();
         footerPart.setJaxbElement(ftr);
-        ftr.getContent().add(p());
-        ftr.getContent().add(footerContent);
+        ftr.getContent().addAll(Arrays.asList(footerContent));
         FooterReference footerReference = factory.createFooterReference();
         footerReference.setId(relationship.getId());
         footerReference.setType(hdrFtrRef);
@@ -723,7 +775,7 @@ public class DocxFacade {
             SectPr sectPr,
             String name,
             HdrFtrRef hdrFtrRef,
-            P headerContent
+            P[] headerContent
     ) {
         HeaderPart headerPart = new HeaderPart();
         PartName partName = new PartName("/word/header-%s-%s.xml".formatted(
@@ -732,8 +784,8 @@ public class DocxFacade {
         Relationship relationship = mainDocumentPart().addTargetPart(headerPart);
         Hdr hdr = factory.createHdr();
         headerPart.setJaxbElement(hdr);
-        hdr.getContent().add(headerContent);
-        hdr.getContent().add(p());
+        hdr.getContent().addAll(Arrays.asList(headerContent));
+        //hdr.getContent().add(p());
         HeaderReference headerReference = factory.createHeaderReference();
         headerReference.setId(relationship.getId());
         headerReference.setType(hdrFtrRef);
@@ -746,5 +798,96 @@ public class DocxFacade {
         File file = new File("binder-pkg.xml");
         worker.marshal(new PrintStream(file));
         System.out.println("Wrote: " + file.getAbsolutePath());
+    }
+
+    public P fontSzP(int fontSize, P p) {
+        fontSzPPr(fontSize, pPr(p));
+        return p;
+    }
+
+    // This isn't setting the font size for the para!!
+    public PPr fontSzPPr(int fontSize, PPr pPr) {
+        fontSzParaRPr(fontSize, rPr(pPr));
+        return pPr;
+    }
+
+    public ParaRPr fontSzParaRPr(int fontSize, ParaRPr rPr) {
+        HpsMeasure sz = sz(fontSize);
+        rPr.setSz(sz);
+        rPr.setSzCs(sz);
+        return rPr;
+    }
+
+    public HpsMeasure sz(int fontSize) {
+        HpsMeasure hpsMeasure = factory.createHpsMeasure();
+        hpsMeasure.setVal(BigInteger.valueOf(fontSize * 2));
+        return hpsMeasure;
+    }
+
+    public ParaRPr rPr(PPr pPr) {
+        ParaRPr rPr = Objects.requireNonNullElseGet(
+                pPr.getRPr(),
+                factory::createParaRPr
+        );
+        pPr.setRPr(rPr);
+        return rPr;
+    }
+
+    public Style createParaStyleBasedOn(String name, String basedOn) {
+        Style style = named(name, basedOn(basedOn, createStyle(name)));
+        style.setType("paragraph");
+        return style;
+    }
+
+    private Style named(String name, Style style) {
+        Style.Name styleName = factory.createStyleName();
+        styleName.setVal(name);
+        style.setName(styleName);
+        return style;
+    }
+
+    private Style basedOn(String name, Style style) {
+        Style.BasedOn basedOn = factory.createStyleBasedOn();
+        basedOn.setVal(name);
+        style.setBasedOn(basedOn);
+        return style;
+    }
+
+    public Style createCharStyleBasedOn(String name, String basedOn) {
+        Style style = named(name, basedOn(basedOn, createStyle(name)));
+        style.setType("character");
+        return style;
+    }
+
+    private Style createStyle(String name) {
+        Style style = factory.createStyle();
+        style.setStyleId(name);
+        return style;
+    }
+
+    public Style fontSize(int fontSize, Style style) {
+        RPr rPr = rPr(style);
+        rPr.setSz(sz(fontSize));
+        rPr.setSzCs(sz(fontSize));
+        return style;
+    }
+
+    private RPr rPr(Style style) {
+        RPr rPr = Objects.requireNonNullElseGet(
+                style.getRPr(),
+                factory::createRPr
+        );
+        style.setRPr(rPr);
+        return rPr;
+    }
+
+    public P styledP(String styleName, P p) {
+        PPr pPr = pPr(p);
+
+        PPrBase.PStyle pStyle = factory.createPPrBasePStyle();
+        pPr.setPStyle(pStyle);
+        pStyle.setVal(styleName);
+
+        return p;
     }
 }
