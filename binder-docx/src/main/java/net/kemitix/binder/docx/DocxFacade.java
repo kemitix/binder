@@ -286,6 +286,7 @@ public class DocxFacade {
         SectPr sectPr = factory.createSectPr();
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
+        sectPr.setType(type);
         return sectPr;
     }
 
