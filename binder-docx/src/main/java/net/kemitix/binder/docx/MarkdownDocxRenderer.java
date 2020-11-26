@@ -50,16 +50,8 @@ public class MarkdownDocxRenderer
                         section.getMarkdown()
                 ).collect(Collectors.toList()));
         contents.add(docx.finaliseTitlePage(context));
-        docx.addStyle(paraStyle(context));
+        docx.addStyle(docx.paraStyle(context));
         return Stream.of(new DocxContent(contents));
-    }
-
-    private Style paraStyle(Context context) {
-        return docx.fontSize(
-                context.getFontSize(),
-                docx.createParaStyleBasedOn(
-                        context.getParaStyleName(),
-                        "Normal"));
     }
 
     private Style charStyle(Section section) {

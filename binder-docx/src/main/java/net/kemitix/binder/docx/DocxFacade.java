@@ -14,6 +14,8 @@ import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.relationships.Relationship;
+import org.docx4j.wml.CTColumns;
+import org.docx4j.wml.CTDocGrid;
 import org.docx4j.wml.CTFootnotes;
 import org.docx4j.wml.CTFtnEdn;
 import org.docx4j.wml.CTFtnEdnRef;
@@ -287,6 +289,18 @@ public class DocxFacade {
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
         sectPr.setType(type);
+
+        CTColumns ctColumns = factory.createCTColumns();
+        sectPr.setCols(ctColumns);
+        BigInteger topBottom = BigInteger.valueOf(
+                UnitsOfMeasurement.inchToTwip(
+                        metadata.getPaperbackMarginTopBottom()));
+        ctColumns.setSpace(topBottom);
+
+        CTDocGrid ctDocGrid = factory.createCTDocGrid();
+        sectPr.setDocGrid(ctDocGrid);
+        ctDocGrid.setLinePitch(topBottom);
+
         return sectPr;
     }
 
@@ -302,6 +316,9 @@ public class DocxFacade {
         pgMar.setBottom(topBottom);
         pgMar.setLeft(sides);
         pgMar.setRight(sides);
+        pgMar.setHeader(topBottom);
+        pgMar.setFooter(topBottom);
+        pgMar.setGutter(BigInteger.ZERO);
         return pgMar;
     }
 
@@ -763,7 +780,10 @@ public class DocxFacade {
         Relationship relationship = mainDocumentPart().addTargetPart(footerPart);
         Ftr ftr = factory.createFtr();
         footerPart.setJaxbElement(ftr);
-        ftr.getContent().addAll(Arrays.asList(footerContent));
+        List<Object> ftrContent = ftr.getContent();
+        Arrays.stream(footerContent)
+                .map(p -> styledP("Header", p))
+                .forEach(ftrContent::add);
         FooterReference footerReference = factory.createFooterReference();
         footerReference.setId(relationship.getId());
         footerReference.setType(hdrFtrRef);
@@ -784,12 +804,20 @@ public class DocxFacade {
         Relationship relationship = mainDocumentPart().addTargetPart(headerPart);
         Hdr hdr = factory.createHdr();
         headerPart.setJaxbElement(hdr);
-        hdr.getContent().addAll(Arrays.asList(headerContent));
-        //hdr.getContent().add(p());
+        List<Object> hdrContent = hdr.getContent();
+        Arrays.stream(headerContent)
+                .map(p -> styleP("Header", p))
+                .forEach(hdrContent::add);
         HeaderReference headerReference = factory.createHeaderReference();
         headerReference.setId(relationship.getId());
         headerReference.setType(hdrFtrRef);
         sectPr.getEGHdrFtrReferences().add(headerReference);
+    }
+
+    private P styleP(String header, P p) {
+        PPr pPr = pPr(p);
+        pPr.setPStyle(pStyle(header));
+        return p;
     }
 
     @SneakyThrows
@@ -890,4 +918,13 @@ public class DocxFacade {
 
         return p;
     }
+
+    public Style paraStyle(Context context) {
+        return fontSize(
+                context.getFontSize(),
+                createParaStyleBasedOn(
+                        context.getParaStyleName(),
+                        "Normal"));
+    }
+
 }
