@@ -6,6 +6,7 @@ import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
 import org.docx4j.wml.P;
+import org.docx4j.wml.Style;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

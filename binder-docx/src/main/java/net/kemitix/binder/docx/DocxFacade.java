@@ -2,10 +2,12 @@ package net.kemitix.binder.docx;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.convert.out.flatOpcXml.FlatOpcXmlCreator;
-import org.docx4j.jaxb.Context;
+import org.docx4j.model.structure.HeaderFooterPolicy;
+import org.docx4j.model.structure.SectionWrapper;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
@@ -17,6 +19,7 @@ import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.CTFootnotes;
 import org.docx4j.wml.CTFtnEdn;
 import org.docx4j.wml.CTFtnEdnRef;
+import org.docx4j.wml.CTSectPrChange;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.Drawing;
 import org.docx4j.wml.FldChar;
@@ -40,6 +43,7 @@ import org.docx4j.wml.STFldCharType;
 import org.docx4j.wml.STFtnEdn;
 import org.docx4j.wml.STTabJc;
 import org.docx4j.wml.SectPr;
+import org.docx4j.wml.Style;
 import org.docx4j.wml.Tabs;
 import org.docx4j.wml.Text;
 
@@ -58,6 +62,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static org.docx4j.jaxb.Context.*;
+
 @ApplicationScoped
 public class DocxFacade {
 
@@ -66,7 +72,7 @@ public class DocxFacade {
     @Getter
     private final WordprocessingMLPackage mlPackage;
 
-    private final ObjectFactory factory = Context.getWmlObjectFactory();
+    private final ObjectFactory factory = getWmlObjectFactory();
     private final AtomicInteger myFootnoteRef = new AtomicInteger(0);
 
     @Inject
@@ -81,11 +87,27 @@ public class DocxFacade {
         sectPr.setPgMar(pgMar());
     }
 
-    public P finaliseTitlePage(String name) {
+    public P finaliseTitlePage(Context context) {
         SectPr sectPr = sectPr(sectPrType("oddPage"));
-        addDefaultPageHeader(sectPr, name, p());
-        addDefaultPageFooter(sectPr, name, p());
+        if (context.hasHeader()) {
+            addDefaultPageHeader(sectPr, context.getName(), p());
+        } else {
+            addBlankPageHeader(sectPr);
+        }
+
+        //FIXME: don't pull in headers from previous section
+
+
+        if (context.hasFooter()) {
+            addDefaultPageFooter(sectPr, context.getName(), p());
+        }
         return p(ppr(sectPr));
+    }
+
+    private void addBlankPageHeader(SectPr sectPr) {
+        addPageHeader(sectPr, "", HdrFtrRef.DEFAULT, p());
+        addPageHeader(sectPr, "", HdrFtrRef.EVEN, p());
+        addPageHeader(sectPr, "", HdrFtrRef.FIRST, p());
     }
 
     public P finaliseSection(String name, String title) {
@@ -102,6 +124,14 @@ public class DocxFacade {
         addEvenPageFooter(sectPr, name, pageNumberPlaceholder);
         addDefaultPageFooter(sectPr, name, pageNumberPlaceholder);
         return p(ppr(sectPr));
+    }
+
+    @SneakyThrows
+    public void addStyle(Style style) {
+        var part = mlPackage.getMainDocumentPart()
+                .getStyleDefinitionsPart(true);
+        List<Style> styles = part.getContents().getStyle();
+        styles.add(style);
     }
 
     public R[] pageNumberPlaceholder() {
@@ -245,7 +275,6 @@ public class DocxFacade {
         SectPr sectPr = factory.createSectPr();
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
-        sectPr.setType(type);
         return sectPr;
     }
 
@@ -329,7 +358,7 @@ public class DocxFacade {
         return p;
     }
 
-    private PPr pPr(P p) {
+    public PPr pPr(P p) {
         PPr pPr = Objects.requireNonNullElseGet(
                 p.getPPr(),
                 factory::createPPr
@@ -746,5 +775,96 @@ public class DocxFacade {
         File file = new File("binder-pkg.xml");
         worker.marshal(new PrintStream(file));
         System.out.println("Wrote: " + file.getAbsolutePath());
+    }
+
+    public P fontSzP(int fontSize, P p) {
+        fontSzPPr(fontSize, pPr(p));
+        return p;
+    }
+
+    // This isn't setting the font size for the para!!
+    public PPr fontSzPPr(int fontSize, PPr pPr) {
+        fontSzParaRPr(fontSize, rPr(pPr));
+        return pPr;
+    }
+
+    public ParaRPr fontSzParaRPr(int fontSize, ParaRPr rPr) {
+        HpsMeasure sz = sz(fontSize);
+        rPr.setSz(sz);
+        rPr.setSzCs(sz);
+        return rPr;
+    }
+
+    public HpsMeasure sz(int fontSize) {
+        HpsMeasure hpsMeasure = factory.createHpsMeasure();
+        hpsMeasure.setVal(BigInteger.valueOf(fontSize * 2));
+        return hpsMeasure;
+    }
+
+    public ParaRPr rPr(PPr pPr) {
+        ParaRPr rPr = Objects.requireNonNullElseGet(
+                pPr.getRPr(),
+                factory::createParaRPr
+        );
+        pPr.setRPr(rPr);
+        return rPr;
+    }
+
+    public Style createParaStyleBasedOn(String name, String basedOn) {
+        Style style = named(name, basedOn(basedOn, createStyle(name)));
+        style.setType("paragraph");
+        return style;
+    }
+
+    private Style named(String name, Style style) {
+        Style.Name styleName = factory.createStyleName();
+        styleName.setVal(name);
+        style.setName(styleName);
+        return style;
+    }
+
+    private Style basedOn(String name, Style style) {
+        Style.BasedOn basedOn = factory.createStyleBasedOn();
+        basedOn.setVal(name);
+        style.setBasedOn(basedOn);
+        return style;
+    }
+
+    public Style createCharStyleBasedOn(String name, String basedOn) {
+        Style style = named(name, basedOn(basedOn, createStyle(name)));
+        style.setType("character");
+        return style;
+    }
+
+    private Style createStyle(String name) {
+        Style style = factory.createStyle();
+        style.setStyleId(name);
+        return style;
+    }
+
+    public Style fontSize(int fontSize, Style style) {
+        RPr rPr = rPr(style);
+        rPr.setSz(sz(fontSize));
+        rPr.setSzCs(sz(fontSize));
+        return style;
+    }
+
+    private RPr rPr(Style style) {
+        RPr rPr = Objects.requireNonNullElseGet(
+                style.getRPr(),
+                factory::createRPr
+        );
+        style.setRPr(rPr);
+        return rPr;
+    }
+
+    public P styledP(String styleName, P p) {
+        PPr pPr = pPr(p);
+
+        PPrBase.PStyle pStyle = factory.createPPrBasePStyle();
+        pPr.setPStyle(pStyle);
+        pStyle.setVal(styleName);
+
+        return p;
     }
 }

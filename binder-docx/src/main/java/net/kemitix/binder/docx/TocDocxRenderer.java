@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlManuscript;
@@ -44,7 +45,6 @@ public class TocDocxRenderer
 
     @Override
     public Stream<DocxContent> render(Section section) {
-        log.info("TOC: %s".formatted(section.getName()));
         List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
         contents.add(
@@ -60,7 +60,8 @@ public class TocDocxRenderer
                         findRenderer(s, tocItemRenderers)
                                 .render(s))
                 .forEach(contents::add);
-        contents.add(docx.finaliseTitlePage(section.getName()));
+        Context context = Context.create(section);
+        contents.add(docx.finaliseTitlePage(context));
         return Stream.of(new DocxContent(contents));
     }
 

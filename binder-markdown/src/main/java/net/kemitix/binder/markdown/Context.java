@@ -36,6 +36,26 @@ public interface Context {
                 return section.getAlign();
             }
 
+            @Override
+            public int getFontSize() {
+                return section.getFontSize();
+            }
+
+            @Override
+            public String getParaStyleName() {
+                return "section-%s-para".formatted(section.getName());
+            }
+
+            @Override
+            public boolean hasHeader() {
+                return section.isHeader();
+            }
+
+            @Override
+            public boolean hasFooter() {
+                return section.isFooter();
+            }
+
             //TODO access values in Section as required
         };
     }
@@ -66,6 +86,26 @@ public interface Context {
             public Section.Align getAlign() {
                 return Section.Align.full;
             }
+
+            @Override
+            public int getFontSize() {
+                return 0;
+            }
+
+            @Override
+            public String getParaStyleName() {
+                return "Normal";
+            }
+
+            @Override
+            public boolean hasHeader() {
+                return false;
+            }
+
+            @Override
+            public boolean hasFooter() {
+                return false;
+            }
         };
     }
 
@@ -78,4 +118,12 @@ public interface Context {
     String getName();
 
     Section.Align getAlign();
+
+    int getFontSize();
+
+    String getParaStyleName();
+
+    boolean hasHeader();
+
+    boolean hasFooter();
 }

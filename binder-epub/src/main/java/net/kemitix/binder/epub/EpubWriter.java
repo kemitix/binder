@@ -36,6 +36,7 @@ public class EpubWriter implements ManuscriptWriter {
                     "Error creating epub file %s: %s",
                     epubFile, e.getMessage()), e);
         }
+        log.info("Wrote: " + epubFile);
     }
 
 }
