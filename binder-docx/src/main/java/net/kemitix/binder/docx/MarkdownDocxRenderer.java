@@ -5,6 +5,7 @@ import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
+import org.docx4j.wml.P;
 import org.docx4j.wml.Style;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -44,12 +45,12 @@ public class MarkdownDocxRenderer
         List<Object> contents = new ArrayList<>();
         addTitle(section, contents);
         Context context = Context.create(section);
-        contents.addAll(
+        List<Object> sectionPs =
                 converter.convert(
                         context,
                         section.getMarkdown()
-                ).collect(Collectors.toList()));
-        contents.add(docx.finaliseTitlePage(context));
+                ).collect(Collectors.toList());
+        contents.addAll(docx.finaliseTitlePage(context, sectionPs));
         docx.addStyle(docx.paraStyle(context));
         return Stream.of(new DocxContent(contents));
     }

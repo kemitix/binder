@@ -61,7 +61,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static org.docx4j.jaxb.Context.*;
+import static org.docx4j.jaxb.Context.getWmlObjectFactory;
 
 @ApplicationScoped
 public class DocxFacade {
@@ -86,12 +86,18 @@ public class DocxFacade {
         sectPr.setPgMar(pgMar());
     }
 
-    public P finaliseTitlePage(Context context) {
-        SectPr.Type sectPrType =
-                context.isLastSection()
-                        ? null
-                        : sectPrType("oddPage");
-        SectPr sectPr = sectPr(sectPrType);
+    public List<P> finaliseTitlePage(
+            Context context,
+            List<Object> pageContent
+    ) {
+        // force into a list of P - we have an invalid section if this results in ClassCastException
+        List<P> sectionPs = pageContent.stream()
+                .map(P.class::cast)
+                .collect(Collectors.toList());
+        SectPr sectPr =
+                formatSection(
+                        sectPrType("oddPage",
+                                sectPr(sectionPs)));
         if (context.hasHeader()) {
             addDefaultPageHeader(sectPr, context.getName(), p());
         } else {
@@ -102,11 +108,21 @@ public class DocxFacade {
         } else {
             addBlankPageFooter(sectPr, context.getName());
         }
-        return p(ppr(sectPr));
+        return sectionPs;
     }
 
-    public P finaliseSection(Context context) {
-        SectPr sectPr = sectPr(sectPrType("oddPage"));
+    public List<P> finaliseSection(
+            Context context,
+            List<Object> pageContent
+    ) {
+        // force into a list of P - we have an invalid section if this results in ClassCastException
+        List<P> sectionPs = pageContent.stream()
+                .map(P.class::cast)
+                .collect(Collectors.toList());
+        SectPr sectPr =
+                formatSection(
+                        sectPrType("oddPage",
+                                sectPr(sectionPs)));
         String name = context.getName();
         String title = context.getTitle();
         if (context.hasHeader()) {
@@ -126,7 +142,7 @@ public class DocxFacade {
         } else {
             addBlankPageFooter(sectPr, context.getName());
         }
-        return p(ppr(sectPr));
+        return sectionPs;
     }
 
     private void addBlankPageHeader(SectPr sectPr, String name) {
@@ -288,11 +304,22 @@ public class DocxFacade {
         return pPr;
     }
 
-    private SectPr sectPr(SectPr.Type type) {
-        SectPr sectPr = factory.createSectPr();
+    private SectPr sectPr(List<P> sectionPs) {
+        P last = last(sectionPs, P.class);
+        PPr pPr = pPr(last);
+        SectPr sectPr =
+                Objects.requireNonNullElseGet(
+                        pPr.getSectPr(),
+                        factory::createSectPr
+                );
+        pPr.setSectPr(sectPr);
+
+        return sectPr;
+    }
+
+    private SectPr formatSection(SectPr sectPr) {
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
-        sectPr.setType(type);
 
         CTColumns ctColumns = factory.createCTColumns();
         sectPr.setCols(ctColumns);
@@ -306,6 +333,10 @@ public class DocxFacade {
         ctDocGrid.setLinePitch(topBottom);
 
         return sectPr;
+    }
+
+    private <T> T last(List<T> items, Class<? extends T> tClass) {
+        return items.get(items.size() - 1);
     }
 
     private SectPr.PgMar pgMar() {
@@ -337,10 +368,14 @@ public class DocxFacade {
         return pgSz;
     }
 
-    private SectPr.Type sectPrType(String value) {
-        SectPr.Type type = new SectPr.Type();
+    private SectPr sectPrType(String value, SectPr sectPr) {
+        SectPr.Type type =
+                Objects.requireNonNullElseGet(
+                        sectPr.getType(),
+                        SectPr.Type::new);
+        sectPr.setType(type);
         type.setVal(value);
-        return type;
+        return sectPr;
     }
 
     public P textParagraph(String text) {
