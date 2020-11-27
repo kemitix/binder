@@ -6,7 +6,6 @@ import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
 import org.docx4j.wml.P;
-import org.docx4j.wml.Style;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -58,7 +57,10 @@ public class StoryDocxRenderer
         contents.addAll(aboutAuthor(section));
         Context context = Context.create(section);
         docx.addStyle(docx.paraStyle(context));
-        return Stream.of(new DocxContent(docx.finaliseSection(context, contents)));
+        return Stream.of(
+                new DocxContent(
+                        docx.finaliseSection(context, contents))
+        );
     }
 
     private Collection<?> aboutAuthor(Section section) {

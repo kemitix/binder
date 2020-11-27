@@ -62,7 +62,10 @@ public class TocDocxRenderer
                                 .render(s))
                 .forEach(contents::add);
         Context context = Context.create(section);
-        return Stream.of(new DocxContent(docx.finaliseTitlePage(context, contents)));
+        return Stream.of(
+                new DocxContent(
+                        docx.finaliseTitlePage(context, contents))
+        );
     }
 
 }
