@@ -87,7 +87,11 @@ public class DocxFacade {
     }
 
     public P finaliseTitlePage(Context context) {
-        SectPr sectPr = sectPr(sectPrType("oddPage"));
+        SectPr.Type sectPrType =
+                context.isLastSection()
+                        ? null
+                        : sectPrType("oddPage");
+        SectPr sectPr = sectPr(sectPrType);
         if (context.hasHeader()) {
             addDefaultPageHeader(sectPr, context.getName(), p());
         } else {

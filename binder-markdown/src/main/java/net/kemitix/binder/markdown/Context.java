@@ -56,6 +56,11 @@ public interface Context {
                 return section.isFooter();
             }
 
+            @Override
+            public boolean isLastSection() {
+                return section.isLast();
+            }
+
             //TODO access values in Section as required
         };
     }
@@ -106,6 +111,11 @@ public interface Context {
             public boolean hasFooter() {
                 return false;
             }
+
+            @Override
+            public boolean isLastSection() {
+                return false;
+            }
         };
     }
 
@@ -126,4 +136,6 @@ public interface Context {
     boolean hasHeader();
 
     boolean hasFooter();
+
+    boolean isLastSection();
 }

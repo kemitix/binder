@@ -41,6 +41,8 @@ public class Section {
     private String markdown; // the markdown contents of the file, after removing yaml header
     private Align align = Align.full; // full justify paragraphs
 
+    private boolean last; // internal flag to mark last section in document
+
     public boolean isType(Type type) {
         return this.type.equals(type);
     }
