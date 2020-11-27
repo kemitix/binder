@@ -778,7 +778,7 @@ public class DocxFacade {
             P[] footerContent
     ) {
         FooterPart footerPart = new FooterPart();
-        PartName partName = new PartName("/word/footer-%s-%s.xml".formatted(
+        PartName partName = new PartName("/word/footers/%s/%s.xml".formatted(
                 hdrFtrRef.value(), name));
         footerPart.setPartName(partName);
         Relationship relationship = mainDocumentPart().addTargetPart(footerPart);
@@ -802,7 +802,7 @@ public class DocxFacade {
             P[] headerContent
     ) {
         HeaderPart headerPart = new HeaderPart();
-        PartName partName = new PartName("/word/header-%s-%s.xml".formatted(
+        PartName partName = new PartName("/word/headers/%s/%s.xml".formatted(
                 hdrFtrRef.value(), name));
         headerPart.setPartName(partName);
         Relationship relationship = mainDocumentPart().addTargetPart(headerPart);
