@@ -707,7 +707,7 @@ public class DocxFacade {
             P pageFooter
     ) {
         addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
-                p(), pageFooter
+                zeroSpaceAfterP(p()), pageFooter
         });
     }
 
@@ -718,7 +718,7 @@ public class DocxFacade {
             P pageFooter
     ) {
         addPageFooter(sectPr, name, HdrFtrRef.EVEN, new P[]{
-                p(), pageFooter
+                zeroSpaceAfterP(p()), pageFooter
         });
     }
 
@@ -729,7 +729,7 @@ public class DocxFacade {
             P pageFooter
     ) {
         addPageFooter(sectPr, name, HdrFtrRef.FIRST, new P[]{
-                p(), pageFooter
+                zeroSpaceAfterP(p()), pageFooter
         });
     }
 
@@ -740,7 +740,7 @@ public class DocxFacade {
             P pageHeader
     ) {
         addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
-                pageHeader, p()
+                zeroSpaceAfterP(pageHeader), p()
         });
     }
 
@@ -751,7 +751,7 @@ public class DocxFacade {
             P pageHeader
     ) {
         addPageHeader(sectPr, name, HdrFtrRef.EVEN, new P[]{
-                pageHeader, p()
+                zeroSpaceAfterP(pageHeader), p()
         });
     }
 
@@ -762,7 +762,7 @@ public class DocxFacade {
             P pageHeader
     ) {
         addPageHeader(sectPr, name, HdrFtrRef.FIRST, new P[]{
-                pageHeader, p()
+                zeroSpaceAfterP(pageHeader), p()
         });
     }
 
@@ -925,6 +925,14 @@ public class DocxFacade {
                 createParaStyleBasedOn(
                         context.getParaStyleName(),
                         "Normal"));
+    }
+
+    public P zeroSpaceAfterP(P p) {
+        PPr pPr = pPr(p);
+        PPrBase.Spacing spacing = factory.createPPrBaseSpacing();
+        pPr.setSpacing(spacing);
+        spacing.setAfter(BigInteger.ZERO);
+        return p;
     }
 
 }
