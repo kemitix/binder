@@ -50,9 +50,12 @@ public class MarkdownDocxRenderer
                         context,
                         section.getMarkdown()
                 ).collect(Collectors.toList());
-        contents.addAll(docx.finaliseTitlePage(context, sectionPs));
+        contents.addAll(sectionPs);
         docx.addStyle(docx.paraStyle(context));
-        return Stream.of(new DocxContent(contents));
+        return Stream.of(
+                new DocxContent(
+                        docx.finaliseTitlePage(context, contents))
+        );
     }
 
     private Style charStyle(Section section) {
