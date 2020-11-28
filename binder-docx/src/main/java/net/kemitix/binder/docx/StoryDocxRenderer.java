@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -44,16 +45,16 @@ public class StoryDocxRenderer
     @Override
     public Stream<DocxContent> render(Section section) {
         List<Object> contents = new ArrayList<>();
-        contents.addAll(docx.leaders());
-        addTitle(section, contents);
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
+        contents.addAll(title(section));
         contents.add(docx.textParagraphCentered(section.getAuthor()));
-        contents.addAll(docx.leaders());
-        Stream<Object> objects =
-                converter.convert(
-                        Context.create(section),
-                        section.getMarkdown()
-                );
-        contents.addAll(objects.collect(Collectors.toList()));
+        contents.add(docx.textParagraph(""));
+        contents.add(docx.textParagraph(""));
+        contents.addAll(converter.convert(
+                Context.create(section),
+                section.getMarkdown()
+        ).collect(Collectors.toList()));
         contents.addAll(aboutAuthor(section));
         Context context = Context.create(section);
         docx.addStyle(docx.paraStyle(context));
@@ -85,20 +86,19 @@ public class StoryDocxRenderer
         );
     }
 
-    private void addTitle(Section sec, List<Object> contents) {
-        String title = getTitle(sec);
+    private List<Object> title(Section sec) {
+        String title = Objects.requireNonNullElse(sec.getTitle(), "");
         if (title.length() > 0) {
-            contents.add(docx.textParagraph(""));
-            contents.add(
+            return Arrays.asList(
+                    docx.textParagraph(""),
                     docx.drawings(
                             docxImage.textImages(
                                     title,
-                                    FontSize.of(240))));
-            contents.add(docx.textParagraph(""));
+                                    FontSize.of(240))),
+                    docx.textParagraph("")
+            );
         }
+        return Collections.emptyList();
     }
 
-    private String getTitle(Section section) {
-        return Objects.requireNonNullElse(section.getTitle(), "");
-    }
 }

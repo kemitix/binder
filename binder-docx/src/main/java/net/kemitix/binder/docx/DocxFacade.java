@@ -446,13 +446,6 @@ public class DocxFacade {
         return alignCenter(p(r));
     }
 
-    public List<P> leaders() {
-        return Arrays.asList(
-                textParagraph(""),
-                textParagraph("")
-        );
-    }
-
     public R italic(R r) {
         rPr(r).setI(defaultTrue());
         return r;
