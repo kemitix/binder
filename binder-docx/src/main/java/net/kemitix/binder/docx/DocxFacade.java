@@ -56,6 +56,7 @@ import static org.docx4j.jaxb.Context.getWmlObjectFactory;
 public class DocxFacade
         implements DocxHeaderFootersFacadeMixIn,
         DocxFacadeParagraphMixIn,
+        DocxFacadeStyleMixIn,
         DocxFacadeFootnoteMixIn {
 
     private final Metadata metadata;
@@ -145,14 +146,6 @@ public class DocxFacade
             addBlankPageFooter(sectPr, context.getName());
         }
         return sectionPs;
-    }
-
-    @SneakyThrows
-    public void addStyle(Style style) {
-        var part = mlPackage.getMainDocumentPart()
-                .getStyleDefinitionsPart(true);
-        List<Style> styles = part.getContents().getStyle();
-        styles.add(style);
     }
 
     public MainDocumentPart mainDocumentPart() {
@@ -274,63 +267,6 @@ public class DocxFacade
         get(sectPr, SectPr::getType, sectPr::setType, SectPr.Type::new)
                 .setVal(value);
         return sectPr;
-    }
-
-    public HpsMeasure sz(float fontSize) {
-        HpsMeasure hpsMeasure = factory.createHpsMeasure();
-        hpsMeasure.setVal(BigInteger.valueOf((long) (fontSize * 2)));
-        return hpsMeasure;
-    }
-
-    public Style createParaStyleBasedOn(String name, String basedOn) {
-        Style style = named(name, basedOn(basedOn, createStyle(name)));
-        style.setType("paragraph");
-        return style;
-    }
-
-    private Style named(String name, Style style) {
-        Style.Name styleName = factory.createStyleName();
-        styleName.setVal(name);
-        style.setName(styleName);
-        return style;
-    }
-
-    private Style basedOn(String name, Style style) {
-        Style.BasedOn basedOn = factory.createStyleBasedOn();
-        basedOn.setVal(name);
-        style.setBasedOn(basedOn);
-        return style;
-    }
-
-    public Style createCharStyleBasedOn(String name, String basedOn) {
-        Style style = named(name, basedOn(basedOn, createStyle(name)));
-        style.setType("character");
-        return style;
-    }
-
-    private Style createStyle(String name) {
-        Style style = factory.createStyle();
-        style.setStyleId(name);
-        return style;
-    }
-
-    public Style fontSize(float fontSize, Style style) {
-        RPr rPr = rPr(style);
-        rPr.setSz(sz(fontSize));
-        rPr.setSzCs(sz(fontSize));
-        return style;
-    }
-
-    private RPr rPr(Style style) {
-        return get(style, Style::getRPr, style::setRPr, factory::createRPr);
-    }
-
-    public Style paraStyle(Context context) {
-        return fontSize(
-                context.getFontSize(),
-                createParaStyleBasedOn(
-                        context.getParaStyleName(),
-                        "Normal"));
     }
 
 }
