@@ -281,20 +281,8 @@ public class DocxFacade {
         return factory.createRTab();
     }
 
-    private PPr ppr(SectPr sectPr) {
-        PPr pPr = pPr();
-        pPr.setSectPr(sectPr);
-        return pPr;
-    }
-
     private PPr pPr() {
         return factory.createPPr();
-    }
-
-    private PPr ppr(Jc jc) {
-        PPr pPr = pPr();
-        pPr.setJc(jc);
-        return pPr;
     }
 
     private PPr ppr(Tabs tabs, PPrBase.Ind tabIndent) {
@@ -857,14 +845,6 @@ public class DocxFacade {
         PPr pPr = pPr(p);
         pPr.setPStyle(pStyle(header));
         return p;
-    }
-
-    @SneakyThrows
-    public void dump() {
-        FlatOpcXmlCreator worker = new FlatOpcXmlCreator(mlPackage);
-        File file = new File("binder-pkg.xml");
-        worker.marshal(new PrintStream(file));
-        System.out.println("Wrote: " + file.getAbsolutePath());
     }
 
     public P fontSzP(int fontSize, P p) {
