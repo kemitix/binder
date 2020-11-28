@@ -25,9 +25,7 @@ public class EmphasisDocxNodeHandler
         if (content instanceof R) {
             R r = (R) content;
             Object italic =
-                    docx.italic(
-                            r.getContent().toArray()
-                    );
+                    docx.italic(r);
             return Stream.of(
                     italic
             );

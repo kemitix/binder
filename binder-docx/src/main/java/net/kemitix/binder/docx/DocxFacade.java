@@ -453,22 +453,14 @@ public class DocxFacade {
         );
     }
 
-    public R italic(Object[] content) {
-        RPr rPr = factory.createRPr();
-        rPr.setI(defaultTrue());
-        List<Object> o = new ArrayList<>();
-        o.add(rPr);
-        o.addAll(Arrays.asList(content));
-        return r(o.toArray());
+    public R italic(R r) {
+        rPr(r).setI(defaultTrue());
+        return r;
     }
 
-    public R bold(Object[] content) {
-        RPr rPr = factory.createRPr();
-        rPr.setB(defaultTrue());
-        List<Object> o = new ArrayList<>();
-        o.add(rPr);
-        o.addAll(Arrays.asList(content));
-        return r(o.toArray());
+    public R bold(R r) {
+        rPr(r).setB(defaultTrue());
+        return r;
     }
 
     /**
