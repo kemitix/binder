@@ -57,7 +57,8 @@ public class DocxFacade
         implements DocxHeaderFootersFacadeMixIn,
         DocxFacadeParagraphMixIn,
         DocxFacadeStyleMixIn,
-        DocxFacadeFootnoteMixIn {
+        DocxFacadeFootnoteMixIn,
+        DocxFacadeTabMixIn {
 
     private final Metadata metadata;
 
@@ -168,42 +169,6 @@ public class DocxFacade
                         t(title)
                 })
         });
-    }
-
-    private PPrBase.Ind tabIndent(
-            @Nullable Integer left,
-            @Nullable Integer right,
-            int hanging
-    ) {
-        PPrBase.Ind ind = factory.createPPrBaseInd();
-        if (left != null) ind.setLeft(BigInteger.valueOf(left));
-        if (right != null) ind.setRight(BigInteger.valueOf(right));
-        ind.setHanging(BigInteger.valueOf(hanging));
-        return ind;
-    }
-
-    private Tabs tabs(CTTabStop[] positions) {
-        Tabs tabs = factory.createTabs();
-        tabs.getTab().addAll(Arrays.asList(positions));
-        return tabs;
-    }
-
-    private CTTabStop tabLeft(int position) {
-        CTTabStop tabStop = factory.createCTTabStop();
-        tabStop.setPos(BigInteger.valueOf(position));
-        tabStop.setVal(STTabJc.LEFT);
-        return tabStop;
-    }
-
-    private CTTabStop tabRight(int position) {
-        CTTabStop tabStop = factory.createCTTabStop();
-        tabStop.setPos(BigInteger.valueOf(position));
-        tabStop.setVal(STTabJc.RIGHT);
-        return tabStop;
-    }
-
-    private R.Tab tab() {
-        return factory.createRTab();
     }
 
     private SectPr sectPr(List<P> sectionPs) {
