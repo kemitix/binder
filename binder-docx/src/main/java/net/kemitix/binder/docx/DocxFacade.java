@@ -55,7 +55,8 @@ import static org.docx4j.jaxb.Context.getWmlObjectFactory;
 @ApplicationScoped
 public class DocxFacade
         implements DocxHeaderFootersFacadeMixIn,
-        DocxFacadeParagraphMixIn{
+        DocxFacadeParagraphMixIn,
+        DocxFacadeFootnoteMixIn {
 
     private final Metadata metadata;
 
@@ -80,6 +81,11 @@ public class DocxFacade
     @Override
     public ObjectFactory factory() {
         return factory;
+    }
+
+    @Override
+    public AtomicInteger footnoteRef() {
+        return myFootnoteRef;
     }
 
     public List<P> finaliseTitlePage(
@@ -268,141 +274,6 @@ public class DocxFacade
         get(sectPr, SectPr::getType, sectPr::setType, SectPr.Type::new)
                 .setVal(value);
         return sectPr;
-    }
-
-    public R footnote(String ordinal, List<P> footnoteBody) {
-        //TODO add footnote bodies from FootnoteBlockDocxNodeHandler
-        // this will provide styles footnotes
-        return footnoteReference(footnoteBody);
-    }
-
-    @SneakyThrows
-    private R footnoteReference(List<P> footnoteBody) {
-        // in document.xml:
-        //      <w:r>
-        //        <w:rPr>
-        //          <w:rStyle w:val="FootnoteAnchor"/>
-        //        </w:rPr>
-        //        <w:footnoteReference w:id="2"/>
-        //      </w:r>
-        FootnotesPart footnotesPart = getFootnotesPart();
-        CTFootnotes contents = footnotesPart.getContents();
-        List<CTFtnEdn> footnotes = contents.getFootnote();
-        CTFtnEdn ctFtnEdn = getNextCtFtnEdn(footnotes);
-        ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(footnoteBody)));
-        CTFtnEdnRef ctFtnEdnRef = factory.createCTFtnEdnRef();
-        ctFtnEdnRef.setId(ctFtnEdn.getId());
-        JAXBElement<CTFtnEdnRef> footnoteReference = factory.createRFootnoteReference(ctFtnEdnRef);
-
-        String footnoteOrdinal = ctFtnEdn.getId().toString();
-
-        R r = r(new Object[]{
-                footnoteReference,
-                t(footnoteOrdinal)
-        });
-
-        RPr rPr = rPr(r);
-        rPr.setRStyle(rStyle("FootnoteAnchor"));
-
-        return r;
-    }
-
-    private CTFtnEdn getNextCtFtnEdn(List<CTFtnEdn> footnotes) {
-        var id = BigInteger.valueOf(myFootnoteRef.getAndIncrement());
-        return footnotes.stream()
-                .filter(o -> o.getId().equals(id))
-                .findFirst()
-                .orElseGet(() -> {
-                    CTFtnEdn edn = factory.createCTFtnEdn();
-                    edn.setId(id);
-                    footnotes.add(edn);
-                    return edn;
-                });
-    }
-
-    private FootnotesPart getFootnotesPart() {
-        return Objects.requireNonNullElseGet(
-                mainDocumentPart().getFootnotesPart(),
-                () -> {
-                    try {
-                        FootnotesPart part = new FootnotesPart();
-                        part.setContents(initFootnotes());
-                        mainDocumentPart().addTargetPart(part);
-                        return part;
-                    } catch (InvalidFormatException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        );
-    }
-
-    private CTFootnotes initFootnotes() {
-        CTFootnotes ctFootnotes = factory.createCTFootnotes();
-        List<CTFtnEdn> footnotes = ctFootnotes.getFootnote();
-
-        //    <w:footnote w:id="0" w:type="separator">
-        //        <w:p>
-        //            <w:r>
-        //                <w:separator/>
-        //            </w:r>
-        //        </w:p>
-        //    </w:footnote>
-        CTFtnEdn separator = getNextCtFtnEdn(footnotes);
-        separator.setType(STFtnEdn.SEPARATOR);
-        separator.getContent().add(p(r(factory.createRSeparator())));
-
-//        //    <w:footnote w:id="1" w:type="continuationSeparator">
-//        //        <w:p>
-//        //            <w:r>
-//        //                <w:continuationSeparator/>
-//        //            </w:r>
-//        //        </w:p>
-//        //    </w:footnote>
-//        CTFtnEdn continuation = getNextCtFtnEdn(footnotes);
-//        continuation.setType(STFtnEdn.CONTINUATION_SEPARATOR);
-//        continuation.getContent().add(p(r(objectFactory.createRContinuationSeparator())));
-
-        return ctFootnotes;
-    }
-
-    private Object[] footnoteBody(List<P> footnoteParas) {
-        // in footnotes.xml:
-        //  <w:footnote w:id="2">
-        //    <w:p>
-        //      <w:pPr>
-        //        <w:pStyle w:val="Footnote"/>
-        //        <w:rPr/>
-        //      </w:pPr>
-        //      <w:r>
-        //        <w:rPr>
-        //          <w:rStyle w:val="FootnoteCharacters"/>
-        //        </w:rPr>
-        //        <w:footnoteRef/>
-        //      </w:r>
-        //      <w:r>
-        //        <w:rPr/>
-        //        <w:tab/>
-        //        <w:t>Footnote</w:t>
-        //      </w:r>
-        //    </w:p>
-        //  </w:footnote>
-        PPr pPr = pPr();
-        pPr.setPStyle(pStyle("Footnote"));
-
-        List<Object> objects = new ArrayList<>();
-        objects.add(pPr);
-        R r = r(
-                factory.createRFootnoteRef()
-        );
-        RPr rPr = rPr(r);
-        rPr.setRStyle(rStyle("FootnoteCharacters"));
-
-        objects.add(r);
-        objects.addAll(
-                footnoteParas.stream()
-                        .peek(para -> para.setPPr(pPr)
-                        ).collect(Collectors.toList()));
-        return objects.toArray();
     }
 
     public HpsMeasure sz(float fontSize) {

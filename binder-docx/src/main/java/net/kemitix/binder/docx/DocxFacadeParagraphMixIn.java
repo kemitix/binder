@@ -18,8 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 public interface DocxFacadeParagraphMixIn
-        extends DocxFacadeMixIn,
-        DocxFacadeRunMixIn {
+        extends DocxFacadeRunMixIn {
 
     default P textParagraph(String text) {
         return p(r(t(text)));
