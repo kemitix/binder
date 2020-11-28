@@ -7,12 +7,8 @@ import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.PartName;
-import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
-import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
-import org.docx4j.relationships.Relationship;
 import org.docx4j.wml.BooleanDefaultTrue;
 import org.docx4j.wml.CTColumns;
 import org.docx4j.wml.CTDocGrid;
@@ -20,13 +16,7 @@ import org.docx4j.wml.CTFootnotes;
 import org.docx4j.wml.CTFtnEdn;
 import org.docx4j.wml.CTFtnEdnRef;
 import org.docx4j.wml.CTTabStop;
-import org.docx4j.wml.Drawing;
 import org.docx4j.wml.FldChar;
-import org.docx4j.wml.FooterReference;
-import org.docx4j.wml.Ftr;
-import org.docx4j.wml.Hdr;
-import org.docx4j.wml.HdrFtrRef;
-import org.docx4j.wml.HeaderReference;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.Jc;
 import org.docx4j.wml.JcEnumeration;
@@ -34,7 +24,6 @@ import org.docx4j.wml.ObjectFactory;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
 import org.docx4j.wml.PPrBase;
-import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.RStyle;
@@ -53,7 +42,6 @@ import javax.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,7 +54,8 @@ import static org.docx4j.jaxb.Context.getWmlObjectFactory;
 
 @ApplicationScoped
 public class DocxFacade
-        implements DocxHeaderFootersFacadeMixIn {
+        implements DocxHeaderFootersFacadeMixIn,
+        DocxFacadeParagraphMixIn{
 
     private final Metadata metadata;
 
@@ -160,67 +149,6 @@ public class DocxFacade
         styles.add(style);
     }
 
-    public R[] pageNumberPlaceholder() {
-        //    <w:r>
-        //      <w:rPr/>
-        //      <w:fldChar w:fldCharType="begin"/>
-        //    </w:r>
-        //    <w:r>
-        //      <w:rPr/>
-        //      <w:instrText> PAGE </w:instrText>
-        //    </w:r>
-        //    <w:r>
-        //      <w:rPr/>
-        //      <w:fldChar w:fldCharType="separate"/>
-        //    </w:r>
-        //    <w:r>
-        //      <w:rPr/>
-        //      <w:t>2</w:t>
-        //    </w:r>
-        //    <w:r>
-        //      <w:rPr/>
-        //      <w:fldChar w:fldCharType="end"/>
-        //    </w:r>
-        FldChar begin = factory.createFldChar();
-        begin.setFldCharType(STFldCharType.BEGIN);
-
-        return new R[]{
-                r(fldChar(STFldCharType.BEGIN)),
-                r(instrText(" PAGE ")),
-                r(fldChar(STFldCharType.SEPARATE)),
-                r(t("2")),
-                r(fldChar(STFldCharType.END))
-        };
-    }
-
-    private JAXBElement<Text> instrText(String text) {
-        return factory.createRInstrText(t(text));
-    }
-
-    private <T, K> K get(
-            T t,
-            Function<T, K> extract,
-            Consumer<K> apply,
-            Supplier<K> create
-    ) {
-        K k = Objects.requireNonNullElseGet(
-                extract.apply(t),
-                create
-        );
-        apply.accept(k);
-        return k;
-    }
-
-    private RPr rPr(R r) {
-        return get(r, R::getRPr, r::setRPr, factory::createRPr);
-    }
-
-    private FldChar fldChar(STFldCharType type) {
-        FldChar fldChar = factory.createFldChar();
-        fldChar.setFldCharType(type);
-        return fldChar;
-    }
-
     public MainDocumentPart mainDocumentPart() {
         return mlPackage.getMainDocumentPart();
     }
@@ -261,10 +189,6 @@ public class DocxFacade
         return tabs;
     }
 
-    private PPr tabDefinition(Tabs tabs, PPrBase.Ind tabIndent) {
-        return ppr(tabs, tabIndent);
-    }
-
     private CTTabStop tabLeft(int position) {
         CTTabStop tabStop = factory.createCTTabStop();
         tabStop.setPos(BigInteger.valueOf(position));
@@ -281,17 +205,6 @@ public class DocxFacade
 
     private R.Tab tab() {
         return factory.createRTab();
-    }
-
-    private PPr pPr() {
-        return factory.createPPr();
-    }
-
-    private PPr ppr(Tabs tabs, PPrBase.Ind tabIndent) {
-        PPr pPr = pPr();
-        pPr.setTabs(tabs);
-        pPr.setInd(tabIndent);
-        return pPr;
     }
 
     private SectPr sectPr(List<P> sectionPs) {
@@ -355,183 +268,6 @@ public class DocxFacade
         get(sectPr, SectPr::getType, sectPr::setType, SectPr.Type::new)
                 .setVal(value);
         return sectPr;
-    }
-
-    public P textParagraph(String text) {
-        return p(r(t(text)));
-    }
-
-    public P textParagraphCentered(String text) {
-        return alignCenter(p(r(t(text))));
-    }
-
-    public P p() {
-        return p(new Object[]{});
-    }
-
-    public P p(Object o) {
-        return p(new Object[]{o});
-    }
-
-    public P p(Object[] o) {
-        P p = factory.createP();
-        p.getContent().addAll(Arrays.asList(o));
-        return p;
-    }
-
-    public P align(JcEnumeration alignment, P p) {
-        pPr(p).setJc(jc(alignment));
-        return p;
-    }
-
-    public P alignFull(P p) {
-        return align(JcEnumeration.BOTH, p);
-    }
-
-    public P alignLeft(P p) {
-        return align(JcEnumeration.LEFT, p);
-    }
-
-    public P alignRight(P p) {
-        return align(JcEnumeration.RIGHT, p);
-    }
-
-    public P alignCenter(P p) {
-        return align(JcEnumeration.CENTER, p);
-    }
-
-    public PPr pPr(P p) {
-        return get(p, P::getPPr, p::setPPr, factory::createPPr);
-    }
-
-    private Jc jc(JcEnumeration value) {
-        Jc jc = factory.createJc();
-        jc.setVal(value);
-        return jc;
-    }
-
-    public R r() {
-        return r(new Object[]{});
-    }
-
-    public R r(Object o) {
-        return r(new Object[]{o});
-    }
-
-    public R r(Object[] o) {
-        R r = factory.createR();
-        r.getContent().addAll(Arrays.asList(o));
-        return r;
-    }
-
-    public Text t(String value) {
-        Text text = factory.createText();
-        text.setValue(value);
-        text.setSpace("preserve");// contains significant whitespace
-        return text;
-    }
-
-    public P drawings(Drawing[] drawings) {
-        R r = r();
-        List<Object> content = r.getContent();
-        Collections.addAll(content, drawings);
-        return alignCenter(p(r));
-    }
-
-    public R italic(R r) {
-        rPr(r).setI(defaultTrue());
-        return r;
-    }
-
-    public R bold(R r) {
-        rPr(r).setB(defaultTrue());
-        return r;
-    }
-
-    /**
-     * <w:p>
-     *   <w:pPr>
-     *     <w:pStyle w:val="Normal"/>
-     *     <w:rPr>
-     *       <w:sz w:val="120"/>
-     *       <w:szCs w:val="120"/>
-     *     </w:rPr>
-     *   </w:pPr>
-     *   <w:r>
-     *     <w:rPr>
-     *       <w:sz w:val="120"/>
-     *       <w:szCs w:val="120"/>
-     *     </w:rPr>
-     *     <w:t>HEADING 2</w:t>
-     *   </w:r>
-     * </w:p>
-     */
-    public P heading(int level, String text) {
-        R r = r(t(text));
-        P p = p(r);
-        PPr pPr = pPr(p);
-        ParaRPr paraRPr = paraRPr(pPr);
-        RPr rPr = rPr(r);
-
-        pPr.setPStyle(pStyle("Normal"));
-
-        HpsMeasure sz = factory.createHpsMeasure();
-        sz.setVal(BigInteger.valueOf(szForLevel(level)));
-
-        rPr.setSz(sz);
-        rPr.setSzCs(sz);
-
-        paraRPr.setSz(sz);
-        paraRPr.setSzCs(sz);
-
-        return p;
-    }
-
-    private ParaRPr paraRPr(PPr pPr) {
-        return get(pPr, PPr::getRPr, pPr::setRPr, factory::createParaRPr);
-    }
-
-    // h1 = 24pt
-    // h2 = 18pt
-    // h3 = 12pt
-    // lvl => 30 - (6 * lvl)
-    private long szForLevel(int level) {
-        int point = 30 - (6 * level);
-        return point * 2;
-    }
-
-    /**
-     * <w:p>
-     *   <w:pPr>
-     *     <w:pStyle w:val="Normal"/>
-     *     <w:numPr>
-     *       <w:ilvl w:val="0"/>
-     *       <w:numId w:val="1"/>
-     *     </w:numPr>
-     *     <w:rPr/>
-     *   </w:pPr>
-     *   <w:r>
-     *     <w:rPr/>
-     *     <w:t>item 1</w:t>
-     *   </w:r>
-     * </w:p>
-     */
-    public P bulletItem(String text) {
-        P p = p(r(t(text)));
-
-        PPr pPr = pPr(p);
-        pPr.setPStyle(pStyle("Normal"));
-
-        PPrBase.NumPr.NumId numId = factory.createPPrBaseNumPrNumId();
-        numId.setVal(BigInteger.TWO);
-        PPrBase.NumPr numPr = factory.createPPrBaseNumPr();
-        PPrBase.NumPr.Ilvl ilvl = factory.createPPrBaseNumPrIlvl();
-        ilvl.setVal(BigInteger.ZERO);
-        numPr.setIlvl(ilvl);
-        numPr.setNumId(numId);
-        pPr.setNumPr(numPr);
-
-        return p;
     }
 
     public R footnote(String ordinal, List<P> footnoteBody) {
@@ -669,39 +405,6 @@ public class DocxFacade
         return objects.toArray();
     }
 
-    private PPrBase.PStyle pStyle(String val) {
-        var pStyle = factory.createPPrBasePStyle();
-        pStyle.setVal(val);
-        return pStyle;
-    }
-
-    private RStyle rStyle(String val) {
-        var rStyle = factory.createRStyle();
-        rStyle.setVal(val);
-        return rStyle;
-    }
-
-    private BooleanDefaultTrue defaultTrue() {
-        return factory.createBooleanDefaultTrue();
-    }
-
-    //p/pPr/keepNext[val="true"]
-    public P keepWithNext(P p) {
-        pPr(p).setKeepNext(defaultTrue());
-        return p;
-    }
-
-    public P keepTogether(P p) {
-        pPr(p).setKeepLines(defaultTrue());
-        return p;
-    }
-
-
-    private P styleP(String styleName, P p) {
-        pPr(p).setPStyle(pStyle(styleName));
-        return p;
-    }
-
     public HpsMeasure sz(float fontSize) {
         HpsMeasure hpsMeasure = factory.createHpsMeasure();
         hpsMeasure.setVal(BigInteger.valueOf((long) (fontSize * 2)));
@@ -751,26 +454,12 @@ public class DocxFacade
         return get(style, Style::getRPr, style::setRPr, factory::createRPr);
     }
 
-    public P styledP(String styleName, P p) {
-        PPrBase.PStyle pStyle = factory.createPPrBasePStyle();
-        pStyle.setVal(styleName);
-        pPr(p).setPStyle(pStyle);
-        return p;
-    }
-
     public Style paraStyle(Context context) {
         return fontSize(
                 context.getFontSize(),
                 createParaStyleBasedOn(
                         context.getParaStyleName(),
                         "Normal"));
-    }
-
-    public P zeroSpaceAfterP(P p) {
-        PPrBase.Spacing spacing = factory.createPPrBaseSpacing();
-        spacing.setAfter(BigInteger.ZERO);
-        pPr(p).setSpacing(spacing);
-        return p;
     }
 
 }
