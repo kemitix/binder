@@ -65,7 +65,8 @@ import java.util.stream.Collectors;
 import static org.docx4j.jaxb.Context.getWmlObjectFactory;
 
 @ApplicationScoped
-public class DocxFacade {
+public class DocxFacade
+        implements DocxHeaderFootersFacadeMixIn {
 
     private final Metadata metadata;
 
@@ -85,6 +86,11 @@ public class DocxFacade {
         SectPr sectPr = mlPackage.getDocumentModel().getSections().get(0).getSectPr();
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
+    }
+
+    @Override
+    public ObjectFactory factory() {
+        return factory;
     }
 
     public List<P> finaliseTitlePage(
@@ -144,20 +150,6 @@ public class DocxFacade {
             addBlankPageFooter(sectPr, context.getName());
         }
         return sectionPs;
-    }
-
-    private void addBlankPageHeader(SectPr sectPr, String name) {
-        P[] emptyP = {};
-        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
-        addPageHeader(sectPr, name, HdrFtrRef.EVEN, emptyP);
-        addPageHeader(sectPr, name, HdrFtrRef.FIRST, emptyP);
-    }
-
-    private void addBlankPageFooter(SectPr sectPr, String name) {
-        P[] emptyP = {};
-        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
-        addPageFooter(sectPr, name, HdrFtrRef.EVEN, emptyP);
-        addPageFooter(sectPr, name, HdrFtrRef.FIRST, emptyP);
     }
 
     @SneakyThrows
@@ -229,7 +221,7 @@ public class DocxFacade {
         return fldChar;
     }
 
-    private MainDocumentPart mainDocumentPart() {
+    public MainDocumentPart mainDocumentPart() {
         return mlPackage.getMainDocumentPart();
     }
 
@@ -704,119 +696,6 @@ public class DocxFacade {
         return p;
     }
 
-    @SneakyThrows
-    public void addDefaultPageFooter(
-            SectPr sectPr,
-            String name,
-            P pageFooter
-    ) {
-        addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
-                zeroSpaceAfterP(p()), pageFooter
-        });
-    }
-
-    @SneakyThrows
-    public void addEvenPageFooter(
-            SectPr sectPr,
-            String name,
-            P pageFooter
-    ) {
-        addPageFooter(sectPr, name, HdrFtrRef.EVEN, new P[]{
-                zeroSpaceAfterP(p()), pageFooter
-        });
-    }
-
-    @SneakyThrows
-    public void addFirstPageFooter(
-            SectPr sectPr,
-            String name,
-            P pageFooter
-    ) {
-        addPageFooter(sectPr, name, HdrFtrRef.FIRST, new P[]{
-                zeroSpaceAfterP(p()), pageFooter
-        });
-    }
-
-    @SneakyThrows
-    public void addDefaultPageHeader(
-            SectPr sectPr,
-            String name,
-            P pageHeader
-    ) {
-        addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
-                zeroSpaceAfterP(pageHeader), p()
-        });
-    }
-
-    @SneakyThrows
-    public void addEvenPageHeader(
-            SectPr sectPr,
-            String name,
-            P pageHeader
-    ) {
-        addPageHeader(sectPr, name, HdrFtrRef.EVEN, new P[]{
-                zeroSpaceAfterP(pageHeader), p()
-        });
-    }
-
-    @SneakyThrows
-    public void addFirstPageHeader(
-            SectPr sectPr,
-            String name,
-            P pageHeader
-    ) {
-        addPageHeader(sectPr, name, HdrFtrRef.FIRST, new P[]{
-                zeroSpaceAfterP(pageHeader), p()
-        });
-    }
-
-    @SneakyThrows
-    public void addPageFooter(
-            SectPr sectPr,
-            String name,
-            HdrFtrRef hdrFtrRef,
-            P[] footerContent
-    ) {
-        FooterPart footerPart = new FooterPart();
-        PartName partName = new PartName("/word/footers/%s/%s.xml".formatted(
-                hdrFtrRef.value(), name));
-        footerPart.setPartName(partName);
-        Relationship relationship = mainDocumentPart().addTargetPart(footerPart);
-        Ftr ftr = factory.createFtr();
-        footerPart.setJaxbElement(ftr);
-        List<Object> ftrContent = ftr.getContent();
-        Arrays.stream(footerContent)
-                .map(p -> styledP("Header", p))
-                .forEach(ftrContent::add);
-        FooterReference footerReference = factory.createFooterReference();
-        footerReference.setId(relationship.getId());
-        footerReference.setType(hdrFtrRef);
-        sectPr.getEGHdrFtrReferences().add(footerReference);
-    }
-
-    @SneakyThrows
-    public void addPageHeader(
-            SectPr sectPr,
-            String name,
-            HdrFtrRef hdrFtrRef,
-            P[] headerContent
-    ) {
-        HeaderPart headerPart = new HeaderPart();
-        PartName partName = new PartName("/word/headers/%s/%s.xml".formatted(
-                hdrFtrRef.value(), name));
-        headerPart.setPartName(partName);
-        Relationship relationship = mainDocumentPart().addTargetPart(headerPart);
-        Hdr hdr = factory.createHdr();
-        headerPart.setJaxbElement(hdr);
-        List<Object> hdrContent = hdr.getContent();
-        Arrays.stream(headerContent)
-                .map(p -> styleP("Header", p))
-                .forEach(hdrContent::add);
-        HeaderReference headerReference = factory.createHeaderReference();
-        headerReference.setId(relationship.getId());
-        headerReference.setType(hdrFtrRef);
-        sectPr.getEGHdrFtrReferences().add(headerReference);
-    }
 
     private P styleP(String styleName, P p) {
         pPr(p).setPStyle(pStyle(styleName));
