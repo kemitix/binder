@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.UnitsOfMeasurement;
-import org.docx4j.convert.out.flatOpcXml.FlatOpcXmlCreator;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
@@ -14,6 +13,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.relationships.Relationship;
+import org.docx4j.wml.BooleanDefaultTrue;
 import org.docx4j.wml.CTColumns;
 import org.docx4j.wml.CTDocGrid;
 import org.docx4j.wml.CTFootnotes;
@@ -50,8 +50,6 @@ import javax.annotation.Nullable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.xml.bind.JAXBElement;
-import java.io.File;
-import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +57,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.docx4j.jaxb.Context.getWmlObjectFactory;
@@ -204,13 +205,22 @@ public class DocxFacade {
         return factory.createRInstrText(t(text));
     }
 
-    private RPr rPr(R r) {
-        RPr rPr = Objects.requireNonNullElseGet(
-                r.getRPr(),
-                factory::createRPr
+    private <T, K> K get(
+            T t,
+            Function<T, K> extract,
+            Consumer<K> apply,
+            Supplier<K> create
+    ) {
+        K k = Objects.requireNonNullElseGet(
+                extract.apply(t),
+                create
         );
-        r.setRPr(rPr);
-        return rPr;
+        apply.accept(k);
+        return k;
+    }
+
+    private RPr rPr(R r) {
+        return get(r, R::getRPr, r::setRPr, factory::createRPr);
     }
 
     private FldChar fldChar(STFldCharType type) {
@@ -295,14 +305,7 @@ public class DocxFacade {
     private SectPr sectPr(List<P> sectionPs) {
         P last = last(sectionPs, P.class);
         PPr pPr = pPr(last);
-        SectPr sectPr =
-                Objects.requireNonNullElseGet(
-                        pPr.getSectPr(),
-                        factory::createSectPr
-                );
-        pPr.setSectPr(sectPr);
-
-        return sectPr;
+        return get(pPr, PPr::getSectPr, pPr::setSectPr, factory::createSectPr);
     }
 
     private SectPr formatSection(SectPr sectPr) {
@@ -357,12 +360,8 @@ public class DocxFacade {
     }
 
     private SectPr sectPrType(String value, SectPr sectPr) {
-        SectPr.Type type =
-                Objects.requireNonNullElseGet(
-                        sectPr.getType(),
-                        SectPr.Type::new);
-        sectPr.setType(type);
-        type.setVal(value);
+        get(sectPr, SectPr::getType, sectPr::setType, SectPr.Type::new)
+                .setVal(value);
         return sectPr;
     }
 
@@ -372,12 +371,6 @@ public class DocxFacade {
 
     public P textParagraphCentered(String text) {
         return alignCenter(p(r(t(text))));
-    }
-
-    public P p(PPr pPr) {
-        P p = factory.createP();
-        p.setPPr(pPr);
-        return p;
     }
 
     public P p() {
@@ -394,33 +387,29 @@ public class DocxFacade {
         return p;
     }
 
-    public P alignFull(P p) {
-        pPr(p).setJc(jc(JcEnumeration.BOTH));
+    public P align(JcEnumeration alignment, P p) {
+        pPr(p).setJc(jc(alignment));
         return p;
+    }
+
+    public P alignFull(P p) {
+        return align(JcEnumeration.BOTH, p);
     }
 
     public P alignLeft(P p) {
-        pPr(p).setJc(jc(JcEnumeration.LEFT));
-        return p;
+        return align(JcEnumeration.LEFT, p);
     }
 
     public P alignRight(P p) {
-        pPr(p).setJc(jc(JcEnumeration.RIGHT));
-        return p;
+        return align(JcEnumeration.RIGHT, p);
     }
 
     public P alignCenter(P p) {
-        pPr(p).setJc(jc(JcEnumeration.CENTER));
-        return p;
+        return align(JcEnumeration.CENTER, p);
     }
 
     public PPr pPr(P p) {
-        PPr pPr = Objects.requireNonNullElseGet(
-                p.getPPr(),
-                factory::createPPr
-        );
-        p.setPPr(pPr);
-        return pPr;
+        return get(p, P::getPPr, p::setPPr, factory::createPPr);
     }
 
     private Jc jc(JcEnumeration value) {
@@ -466,7 +455,7 @@ public class DocxFacade {
 
     public R italic(Object[] content) {
         RPr rPr = factory.createRPr();
-        rPr.setI(factory.createBooleanDefaultTrue());
+        rPr.setI(defaultTrue());
         List<Object> o = new ArrayList<>();
         o.add(rPr);
         o.addAll(Arrays.asList(content));
@@ -475,7 +464,7 @@ public class DocxFacade {
 
     public R bold(Object[] content) {
         RPr rPr = factory.createRPr();
-        rPr.setB(factory.createBooleanDefaultTrue());
+        rPr.setB(defaultTrue());
         List<Object> o = new ArrayList<>();
         o.add(rPr);
         o.addAll(Arrays.asList(content));
@@ -712,18 +701,18 @@ public class DocxFacade {
         return rStyle;
     }
 
+    private BooleanDefaultTrue defaultTrue() {
+        return factory.createBooleanDefaultTrue();
+    }
+
     //p/pPr/keepNext[val="true"]
     public P keepWithNext(P p) {
-        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), factory::createPPr);
-        pPr.setKeepNext(factory.createBooleanDefaultTrue());
-        p.setPPr(pPr);
+        pPr(p).setKeepNext(defaultTrue());
         return p;
     }
 
     public P keepTogether(P p) {
-        PPr pPr = Objects.requireNonNullElseGet(p.getPPr(), factory::createPPr);
-        pPr.setKeepLines(factory.createBooleanDefaultTrue());
-        p.setPPr(pPr);
+        pPr(p).setKeepLines(defaultTrue());
         return p;
     }
 
@@ -841,43 +830,15 @@ public class DocxFacade {
         sectPr.getEGHdrFtrReferences().add(headerReference);
     }
 
-    private P styleP(String header, P p) {
-        PPr pPr = pPr(p);
-        pPr.setPStyle(pStyle(header));
+    private P styleP(String styleName, P p) {
+        pPr(p).setPStyle(pStyle(styleName));
         return p;
-    }
-
-    public P fontSzP(int fontSize, P p) {
-        fontSzPPr(fontSize, pPr(p));
-        return p;
-    }
-
-    // This isn't setting the font size for the para!!
-    public PPr fontSzPPr(int fontSize, PPr pPr) {
-        fontSzParaRPr(fontSize, rPr(pPr));
-        return pPr;
-    }
-
-    public ParaRPr fontSzParaRPr(int fontSize, ParaRPr rPr) {
-        HpsMeasure sz = sz(fontSize);
-        rPr.setSz(sz);
-        rPr.setSzCs(sz);
-        return rPr;
     }
 
     public HpsMeasure sz(float fontSize) {
         HpsMeasure hpsMeasure = factory.createHpsMeasure();
         hpsMeasure.setVal(BigInteger.valueOf((long) (fontSize * 2)));
         return hpsMeasure;
-    }
-
-    public ParaRPr rPr(PPr pPr) {
-        ParaRPr rPr = Objects.requireNonNullElseGet(
-                pPr.getRPr(),
-                factory::createParaRPr
-        );
-        pPr.setRPr(rPr);
-        return rPr;
     }
 
     public Style createParaStyleBasedOn(String name, String basedOn) {
@@ -920,21 +881,13 @@ public class DocxFacade {
     }
 
     private RPr rPr(Style style) {
-        RPr rPr = Objects.requireNonNullElseGet(
-                style.getRPr(),
-                factory::createRPr
-        );
-        style.setRPr(rPr);
-        return rPr;
+        return get(style, Style::getRPr, style::setRPr, factory::createRPr);
     }
 
     public P styledP(String styleName, P p) {
-        PPr pPr = pPr(p);
-
         PPrBase.PStyle pStyle = factory.createPPrBasePStyle();
-        pPr.setPStyle(pStyle);
         pStyle.setVal(styleName);
-
+        pPr(p).setPStyle(pStyle);
         return p;
     }
 
@@ -947,10 +900,9 @@ public class DocxFacade {
     }
 
     public P zeroSpaceAfterP(P p) {
-        PPr pPr = pPr(p);
         PPrBase.Spacing spacing = factory.createPPrBaseSpacing();
-        pPr.setSpacing(spacing);
         spacing.setAfter(BigInteger.ZERO);
+        pPr(p).setSpacing(spacing);
         return p;
     }
 
