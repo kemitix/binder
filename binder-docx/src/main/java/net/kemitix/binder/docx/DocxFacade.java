@@ -483,24 +483,27 @@ public class DocxFacade {
      */
     public P heading(int level, String text) {
         R r = r(t(text));
+        P p = p(r);
+        PPr pPr = pPr(p);
+        ParaRPr paraRPr = paraRPr(pPr);
         RPr rPr = rPr(r);
+
+        pPr.setPStyle(pStyle("Normal"));
+
         HpsMeasure sz = factory.createHpsMeasure();
         sz.setVal(BigInteger.valueOf(szForLevel(level)));
+
         rPr.setSz(sz);
         rPr.setSzCs(sz);
 
-        P p = p(r);
-        PPr pPr = pPr(p);
-
-        ParaRPr paraRPr = factory.createParaRPr();
         paraRPr.setSz(sz);
         paraRPr.setSzCs(sz);
-        pPr.setRPr(paraRPr);
-
-        PPrBase.PStyle pStyle = pStyle("Normal");
-        pPr.setPStyle(pStyle);
 
         return p;
+    }
+
+    private ParaRPr paraRPr(PPr pPr) {
+        return get(pPr, PPr::getRPr, pPr::setRPr, factory::createParaRPr);
     }
 
     // h1 = 24pt
