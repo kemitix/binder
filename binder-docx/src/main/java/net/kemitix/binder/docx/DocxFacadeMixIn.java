@@ -1,5 +1,6 @@
 package net.kemitix.binder.docx;
 
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.BooleanDefaultTrue;
 import org.docx4j.wml.ObjectFactory;
@@ -12,6 +13,8 @@ import java.util.function.Supplier;
 public interface DocxFacadeMixIn {
 
     ObjectFactory factory();
+
+    WordprocessingMLPackage mlPackage();
 
     MainDocumentPart mainDocumentPart();
 

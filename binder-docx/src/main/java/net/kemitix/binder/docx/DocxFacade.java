@@ -45,7 +45,12 @@ public class DocxFacade
         return factory;
     }
 
-    //@Override
+    @Override
+    public WordprocessingMLPackage mlPackage() {
+        return mlPackage;
+    }
+
+    @Override
     public AtomicInteger footnoteRef() {
         return myFootnoteRef;
     }
