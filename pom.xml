@@ -7,7 +7,7 @@
     <groupId>net.kemitix.binder</groupId>
     <artifactId>binder-root</artifactId>
     <name>binder-root</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <properties>
