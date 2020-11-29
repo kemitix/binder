@@ -40,6 +40,7 @@ public class DocxFacade
         sectPr.setPgMar(pgMar());
         addBlankPageHeader(sectPr, "default");
         addBlankPageFooter(sectPr, "default");
+        sectPrType("oddPage", sectPr);
     }
 
     @Override
