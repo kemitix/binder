@@ -104,6 +104,7 @@ public class DocxManuscript {
     @SneakyThrows
     private void styleDefinitionsPart(MainDocumentPart mainDocument) {
         var part = mainDocument.getStyleDefinitionsPart(true);
+
         List<Style> styles = part.getContents().getStyle();
         styles.add(styleFootnote());
         styles.add(styleFootnoteAnchor());

@@ -31,7 +31,7 @@ public class Section {
     private String name; // the base filename
     private String author;
     private String bio = "TODO"; // the author bio
-    private int fontSize = 11;
+    private float fontSize = 11;
     private boolean header = true; // should there be a header
     private boolean footer = true; // should there be a footer
     private int page = 0; // page in paperback to toc
@@ -40,6 +40,8 @@ public class Section {
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
     private Align align = Align.full; // full justify paragraphs
+
+    private boolean last; // internal flag to mark last section in document
 
     public boolean isType(Type type) {
         return this.type.equals(type);

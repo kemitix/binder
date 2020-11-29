@@ -25,9 +25,7 @@ public class StrongEmphasisDocxNodeHandler
         if (content instanceof R) {
             R r = (R) content;
             return Stream.of(
-                    docx.bold(
-                            r.getContent().toArray()
-                    )
+                    docx.bold(r)
             );
         } else {
             throw new RuntimeException("Not passed content in an R");

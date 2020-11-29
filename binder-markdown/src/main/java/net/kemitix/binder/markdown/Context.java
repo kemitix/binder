@@ -7,6 +7,13 @@ import java.util.Objects;
 public interface Context {
     static Context create(Section section) {
         return new Context() {
+
+            @Override
+            public String toString() {
+                return "Context: (type: %s, title: %s)"
+                        .formatted(section.getType(), section.getTitle());
+            }
+
             @Override
             public boolean isType(Section.Type type) {
                 return section.isType(type);
@@ -37,7 +44,7 @@ public interface Context {
             }
 
             @Override
-            public int getFontSize() {
+            public float getFontSize() {
                 return section.getFontSize();
             }
 
@@ -56,12 +63,23 @@ public interface Context {
                 return section.isFooter();
             }
 
+            @Override
+            public boolean isLastSection() {
+                return section.isLast();
+            }
+
             //TODO access values in Section as required
         };
     }
 
     static Context create() {
         return new Context() {
+
+            @Override
+            public String toString() {
+                return "Context: No Section";
+            }
+
             @Override
             public boolean isType(Section.Type type) {
                 return false;
@@ -88,7 +106,7 @@ public interface Context {
             }
 
             @Override
-            public int getFontSize() {
+            public float getFontSize() {
                 return 0;
             }
 
@@ -106,6 +124,11 @@ public interface Context {
             public boolean hasFooter() {
                 return false;
             }
+
+            @Override
+            public boolean isLastSection() {
+                return false;
+            }
         };
     }
 
@@ -119,11 +142,13 @@ public interface Context {
 
     Section.Align getAlign();
 
-    int getFontSize();
+    float getFontSize();
 
     String getParaStyleName();
 
     boolean hasHeader();
 
     boolean hasFooter();
+
+    boolean isLastSection();
 }

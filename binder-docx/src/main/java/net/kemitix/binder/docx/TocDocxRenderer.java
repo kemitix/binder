@@ -45,6 +45,7 @@ public class TocDocxRenderer
 
     @Override
     public Stream<DocxContent> render(Section section) {
+        //TODO: use Arrays.asList(...)
         List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
         contents.add(
@@ -61,8 +62,10 @@ public class TocDocxRenderer
                                 .render(s))
                 .forEach(contents::add);
         Context context = Context.create(section);
-        contents.add(docx.finaliseTitlePage(context));
-        return Stream.of(new DocxContent(contents));
+        return Stream.of(
+                new DocxContent(
+                        docx.finaliseTitlePage(context, contents))
+        );
     }
 
 }

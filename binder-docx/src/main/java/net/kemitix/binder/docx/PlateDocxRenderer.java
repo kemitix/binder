@@ -8,6 +8,7 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Log
@@ -34,8 +35,8 @@ public class PlateDocxRenderer
 
     @Override
     public Stream<DocxContent> render(Section section) {
-        log.info("PLATE: %s".formatted(section.getName()));
-        ArrayList<Object> contents = new ArrayList<>();
+        //TODO: use Arrays.asList(...)
+        List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
@@ -54,8 +55,10 @@ public class PlateDocxRenderer
                                 FontSize.of(240))));
         contents.add(docx.textParagraph(""));
         Context context = Context.create(section);
-        contents.add(docx.finaliseTitlePage(context));
-        return Stream.of(new DocxContent(contents));
+        return Stream.of(
+                new DocxContent(
+                        docx.finaliseTitlePage(context, contents))
+        );
     }
 
 }

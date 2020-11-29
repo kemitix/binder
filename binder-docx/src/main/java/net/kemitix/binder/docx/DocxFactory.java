@@ -19,7 +19,12 @@ public class DocxFactory {
             MdManuscript mdManuscript,
             DocxMdRenderer docxMdRenderer
     ) {
-        return mdManuscript.getContents()
+        List<Section> sections = mdManuscript.getContents();
+        if (sections.size() > 0) {
+            Section lastSection = sections.get(sections.size() - 1);
+            lastSection.setLast(true);
+        }
+        return sections
                 .stream()
                 .filter(Section::isDocx)
                 .flatMap(docxMdRenderer::render)
