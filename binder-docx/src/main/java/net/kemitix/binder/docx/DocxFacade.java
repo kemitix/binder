@@ -38,6 +38,8 @@ public class DocxFacade
         SectPr sectPr = mlPackage.getDocumentModel().getSections().get(0).getSectPr();
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
+        addBlankPageHeader(sectPr, "default");
+        addBlankPageFooter(sectPr, "default");
     }
 
     @Override
