@@ -28,7 +28,7 @@ public class DocxImageFacade {
 
     private final TextImageFactory textImageFactory;
     private final Metadata metadata;
-    private final DocxFacade docx;
+    private final DocxFacadeMixIn docx;
 
     private final int dpi = 640;
     private final Map<FontSize, ImagePartCache> imagePartCaches =
@@ -40,7 +40,7 @@ public class DocxImageFacade {
     public DocxImageFacade(
             TextImageFactory textImageFactory,
             Metadata metadata,
-            DocxFacade docx
+            DocxFacadeMixIn docx
     ) {
         this.textImageFactory = textImageFactory;
         this.metadata = metadata;
@@ -111,7 +111,7 @@ public class DocxImageFacade {
                 word -> {
                     try {
                         return BinaryPartAbstractImage
-                                .createImagePart(docx.getMlPackage(), image.getFile());
+                                .createImagePart(docx.mlPackage(), image.getFile());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
