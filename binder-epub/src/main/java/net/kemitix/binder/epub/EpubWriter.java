@@ -2,6 +2,7 @@ package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
+import net.kemitix.binder.markdown.MarkdownConversionException;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
 
@@ -31,6 +32,11 @@ public class EpubWriter implements ManuscriptWriter {
         log.info("Writing: " + epubFile);
         try {
             epubBook.writeToFile(epubFile);
+        } catch (MarkdownConversionException e) {
+            log.severe(e.getMessage());
+            log.severe("Node: " + e.getNode());
+            log.severe("Context: " + e.getContext());
+            log.severe("Content: " + e.getContent());
         } catch (Exception e) {
             throw new RuntimeException(String.format(
                     "Error creating epub file %s: %s",

@@ -7,6 +7,13 @@ import java.util.Objects;
 public interface Context {
     static Context create(Section section) {
         return new Context() {
+
+            @Override
+            public String toString() {
+                return "Context: (type: %s, title: %s)"
+                        .formatted(section.getType(), section.getTitle());
+            }
+
             @Override
             public boolean isType(Section.Type type) {
                 return section.isType(type);
@@ -67,6 +74,12 @@ public interface Context {
 
     static Context create() {
         return new Context() {
+
+            @Override
+            public String toString() {
+                return "Context: No Section";
+            }
+
             @Override
             public boolean isType(Section.Type type) {
                 return false;
