@@ -30,7 +30,7 @@ public interface DocxFacadeSectionMixIn
                 .map(P.class::cast)
                 .collect(Collectors.toList());
         SectPr sectPr =
-                formatSection(
+                sizePage(
                         sectPrType("oddPage",
                                 sectPr(sectionPs)));
         if (context.hasHeader()) {
@@ -55,7 +55,7 @@ public interface DocxFacadeSectionMixIn
                 .map(P.class::cast)
                 .collect(Collectors.toList());
         SectPr sectPr =
-                formatSection(
+                sizePage(
                         sectPrType("oddPage",
                                 sectPr(sectionPs)));
         String name = context.getName();
@@ -104,10 +104,13 @@ public interface DocxFacadeSectionMixIn
         return get(pPr, PPr::getSectPr, pPr::setSectPr, factory()::createSectPr);
     }
 
-    default SectPr formatSection(SectPr sectPr) {
+    default SectPr sizePage(SectPr sectPr) {
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
+        return sectPr;
+    }
 
+    default SectPr formatSection(SectPr sectPr) {
         CTColumns ctColumns = factory().createCTColumns();
         sectPr.setCols(ctColumns);
         BigInteger topBottom = BigInteger.valueOf(
