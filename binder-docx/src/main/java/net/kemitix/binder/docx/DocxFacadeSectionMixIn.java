@@ -81,21 +81,21 @@ public interface DocxFacadeSectionMixIn
     }
 
     default P tocItem(String pageNumber, String title) {
-        return p(new Object[]{
-                tabDefinition(
-                        tabs(new CTTabStop[]{
-                                tabLeft(0),
-                                tabRight(576),
-                                tabLeft(720)
-                        }),
-                        tabIndent(720, null, 720)),
-                r(new Object[]{
-                        tab(),
-                        t(pageNumber),
-                        tab(),
-                        t(title)
-                })
-        });
+        return tabDefinition(
+                tabs(new CTTabStop[]{
+                        tabLeft(0),
+                        tabRight(576),
+                        tabLeft(720)
+                }),
+                tabIndent(720, null, 720),
+                p(new Object[]{
+                        r(new Object[]{
+                                tab(),
+                                t(pageNumber),
+                                tab(),
+                                t(title)
+                        })
+                }));
     }
 
     default SectPr sectPr(List<P> sectionPs) {

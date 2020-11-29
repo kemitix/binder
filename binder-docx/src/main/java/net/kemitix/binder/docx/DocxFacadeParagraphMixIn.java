@@ -173,23 +173,19 @@ public interface DocxFacadeParagraphMixIn
         return p;
     }
 
-    default PPr tabDefinition(Tabs tabs, PPrBase.Ind tabIndent) {
-        return ppr(tabs, tabIndent);
+    default P tabDefinition(Tabs tabs, PPrBase.Ind tabIndent, P p) {
+        PPr pPr = pPr(p);
+        pPr.setTabs(tabs);
+        pPr.setInd(tabIndent);
+        return p;
     }
 
     default PPr pPr() {
         return factory().createPPr();
     }
 
-    default PPr ppr(Tabs tabs, PPrBase.Ind tabIndent) {
-        PPr pPr = pPr();
-        pPr.setTabs(tabs);
-        pPr.setInd(tabIndent);
-        return pPr;
-    }
-
     default PPr pPr(P p) {
-        return get(p, P::getPPr, p::setPPr, factory()::createPPr);
+        return get(p, P::getPPr, p::setPPr, this::pPr);
     }
 
     default ParaRPr paraRPr(PPr pPr) {
