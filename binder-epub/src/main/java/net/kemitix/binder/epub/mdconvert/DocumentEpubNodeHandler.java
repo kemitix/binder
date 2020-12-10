@@ -31,7 +31,7 @@ public class DocumentEpubNodeHandler
                          xmlns="http://www.w3.org/1999/xhtml"
                          xmlns:epub="http://www.idpf.org/2007/ops">
                         <head>
-                        <link rel="stylesheet" href="%s" type="text/css" media="all">
+                        <link rel="stylesheet" href="%s" type="text/css" media="all"/>
                         </head>
                         <body>
                         <h1>%s</h1>
@@ -56,7 +56,7 @@ public class DocumentEpubNodeHandler
                          xmlns="http://www.w3.org/1999/xhtml"
                          xmlns:epub="http://www.idpf.org/2007/ops">
                         <head>
-                        <link rel="stylesheet" href="%s" type="text/css" media="all">
+                        <link rel="stylesheet" href="%s" type="text/css" media="all"/>
                         </head>
                         <body>
                         <h1>%s</h1>
