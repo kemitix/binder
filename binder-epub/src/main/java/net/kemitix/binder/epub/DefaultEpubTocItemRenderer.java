@@ -19,7 +19,7 @@ public class DefaultEpubTocItemRenderer
     @Override
     public Stream<String> render(HtmlSection section) {
         return Stream.of(
-                "<li><a href=\"../%s\">%s</a></li>"
+                "<li><a href=\"%s\">%s</a></li>"
                         .formatted(
                                 section.getHref(),
                                 section.getTitle()));

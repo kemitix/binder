@@ -69,11 +69,11 @@ public class StoryEpubRenderer
                         
                         %s
                         """
-                        .formatted(
-                                section.getCopyright(),
-                                section.getAuthor(),
-                                section.getBio()
-                        );
+                .formatted(
+                        section.getCopyright(),
+                        section.getAuthor(),
+                        section.getBio()
+                );
     }
 
 }

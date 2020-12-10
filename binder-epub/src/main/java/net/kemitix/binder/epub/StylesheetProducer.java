@@ -20,7 +20,7 @@ public class StylesheetProducer {
         byte[] bytes = getClass()
                 .getResourceAsStream("stylesheet.css")
                 .readAllBytes();
-        Content content = new Content(mediaType, "content/" + stylesheetHref, bytes);
+        Content content = new Content(mediaType, stylesheetHref, bytes);
         content.setToc(false);
         content.setSpine(false);
         return content;
@@ -29,7 +29,7 @@ public class StylesheetProducer {
     @Produces
     @Named
     String stylesheetHref() {
-        return "css/binder.css";
+        return "binder.css";
     }
 
 }
