@@ -87,25 +87,22 @@ public class EpubFactory {
 
     private void addLandmarks(EpubBook epub, Content cover) {
         List<Landmark> landmarks = new ArrayList<>();
-        landmarks.add(landmark(Section.LandmarkType.cover, cover.getHref(), "Cover"));
+        landmarks.add(landmark(Section.LandmarkType.cover, cover.getHref()));
         htmlManuscript.sections()
                 .filter(HtmlSection::isEpub)
                 .filter(HtmlSection::isLandmark)
                 .forEach(section ->
                         landmarks.add(
                                 landmark(section.getLandmarkType(),
-                                        section.getHref(),
-                                        Objects.requireNonNull(
-                                                section.getTitle(),
-                                                "Section title"))));
+                                        section.getHref())));
         epub.setLandmarks(landmarks);
     }
 
-    private Landmark landmark(Section.LandmarkType type, String href, String title) {
+    private Landmark landmark(Section.LandmarkType type, String href) {
         Landmark landmark = new Landmark();
         landmark.setType(type.toString());
         landmark.setHref(href);
-        landmark.setTitle(title);
+        landmark.setTitle("");
         return landmark;
     }
 
