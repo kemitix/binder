@@ -66,7 +66,7 @@ public class EpubFactory {
     private Content addCover(Metadata metadata, EpubBook epub) {
         epub.addCoverImage(coverImage(metadata.getCover()),
                 "image/jpeg", "cover.jpg");
-        return epub.addTextContent("Cover", "cover.html",
+        return epub.addTextContent("Cover", "cover.xhtml",
                 "<img src=\"cover.jpg\" style=\"height:100%\"/>");
     }
 
