@@ -102,7 +102,7 @@ public class EpubFactory {
         Landmark landmark = new Landmark();
         landmark.setType(type.toString());
         landmark.setHref(href);
-        landmark.setTitle("");
+        landmark.setTitle("&nbps;");
         return landmark;
     }
 
