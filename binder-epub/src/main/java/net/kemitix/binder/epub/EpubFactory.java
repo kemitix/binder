@@ -3,6 +3,7 @@ package net.kemitix.binder.epub;
 import coza.opencollab.epub.creator.api.MetadataItem;
 import coza.opencollab.epub.creator.model.Content;
 import coza.opencollab.epub.creator.model.EpubBook;
+import coza.opencollab.epub.creator.model.Landmark;
 import coza.opencollab.epub.creator.model.TocLink;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.HtmlManuscript;
@@ -17,6 +18,7 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -53,6 +55,7 @@ public class EpubFactory {
         Content cover = addCover(metadata, epub);
         addSections(epub);
         addTableOfContents(epub, cover);
+        addLandmarks(epub, cover);
         return epub;
     }
 
@@ -80,6 +83,30 @@ public class EpubFactory {
                 .filter(HtmlSection::isToc)
                 .forEach(section ->
                         tocLinks.add(new TocLink(section.getHref(), section.getTitle(), "")));
+    }
+
+    private void addLandmarks(EpubBook epub, Content cover) {
+        List<Landmark> landmarks = new ArrayList<>();
+        landmarks.add(landmark(Section.LandmarkType.cover, cover.getHref(), "Cover"));
+        htmlManuscript.sections()
+                .filter(HtmlSection::isEpub)
+                .filter(HtmlSection::isLandmark)
+                .forEach(section ->
+                        landmarks.add(
+                                landmark(section.getLandmarkType(),
+                                        section.getHref(),
+                                        Objects.requireNonNull(
+                                                section.getTitle(),
+                                                "Section title"))));
+        epub.setLandmarks(landmarks);
+    }
+
+    private Landmark landmark(Section.LandmarkType type, String href, String title) {
+        Landmark landmark = new Landmark();
+        landmark.setType(type.toString());
+        landmark.setHref(href);
+        landmark.setTitle(title);
+        return landmark;
     }
 
     private byte[] coverImage(String cover) {
