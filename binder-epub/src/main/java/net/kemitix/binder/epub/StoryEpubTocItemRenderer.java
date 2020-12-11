@@ -19,7 +19,7 @@ public class StoryEpubTocItemRenderer
     @Override
     public Stream<String> render(HtmlSection section) {
         return Stream.of(
-                "<li><a href=\"../%s\">%s</a> by %s</li>"
+                "<li><a href=\"%s\">%s</a> by %s</li>"
                         .formatted(
                                 section.getHref(),
                                 section.getTitle(),

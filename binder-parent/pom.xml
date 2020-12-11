@@ -12,7 +12,7 @@
 
     <groupId>net.kemitix.binder</groupId>
     <artifactId>binder-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -31,6 +31,7 @@
         <velocity-engine.version>2.2</velocity-engine.version>
         <awt-color-factory.version>1.0.2</awt-color-factory.version>
         <mon.version>2.2.0</mon.version>
+        <commons-text.version>1.9</commons-text.version>
     </properties>
 
     <dependencyManagement>
@@ -111,6 +112,12 @@
                 <groupId>org.docx4j</groupId>
                 <artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
                 <version>${docx4j-JAXB-ReferenceImpl.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text.version}</version>
             </dependency>
 
             <dependency>

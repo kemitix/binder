@@ -19,7 +19,7 @@ public interface AlignableParagraph {
         };
         return Stream.of(
                 """
-                        <%1$s style="text-align: %2$s">%3$s</p>
+                        <%1$s style="text-align: %2$s">%3$s</%1$s>
                         """
                         .formatted(element, alignment, text.strip())
         );

@@ -5,6 +5,7 @@ import net.kemitix.binder.markdown.DocumentNodeHandler;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Epub
@@ -27,20 +28,22 @@ public class DocumentEpubNodeHandler
     ) {
         return Stream.of(
                 """
+                        <?xml version='1.0' encoding='utf-8'?>
+                        <!DOCTYPE html>
                         <html
                          xmlns="http://www.w3.org/1999/xhtml"
                          xmlns:epub="http://www.idpf.org/2007/ops">
                         <head>
-                        <link rel="stylesheet" href="%s" type="text/css" media="all">
+                        <link rel="stylesheet" href="%s" type="text/css" media="all"/>
                         </head>
                         <body>
-                        <h1>%s</h1>
+                        <h1 style="text-align: center;">%s</h1>
                         %s
                         </body>
                         </html>
                         """.formatted(
                         stylesheetHref,
-                        title,
+                        Objects.requireNonNullElse(title, ""),
                         collect(content)));
     }
 
@@ -52,22 +55,24 @@ public class DocumentEpubNodeHandler
     ) {
         return Stream.of(
                 """
+                        <?xml version='1.0' encoding='utf-8'?>
+                        <!DOCTYPE html>
                         <html
                          xmlns="http://www.w3.org/1999/xhtml"
                          xmlns:epub="http://www.idpf.org/2007/ops">
                         <head>
-                        <link rel="stylesheet" href="%s" type="text/css" media="all">
+                        <link rel="stylesheet" href="%s" type="text/css" media="all"/>
                         </head>
                         <body>
-                        <h1>%s</h1>
-                        <h2>%s</h2>
+                        <h1 style="text-align: center;">%s</h1>
+                        <h2 style="text-align: center;">%s</h2>
                         %s
                         </body>
                         </html>
                         """.formatted(
                         stylesheetHref,
-                        title,
-                        author,
+                        Objects.requireNonNull(title, "Story title"),
+                        Objects.requireNonNull(author, "Story author"),
                         collect(content)));
     }
 }

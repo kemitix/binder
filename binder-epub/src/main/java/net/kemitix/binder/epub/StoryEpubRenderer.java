@@ -11,10 +11,8 @@ import net.kemitix.binder.spi.Section;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,15 +39,15 @@ public class StoryEpubRenderer
 
     @Override
     public Stream<Content> render(HtmlSection section) {
+        String markdown = section.getMarkdown() + aboutAuthor(section);
+        List<String> convertedBody = converter.convert(
+                Context.create(section),
+                markdown
+        ).collect(Collectors.toList());
         Stream<String> contents =
                 Stream.of(
-                        converter.convert(
-                                Context.create(section),
-                                section.getMarkdown()
-                        ),
-                        aboutAuthor(section)
+                        convertedBody.stream()
                 ).flatMap(Function.identity());
-
 
         byte[] content = contents.collect(Collectors.joining())
                 .getBytes(StandardCharsets.UTF_8);
@@ -59,31 +57,23 @@ public class StoryEpubRenderer
         );
     }
 
-    private Stream<String> aboutAuthor(Section section) {
-        String authorBio =
-                converter.convert(
-                        Context.create(),
-                        section.getBio()
-                ).collect(Collectors.joining());
-        return Stream.of(
-                """
-                        <p>&nbsp;</p>
-                        <blockquote>
-                          <p>
-                            <em>&copy; %4d %s</em>
-                          </p>
-                        </blockquote>
-                        <p>&nbsp;</p>
-                        <hr/>
-                        <p>&nbsp;</p>
+    private String aboutAuthor(Section section) {
+        return  """
+                        > *&copy; %4d %s*
+                        
+                        ---
+
                         <p style="text-align: center;">
                           About the Author
                         </p>
+                        
+                        %s
                         """
-                        .formatted(
-                                section.getCopyright(),
-                                section.getAuthor()
-                        ), authorBio);
+                .formatted(
+                        section.getCopyright(),
+                        section.getAuthor(),
+                        section.getBio()
+                );
     }
 
 }

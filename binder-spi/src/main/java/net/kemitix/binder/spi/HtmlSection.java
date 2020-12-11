@@ -18,6 +18,6 @@ public class HtmlSection extends Section {
     }
 
     public String getHref() {
-        return "issue/%s.html".formatted(getName());
+        return "%s.xhtml".formatted(getName());
     }
 }

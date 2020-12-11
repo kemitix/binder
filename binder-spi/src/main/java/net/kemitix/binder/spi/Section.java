@@ -40,12 +40,15 @@ public class Section {
     private File filename; // the file loaded
     private String markdown; // the markdown contents of the file, after removing yaml header
     private Align align = Align.full; // full justify paragraphs
+    private boolean landmark = false; // is an epub landmark
+    private LandmarkType landmarkType;
 
     private boolean last; // internal flag to mark last section in document
 
     public boolean isType(Type type) {
         return this.type.equals(type);
     }
+
 
     public enum Type {
 
@@ -67,5 +70,34 @@ public class Section {
         right,
         full,
         centre
+    }
+
+    public enum LandmarkType {
+        cover("cover"),
+        toc("toc"),
+        bodymatter("bodymatter"),
+        titlepage("titlepage"),
+        frontmatter("frontmatter"),
+        backmatter("backmatter"),
+        loi("loi"),
+        lot("lot"),
+        preface("preface"),
+        bibliography("bibliography"),
+        index("index"),
+        glossary("glossary"),
+        acknowledgments("acknowledgments"),
+        ;
+
+        @Getter
+        private final String value;
+
+        @Override
+        public String toString() {
+            return value;
+        }
+
+        LandmarkType(String type) {
+            this.value = type;
+        }
     }
 }
