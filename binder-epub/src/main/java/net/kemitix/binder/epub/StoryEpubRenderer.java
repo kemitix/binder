@@ -59,8 +59,9 @@ public class StoryEpubRenderer
 
     private String aboutAuthor(Section section) {
         return  """
-                        > *&copy; %4d %s*
                         
+                        > *© %4d %s*
+
                         ---
 
                         <p style="text-align: center;">
