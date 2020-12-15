@@ -1,6 +1,5 @@
 package net.kemitix.binder.epub;
 
-import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
 
