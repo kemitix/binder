@@ -74,7 +74,7 @@ public class TemplateEngine {
     private String copyrights(MdManuscript mdManuscript) {
         return mdManuscript.getContents().stream()
                 .filter(Section.Type.story::isA)
-                .map(section -> "%s ©%s by%s%s".formatted(
+                .map(section -> "*%s* ©%s by%s%s".formatted(
                         section.getTitle(),
                         section.getCopyright(),
                         NON_BREAKING_SPACE,
