@@ -80,7 +80,7 @@ public class TemplateEngine {
                         NON_BREAKING_SPACE,
                         unBreakable(section.getAuthor())
                 ))
-                .collect(Collectors.joining("\n\n"));
+                .collect(Collectors.joining("  \n"));
     }
 
     private String unBreakable(String s) {

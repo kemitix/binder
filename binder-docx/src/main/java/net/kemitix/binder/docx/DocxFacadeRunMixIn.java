@@ -1,5 +1,6 @@
 package net.kemitix.binder.docx;
 
+import org.docx4j.wml.Br;
 import org.docx4j.wml.FldChar;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
@@ -97,4 +98,7 @@ public interface DocxFacadeRunMixIn
         return rStyle;
     }
 
+    default Br textLineBreak() {
+        return factory().createBr();
+    }
 }
