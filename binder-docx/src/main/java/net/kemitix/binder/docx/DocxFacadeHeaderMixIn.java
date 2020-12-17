@@ -17,7 +17,7 @@ public interface DocxFacadeHeaderMixIn
         extends DocxFacadeParagraphMixIn {
 
     default void addBlankPageHeader(SectPr sectPr, String name) {
-        P[] emptyP = {};
+        P[] emptyP = new P[]{zeroSpaceAfterP(p()), p()};
         addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
         addPageHeader(sectPr, name, HdrFtrRef.EVEN, emptyP);
         addPageHeader(sectPr, name, HdrFtrRef.FIRST, emptyP);

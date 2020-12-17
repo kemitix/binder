@@ -1,6 +1,5 @@
 package net.kemitix.binder;
 
-import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import net.kemitix.binder.app.BinderApp;
