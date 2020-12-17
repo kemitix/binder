@@ -17,7 +17,7 @@ public interface DocxFacadeFooterMixIn
         extends DocxFacadeParagraphMixIn {
     
     default void addBlankPageFooter(SectPr sectPr, String name) {
-        P[] emptyP = {};
+        P[] emptyP = new P[]{zeroSpaceAfterP(p()), p()};
         addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
         addPageFooter(sectPr, name, HdrFtrRef.EVEN, emptyP);
         addPageFooter(sectPr, name, HdrFtrRef.FIRST, emptyP);
