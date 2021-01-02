@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import net.kemitix.binder.spi.FontSize;
+import net.kemitix.binder.spi.FontSpec;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.TextImage;
 import net.kemitix.binder.spi.TextImageFactory;
@@ -49,8 +50,13 @@ public class DocxImageFacade {
 
     public Drawing[] textImages(String text, FontSize fontSize) {
         var imagePartCache = getImagePartCache(fontSize);
+        var fontSpec = FontSpec.builder()
+                .size(fontSize)
+                .kerning(metadata.isKerning())
+                .ligatures(metadata.isLigatures())
+                .build();
         return words(text)
-                .flatMap(word -> textImageFactory.createImages(word, fontSize).stream())
+                .flatMap(word -> textImageFactory.createImages(word, fontSpec).stream())
                 .map(image -> imagePart(image, imagePartCache))
                 .map(imagePart -> inline(imagePart, fontSize))
                 .map(this::drawing)

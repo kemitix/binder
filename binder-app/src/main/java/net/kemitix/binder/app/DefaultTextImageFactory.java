@@ -1,8 +1,8 @@
 package net.kemitix.binder.app;
 
 import net.kemitix.binder.spi.CoverFont;
-import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.TextImage;
+import net.kemitix.binder.spi.FontSpec;
 import net.kemitix.binder.spi.TextImageFactory;
 import net.kemitix.fontface.FontCache;
 import net.kemitix.fontface.FontFace;
@@ -11,14 +11,11 @@ import org.beryx.awt.color.ColorFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.awt.*;
-import java.awt.font.TextAttribute;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,13 +40,13 @@ public class DefaultTextImageFactory
     @Override
     public List<TextImage> createImages(
             String text,
-            FontSize fontSize
+            FontSpec fontSpec
     ) {
         Stream<String> words = splitIntoLines(text)
                 .flatMap(this::splitIntoWords)
                 .filter(IGNORE_BLANKS);
         return words
-                .map(word -> createImage(word, fontSize))
+                .map(word -> createImage(word, fontSpec))
                 .collect(Collectors.toList());
     }
 
@@ -61,9 +58,12 @@ public class DefaultTextImageFactory
         return Arrays.stream(line.split("\s+"));
     }
 
-    private DefaultTextImage createImage(String word, FontSize fontSize) {
-        Font titleFont = getFont(fontSize);
-        int spaceWidth = fontSize.getValue();
+    private DefaultTextImage createImage(
+            String word,
+            FontSpec fontSpec
+    ) {
+        Font titleFont = getFont(fontSpec);
+        int spaceWidth = fontSpec.size();
         int padWidth = spaceWidth / 2;
         Rectangle2D stringBounds = getStringBounds(word, titleFont);
         int width = (int) stringBounds.getWidth() + padWidth;
@@ -81,16 +81,12 @@ public class DefaultTextImageFactory
                 word,
                 padWidth / 2,
                 (int) (stringBounds.getHeight() * 0.8));
-        return new DefaultTextImage(word, fontSize, bufferedImage);
+        return new DefaultTextImage(word, fontSpec, bufferedImage);
     }
 
-    private Font getFont(FontSize fontSize) {
-        FontFace fontFace = FontFace.of(fontUri, fontSize.getValue(), "black");
-        final Map<TextAttribute, Object> map = new HashMap<>();
-        map.put(TextAttribute.LIGATURES, TextAttribute.LIGATURES_ON);
-        map.put(TextAttribute.KERNING, TextAttribute.KERNING_ON);
-        return fontCache.loadFont(fontFace)
-                .deriveFont(map);
+    private Font getFont(FontSpec fontSpec) {
+        FontFace fontFace = FontFace.of(fontUri, fontSpec.size(), "black");
+        return fontSpec.derive(fontCache.loadFont(fontFace));
     }
 
     private Rectangle2D getStringBounds(String word, Font titleFont) {
