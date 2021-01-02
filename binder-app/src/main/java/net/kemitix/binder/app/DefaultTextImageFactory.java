@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +27,7 @@ import java.util.stream.Stream;
 public class DefaultTextImageFactory
         implements TextImageFactory {
 
+    public static final Predicate<String> IGNORE_BLANKS = word -> word.length() > 0;
     private final FontCache fontCache;
     private final URI fontUri;
 
@@ -43,13 +45,20 @@ public class DefaultTextImageFactory
             String text,
             FontSize fontSize
     ) {
-        String[] lines = text.split(System.lineSeparator());
-        Stream<String> words = Arrays.stream(lines)
-                .flatMap(line -> Arrays.stream(line.split("\s+")))
-                .filter(word -> word.length() > 0);
+        Stream<String> words = splitIntoLines(text)
+                .flatMap(this::splitIntoWords)
+                .filter(IGNORE_BLANKS);
         return words
                 .map(word -> createImage(word, fontSize))
                 .collect(Collectors.toList());
+    }
+
+    private Stream<String> splitIntoLines(String text) {
+        return Arrays.stream(text.split(System.lineSeparator()));
+    }
+
+    private Stream<String> splitIntoWords(String line) {
+        return Arrays.stream(line.split("\s+"));
     }
 
     private DefaultTextImage createImage(String word, FontSize fontSize) {
