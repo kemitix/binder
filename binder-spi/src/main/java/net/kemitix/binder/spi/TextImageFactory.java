@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface TextImageFactory {
 
-    List<TextImage> createImages(String text, FontSize fontSize);
+    List<TextImage> createImages(String text, FontSpec fontSpec);
 
 }

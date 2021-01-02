@@ -1,7 +1,7 @@
 package net.kemitix.binder.app;
 
 import lombok.Getter;
-import net.kemitix.binder.spi.FontSize;
+import net.kemitix.binder.spi.FontSpec;
 import net.kemitix.binder.spi.TextImage;
 
 import javax.imageio.ImageIO;
@@ -19,20 +19,21 @@ public class DefaultTextImage
 
     @Getter
     private final String word;
-    private final FontSize fontSize;
+    private final FontSpec fontSpec;
     private final BufferedImage bufferedImage;
     @Getter
     private final File file;
 
     public DefaultTextImage(
             String word,
-            FontSize fontSize,
+            FontSpec fontSpec,
             BufferedImage bufferedImage
     ) {
         this.word = word;
-        this.fontSize = fontSize;
+        this.fontSpec = fontSpec;
         this.bufferedImage = bufferedImage;
-        file = new File("text-image-%s-%s.png".formatted(fontSize, word));
+        file = new File("text-image-%s-%s.png".formatted(fontSpec.signature(), word));
+        System.out.println("file = " + file.getAbsolutePath());
         writeImageFile();
     }
 
@@ -46,7 +47,7 @@ public class DefaultTextImage
             return Files.readAllBytes(file.toPath());
         } catch (IOException e) {
             throw new RuntimeException(
-                    "Error reading Image for %s @ %s: %s".formatted(word, fontSize, file.getAbsolutePath()),
+                    "Error reading Image for '%s': %s".formatted(word, file.getAbsolutePath()),
                     e);
         }
     }
@@ -56,9 +57,9 @@ public class DefaultTextImage
             ImageIO.write(bufferedImage, "PNG", file);
         } catch (IOException e) {
             throw new RuntimeException(
-                    "Error writing Image for %s @ %s: %s"
+                    "Error writing Image for %s: %s"
                             .formatted(
-                                    word, fontSize, file.getAbsolutePath()),
+                                    word, file.getAbsolutePath()),
                     e);
         }
     }
@@ -79,6 +80,6 @@ public class DefaultTextImage
                 bufferedImage.getScaledInstance(maxWidth, height, SCALE_SMOOTH);
         Graphics2D graphics = resized.createGraphics();
         graphics.drawImage(scaledInstance, 0, 0, null);
-        return new DefaultTextImage(word, fontSize, resized);
+        return new DefaultTextImage(word, fontSpec, resized);
     }
 }
