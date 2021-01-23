@@ -20,8 +20,7 @@ public class YamlLoader {
             Class<T> theRoot
     ) {
         try {
-            requireFileExists(file);
-            String header = Files.readString(file.toPath());
+            String header = Files.readString(requiredFile(file).toPath());
             return parseYamlFromFile(file, theRoot, header);
         } catch (IOException e) {
             throw new ManuscriptFormatException(String.format(
@@ -32,8 +31,7 @@ public class YamlLoader {
     public Section loadSectionFile(
             File file
     ) throws IOException {
-        requireFileExists(file);
-        List<String> lines = Files.readAllLines(file.toPath());
+        List<String> lines = loadRequiredFile(file);
         List<String> header = lines
                 .stream()
                 .dropWhile("---"::equals)
@@ -47,10 +45,20 @@ public class YamlLoader {
         return section;
     }
 
-    private void requireFileExists(File file) throws IOException {
+    private List<String> loadRequiredFile(File file) {
+        try {
+            return Files.readAllLines(requiredFile(file).toPath());
+        } catch (IOException e) {
+            log.severe("Could not read file: " + file);
+            throw new RuntimeException();
+        }
+    }
+
+    private File requiredFile(File file) throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException(file.getCanonicalPath());
         }
+        return file;
     }
 
     private <T> T parseYamlFromFile(
