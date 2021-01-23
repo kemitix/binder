@@ -33,7 +33,6 @@ public class DefaultTextImage
         this.fontSpec = fontSpec;
         this.bufferedImage = bufferedImage;
         file = new File("text-image-%s-%s.png".formatted(fontSpec.signature(), word));
-        System.out.println("file = " + file.getAbsolutePath());
         writeImageFile();
     }
 
