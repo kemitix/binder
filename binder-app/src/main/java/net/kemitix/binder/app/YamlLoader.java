@@ -3,6 +3,7 @@ package net.kemitix.binder.app;
 import net.kemitix.binder.spi.Section;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.io.File;
@@ -30,7 +31,7 @@ public class YamlLoader {
 
     public Section loadSectionFile(
             File file
-    ) throws IOException {
+    ) {
         List<String> lines = loadRequiredFile(file);
         List<String> header = lines
                 .stream()
@@ -49,8 +50,7 @@ public class YamlLoader {
         try {
             return Files.readAllLines(requiredFile(file).toPath());
         } catch (IOException e) {
-            log.severe("Could not read file: " + file);
-            throw new RuntimeException();
+            throw new RuntimeException("Could not read file: " + file);
         }
     }
 
@@ -65,20 +65,20 @@ public class YamlLoader {
             File file,
             Class<T> theRoot,
             String header
-    ) throws IOException {
+    ) {
         try {
             Yaml yaml = new Yaml(new Constructor(theRoot));
             T loaded = yaml.load(header);
             if (loaded == null) {
                 throw new ManuscriptFormatException(String.format(
                         "File not compatible with %s: %s",
-                        theRoot.getSimpleName(), file.getCanonicalPath()));
+                        theRoot.getSimpleName(), file.getAbsolutePath()));
             }
             return loaded;
-        } catch (Exception e) {
+        } catch (YAMLException e) {
             throw new ManuscriptFormatException(String.format(
                     "Error parsing %s from %s: %s",
-                    theRoot.getSimpleName(), file.getCanonicalPath(),
+                    theRoot.getSimpleName(), file.getAbsolutePath(),
                     e.getMessage()), e);
         }
 
