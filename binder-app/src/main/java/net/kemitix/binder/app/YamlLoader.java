@@ -1,5 +1,6 @@
 package net.kemitix.binder.app;
 
+import net.kemitix.binder.spi.ManuscriptFormatException;
 import net.kemitix.binder.spi.Section;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -24,8 +25,7 @@ public class YamlLoader {
             String header = Files.readString(requiredFile(file).toPath());
             return parseYamlFromFile(file, theRoot, header);
         } catch (IOException e) {
-            throw new ManuscriptFormatException(String.format(
-                    "Error loading YAML from: %s", file), e);
+            throw new ManuscriptFormatException("Error loading", theRoot, file, e);
         }
     }
 
@@ -70,16 +70,11 @@ public class YamlLoader {
             Yaml yaml = new Yaml(new Constructor(theRoot));
             T loaded = yaml.load(header);
             if (loaded == null) {
-                throw new ManuscriptFormatException(String.format(
-                        "File not compatible with %s: %s",
-                        theRoot.getSimpleName(), file.getAbsolutePath()));
+                throw new ManuscriptFormatException("File not compatible", theRoot, file);
             }
             return loaded;
         } catch (YAMLException e) {
-            throw new ManuscriptFormatException(String.format(
-                    "Error parsing %s from %s: %s",
-                    theRoot.getSimpleName(), file.getAbsolutePath(),
-                    e.getMessage()), e);
+            throw new ManuscriptFormatException("Error parsing", theRoot, file, e);
         }
 
     }

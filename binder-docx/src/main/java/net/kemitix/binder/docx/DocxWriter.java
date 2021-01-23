@@ -3,6 +3,7 @@ package net.kemitix.binder.docx;
 import lombok.extern.java.Log;
 import net.kemitix.binder.markdown.MarkdownConversionException;
 import net.kemitix.binder.spi.BinderConfig;
+import net.kemitix.binder.spi.BinderException;
 import net.kemitix.binder.spi.ManuscriptWriter;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -36,10 +37,6 @@ public class DocxWriter
             log.severe("Node: " + e.getNode());
             log.severe("Context: " + e.getContext());
             log.severe("Content: " + e.getContent());
-        } catch (Exception e) {
-            throw new RuntimeException(String.format(
-                    "Error creating docx file %s: %s",
-                    docxFile, e.getMessage()), e);
         }
         log.info("Wrote: " + docxFile);
     }

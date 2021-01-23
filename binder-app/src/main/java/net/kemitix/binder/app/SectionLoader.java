@@ -1,6 +1,7 @@
 package net.kemitix.binder.app;
 
 import net.kemitix.binder.spi.BinderConfig;
+import net.kemitix.binder.spi.ManuscriptFormatException;
 import net.kemitix.binder.spi.Section;
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -32,11 +33,6 @@ public class SectionLoader {
     }
 
     private Section loadSection(File filename) {
-        try {
-            return yamlLoader.loadSectionFile(filename);
-        } catch (YAMLException e) {
-            throw new ManuscriptFormatException(String.format(
-                    "Error loading section: %s", filename), e);
-        }
+        return yamlLoader.loadSectionFile(filename);
     }
 }
