@@ -22,8 +22,12 @@ public class BinderApp {
 
     public void run(String[] args) {
         log.info("Binder - Starting");
-        writers.stream()
-                .forEach(ManuscriptWriter::write);
+        try {
+            writers.stream()
+                    .forEach(ManuscriptWriter::write);
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+        }
         log.info("Binder - Done.");
     }
 
