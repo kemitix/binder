@@ -6,6 +6,7 @@ import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.wml.ObjectFactory;
+import org.docx4j.wml.P;
 import org.docx4j.wml.SectPr;
 
 import javax.enterprise.context.ApplicationScoped;

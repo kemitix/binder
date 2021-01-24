@@ -1,5 +1,6 @@
 package net.kemitix.binder.docx;
 
+import org.docx4j.wml.CTBorder;
 import org.docx4j.wml.Drawing;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.Jc;
@@ -10,12 +11,15 @@ import org.docx4j.wml.PPrBase;
 import org.docx4j.wml.ParaRPr;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
+import org.docx4j.wml.STBorder;
 import org.docx4j.wml.Tabs;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.docx4j.wml.PPrBase.*;
 
 public interface DocxFacadeParagraphMixIn
         extends DocxFacadeRunMixIn {
@@ -33,7 +37,7 @@ public interface DocxFacadeParagraphMixIn
     }
 
     default P zeroSpaceAfterP(P p) {
-        PPrBase.Spacing spacing = factory().createPPrBaseSpacing();
+        Spacing spacing = factory().createPPrBaseSpacing();
         spacing.setAfter(BigInteger.ZERO);
         pPr(p).setSpacing(spacing);
         return p;
@@ -138,16 +142,40 @@ public interface DocxFacadeParagraphMixIn
         PPr pPr = pPr(p);
         pPr.setPStyle(pStyle("Normal"));
 
-        PPrBase.NumPr.NumId numId = factory().createPPrBaseNumPrNumId();
+        NumPr.NumId numId = factory().createPPrBaseNumPrNumId();
         numId.setVal(BigInteger.TWO);
-        PPrBase.NumPr numPr = factory().createPPrBaseNumPr();
-        PPrBase.NumPr.Ilvl ilvl = factory().createPPrBaseNumPrIlvl();
+        NumPr numPr = factory().createPPrBaseNumPr();
+        NumPr.Ilvl ilvl = factory().createPPrBaseNumPrIlvl();
         ilvl.setVal(BigInteger.ZERO);
         numPr.setIlvl(ilvl);
         numPr.setNumId(numId);
         pPr.setNumPr(numPr);
 
         return p;
+    }
+
+    default Object blockquote(P p) {
+        PBdr pBdr = pBdr(p);
+        // set left border
+        CTBorder left = left(pBdr);
+        left.setVal(STBorder.SINGLE);
+        left.setSz(BigInteger.TWO);
+        left.setSpace(BigInteger.TEN);
+        left.setColor("000000");
+        Ind ind = ind(p);
+        // set left and hang
+        BigInteger margin = BigInteger.valueOf(400);
+        ind.setLeft(margin);
+        ind.setRight(margin);
+        return p;
+    }
+
+    private CTBorder left(PBdr pBdr) {
+        return get(pBdr, PBdr::getLeft, pBdr::setLeft, this::ctBorder);
+    }
+
+    private CTBorder ctBorder() {
+        return factory().createCTBorder();
     }
 
     //p/pPr/keepNext[val="true"]
@@ -167,13 +195,13 @@ public interface DocxFacadeParagraphMixIn
     }
 
     default P styledP(String styleName, P p) {
-        PPrBase.PStyle pStyle = factory().createPPrBasePStyle();
+        PStyle pStyle = factory().createPPrBasePStyle();
         pStyle.setVal(styleName);
         pPr(p).setPStyle(pStyle);
         return p;
     }
 
-    default P tabDefinition(Tabs tabs, PPrBase.Ind tabIndent, P p) {
+    default P tabDefinition(Tabs tabs, Ind tabIndent, P p) {
         PPr pPr = pPr(p);
         pPr.setTabs(tabs);
         pPr.setInd(tabIndent);
@@ -198,10 +226,28 @@ public interface DocxFacadeParagraphMixIn
         return jc;
     }
 
-    default PPrBase.PStyle pStyle(String val) {
+    default PStyle pStyle(String val) {
         var pStyle = factory().createPPrBasePStyle();
         pStyle.setVal(val);
         return pStyle;
+    }
+
+    default PBdr pBdr(P p) {
+        PPr pPr = pPr(p);
+        return get(pPr, PPr::getPBdr, pPr::setPBdr, this::pBdr);
+    }
+
+    default PBdr pBdr() {
+        return factory().createPPrBasePBdr();
+    }
+
+    default Ind ind(P p) {
+        PPr pPr = pPr(p);
+        return get(pPr, PPr::getInd, pPr::setInd, this::ind);
+    }
+
+    default Ind ind() {
+        return factory().createPPrBaseInd();
     }
 
     // h1 = 24pt
