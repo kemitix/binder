@@ -1,8 +1,6 @@
 package net.kemitix.binder.epub.mdconvert;
 
-import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.markdown.BlockQuoteNodeHandler;
-import net.kemitix.binder.markdown.Context;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.stream.Stream;
@@ -14,13 +12,12 @@ public class BlockQuoteEpubNodeHandler
         EpubNodeHandler {
 
     @Override
-    public Stream<String> body(Node node, Stream<String> content, Context context) {
-        return Stream.of(
-                """
+    public Stream<String> blockQuoteBody(String content) {
+        return Stream.of("""
                         <blockquote>
                         %s
                         </blockquote>
-                        """.formatted(collect(content))
+                        """.formatted(content)
         );
     }
 
