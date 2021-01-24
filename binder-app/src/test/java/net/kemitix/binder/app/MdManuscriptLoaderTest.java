@@ -1,6 +1,7 @@
 package net.kemitix.binder.app;
 
 import net.kemitix.binder.spi.BinderConfig;
+import net.kemitix.binder.spi.ManuscriptFormatException;
 import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.Section;

@@ -1,8 +1,10 @@
 package net.kemitix.binder.app;
 
+import net.kemitix.binder.spi.ManuscriptFormatException;
 import net.kemitix.binder.spi.Section;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.io.File;
@@ -20,20 +22,17 @@ public class YamlLoader {
             Class<T> theRoot
     ) {
         try {
-            requireFileExists(file);
-            String header = Files.readString(file.toPath());
+            String header = Files.readString(requiredFile(file).toPath());
             return parseYamlFromFile(file, theRoot, header);
         } catch (IOException e) {
-            throw new ManuscriptFormatException(String.format(
-                    "Error loading YAML from: %s", file), e);
+            throw new ManuscriptFormatException("Error loading", theRoot, file, e);
         }
     }
 
     public Section loadSectionFile(
             File file
-    ) throws IOException {
-        requireFileExists(file);
-        List<String> lines = Files.readAllLines(file.toPath());
+    ) {
+        List<String> lines = loadRequiredFile(file);
         List<String> header = lines
                 .stream()
                 .dropWhile("---"::equals)
@@ -47,31 +46,35 @@ public class YamlLoader {
         return section;
     }
 
-    private void requireFileExists(File file) throws IOException {
+    private List<String> loadRequiredFile(File file) {
+        try {
+            return Files.readAllLines(requiredFile(file).toPath());
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read file: " + file);
+        }
+    }
+
+    private File requiredFile(File file) throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException(file.getCanonicalPath());
         }
+        return file;
     }
 
     private <T> T parseYamlFromFile(
             File file,
             Class<T> theRoot,
             String header
-    ) throws IOException {
+    ) {
         try {
             Yaml yaml = new Yaml(new Constructor(theRoot));
             T loaded = yaml.load(header);
             if (loaded == null) {
-                throw new ManuscriptFormatException(String.format(
-                        "File not compatible with %s: %s",
-                        theRoot.getSimpleName(), file.getCanonicalPath()));
+                throw new ManuscriptFormatException("File not compatible", theRoot, file);
             }
             return loaded;
-        } catch (Exception e) {
-            throw new ManuscriptFormatException(String.format(
-                    "Error parsing %s from %s: %s",
-                    theRoot.getSimpleName(), file.getCanonicalPath(),
-                    e.getMessage()), e);
+        } catch (YAMLException e) {
+            throw new ManuscriptFormatException("Error parsing", theRoot, file, e);
         }
 
     }

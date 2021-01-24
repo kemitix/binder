@@ -1,6 +1,7 @@
 package net.kemitix.binder.app;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.spi.BinderException;
 import net.kemitix.binder.spi.ManuscriptWriter;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -22,8 +23,12 @@ public class BinderApp {
 
     public void run(String[] args) {
         log.info("Binder - Starting");
-        writers.stream()
-                .forEach(ManuscriptWriter::write);
+        try {
+            writers.stream()
+                    .forEach(ManuscriptWriter::write);
+        } catch (BinderException e) {
+            log.severe(e.getMessage());
+        }
         log.info("Binder - Done.");
     }
 
