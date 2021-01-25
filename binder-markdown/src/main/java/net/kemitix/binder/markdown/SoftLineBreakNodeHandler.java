@@ -2,7 +2,6 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.ast.SoftLineBreak;
 import com.vladsch.flexmark.util.ast.Node;
-import net.kemitix.binder.spi.Section;
 
 import java.util.stream.Stream;
 

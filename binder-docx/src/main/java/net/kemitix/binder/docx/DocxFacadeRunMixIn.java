@@ -92,6 +92,11 @@ public interface DocxFacadeRunMixIn
         return r;
     }
 
+    default R strikethrough(R r) {
+        rPr(r).setStrike(defaultTrue());
+        return r;
+    }
+
     default RStyle rStyle(String val) {
         var rStyle = factory().createRStyle();
         rStyle.setVal(val);
