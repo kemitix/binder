@@ -3,7 +3,6 @@ package net.kemitix.binder.epub.mdconvert;
 import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.spi.FootnoteStore;
 import net.kemitix.binder.spi.HtmlSection;
-import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -37,12 +36,10 @@ public class FootnoteGenerator {
                 .peek(content -> content.setToc(false));
     }
 
-    @NotNull
     private Function<String, byte[]> asBytes() {
         return s -> s.getBytes(StandardCharsets.UTF_8);
     }
 
-    @NotNull
     private Content asContent(Tuple<String, byte[]> t) {
         String href = t.getFirst();
         byte[] body = t.getSecond();
