@@ -36,10 +36,10 @@ public class FootnoteDocxNodeHandler
 
     @Override
     public Stream<Object> footnoteBody(FootnoteAnchor footnoteAnchor) {
-        String oridinal = footnoteAnchor.getOridinal();
-        List<P> paras = footnoteStore.get(footnoteAnchor.getName(), oridinal);
+        String ordinal = footnoteAnchor.getOridinal();
+        List<P> paras = footnoteStore.get(footnoteAnchor.getName(), ordinal);
         return Stream.of(
-                docx.footnote(oridinal, paras)
+                docx.footnote(ordinal, paras)
         );
     }
 
