@@ -32,6 +32,7 @@
         <awt-color-factory.version>1.0.2</awt-color-factory.version>
         <mon.version>2.2.0</mon.version>
         <commons-text.version>1.9</commons-text.version>
+        <jsoup.version>1.11.3</jsoup.version>
     </properties>
 
     <dependencyManagement>
@@ -71,6 +72,12 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
             </dependency>
 
             <dependency>
