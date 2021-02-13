@@ -2,7 +2,7 @@ package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.epub.mdconvert.Epub;
-import net.kemitix.binder.epub.mdconvert.FootnoteGenerator;
+import net.kemitix.binder.epub.mdconvert.footnote.FootnoteHtmlContentGenerator;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.HtmlSection;
@@ -21,14 +21,14 @@ public class MarkdownEpubRenderer
         implements EpubRenderer {
 
     private final MarkdownConverter<String> converter;
-    private final FootnoteGenerator footnoteGenerator;
+    private final FootnoteHtmlContentGenerator footnoteHtmlContentGenerator;
 
     @Inject
     public MarkdownEpubRenderer(
             @Epub MarkdownConverter<String> converter,
-            FootnoteGenerator footnoteGenerator) {
+            FootnoteHtmlContentGenerator footnoteHtmlContentGenerator) {
         this.converter = converter;
-        this.footnoteGenerator = footnoteGenerator;
+        this.footnoteHtmlContentGenerator = footnoteHtmlContentGenerator;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class MarkdownEpubRenderer
         byte[] content = contents.getBytes(StandardCharsets.UTF_8);
         return Stream.concat(
                 createContent(section, content),
-                footnoteGenerator.createFootnotes(section)
+                footnoteHtmlContentGenerator.createFootnotes(section)
         );
     }
 

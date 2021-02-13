@@ -1,8 +1,10 @@
-package net.kemitix.binder.epub.mdconvert;
+package net.kemitix.binder.epub.mdconvert.footnote;
 
-import net.kemitix.binder.markdown.FootnoteBlockNodeHandler;
-import net.kemitix.binder.markdown.FootnoteBody;
+import net.kemitix.binder.epub.mdconvert.Epub;
+import net.kemitix.binder.epub.mdconvert.EpubNodeHandler;
+import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownOutputException;
+import net.kemitix.binder.markdown.footnote.FootnoteBodyNodeHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
@@ -12,12 +14,11 @@ import java.util.stream.Stream;
 
 @Epub
 @ApplicationScoped
-public class FootnoteBlockEpubNodeHandler
-        implements FootnoteBlockNodeHandler<String>, EpubNodeHandler {
+public class FootnoteBodyEpubNodeHandler
+        implements FootnoteBodyNodeHandler<String>, EpubNodeHandler {
     @Override
-    public Stream<String> footnoteBlockBody(FootnoteBody<String> footnoteBody) {
-        var ordinal = footnoteBody.getOridinal();
-        var body = footnoteBody.getContent().collect(Collectors.joining())
+    public Stream<String> footnoteBody(String ordinal, Stream<String> content, Context context) {
+        var body = content.collect(Collectors.joining())
                 .replaceAll(" ~PARA~ ", "</p><p>");
         var element = Jsoup.parseBodyFragment(body).body();
         var children = element.children();

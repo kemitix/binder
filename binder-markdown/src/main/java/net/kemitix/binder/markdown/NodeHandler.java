@@ -2,6 +2,7 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.util.ast.Node;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public interface NodeHandler<T> {
@@ -19,9 +20,16 @@ public interface NodeHandler<T> {
     ) {
         Stream<T> children = handleChildren(node, converter, context);
         return Stream.concat(
-                body(node, children, context),
-                handleNext(node, converter, context)
+                requireNonNull(body(node, children, context), "body", node),
+                requireNonNull(handleNext(node, converter, context), "handleNext", node)
         );
+    }
+
+    default <O> O requireNonNull(O object, String tag, Node node) {
+        if (Objects.isNull(object)) {
+            throw new MarkdownOutputException("Element is null: %s [%s]".formatted(tag, node.toString()), node.toString());
+        }
+        return object;
     }
 
     default Stream<T> body(Node node, Stream<T> content, Context context) {

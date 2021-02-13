@@ -1,7 +1,9 @@
-package net.kemitix.binder.epub.mdconvert;
+package net.kemitix.binder.epub.mdconvert.footnote;
 
 import coza.opencollab.epub.creator.model.Content;
-import net.kemitix.binder.spi.FootnoteStore;
+import net.kemitix.binder.epub.mdconvert.Epub;
+import net.kemitix.binder.epub.mdconvert.Tuple;
+import net.kemitix.binder.spi.FootnoteStoreImpl;
 import net.kemitix.binder.spi.HtmlSection;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -13,12 +15,12 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 @ApplicationScoped
-public class FootnoteGenerator {
+public class FootnoteHtmlContentGenerator {
 
-    private final FootnoteStore<String> footnoteStore;
+    private final EpubFootnoteStore footnoteStore;
 
     @Inject
-    public FootnoteGenerator(@Epub FootnoteStore<String> footnoteStore) {
+    public FootnoteHtmlContentGenerator(EpubFootnoteStore footnoteStore) {
         this.footnoteStore = footnoteStore;
     }
 
@@ -27,7 +29,6 @@ public class FootnoteGenerator {
                 .streamByName(section.getName())
                 .map(Tuple::of)
                 .map(t -> t.mapFirst(backlink(section.getName())))
-                .map(t -> t.mapSecond(l -> (List<String>)l))
                 .map(t -> t.mapSecond(l -> String.join("", l)))
                 .map(t -> t.mapSecond(footnoteBody(section.getName())))
                 .map(t -> t.mapSecond(asBytes()))

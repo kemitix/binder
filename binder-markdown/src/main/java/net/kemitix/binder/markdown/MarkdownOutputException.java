@@ -12,4 +12,8 @@ public class MarkdownOutputException extends RuntimeException {
         this.output = output;
     }
 
+    public MarkdownOutputException(String message, String output, Throwable cause) {
+        super(message, cause);
+        this.output = output;
+    }
 }
