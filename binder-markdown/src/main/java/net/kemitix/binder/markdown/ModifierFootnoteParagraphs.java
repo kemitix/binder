@@ -33,12 +33,13 @@ public class ModifierFootnoteParagraphs
     }
 
     private <N extends Node> void visit(@NotNull FootnoteBlock footnoteBlock) {
-        BasedSequence ordinal = footnoteBlock.getText();
         Paragraph originalPara =
                 Objects.requireNonNull((Paragraph) footnoteBlock.getFirstChild(), "Footnote first child");
-        List<Paragraph> paras = splitParagraphs(originalPara);
-        footnoteBlock.removeChildren();
-        paras.forEach(footnoteBlock::appendChild);
+        if (originalPara.getChars().toString().contains("~PARA~")) {
+            List<Paragraph> paras = splitParagraphs(originalPara);
+            footnoteBlock.removeChildren();
+            paras.forEach(footnoteBlock::appendChild);
+        }
     }
 
     private List<Paragraph> splitParagraphs(Paragraph paragraph) {
