@@ -196,6 +196,13 @@ public class DocxManuscript {
         ind.setHanging(BigInteger.valueOf(339));
         pPr.setInd(ind);
 
+        // do not put space between paragraphs of the same style
+        PPrBase.Spacing spacing = factory.createPPrBaseSpacing();
+        spacing.setBefore(BigInteger.ZERO);
+        spacing.setAfter(BigInteger.valueOf(198));
+        pPr.setSpacing(spacing);
+        pPr.setContextualSpacing(factory.createBooleanDefaultTrue());
+
         style.setPPr(pPr);
 
         // Font size 10pt (i.e. 20 /2)
