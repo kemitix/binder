@@ -191,7 +191,7 @@ public class DocxManuscript {
 
         // indent margins
         PPrBase.Ind ind = factory.createPPrBaseInd();
-        BigInteger margin = BigInteger.valueOf(300);
+        BigInteger margin = BigInteger.valueOf(400);
         ind.setLeft(margin);
         ind.setRight(margin);
         ind.setHanging(margin);
