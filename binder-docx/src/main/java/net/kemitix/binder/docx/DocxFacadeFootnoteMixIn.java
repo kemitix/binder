@@ -66,8 +66,7 @@ public interface DocxFacadeFootnoteMixIn
         }
 
         R r = r(new Object[]{
-                footnoteReference,
-                t(footnoteOrdinal)
+                footnoteReference
         });
 
         RPr rPr = rPr(r);
@@ -86,7 +85,9 @@ public interface DocxFacadeFootnoteMixIn
         CTFtnEdnRef ctFtnEdnRef = footnoteReference.getValue();
         BigInteger id = ctFtnEdnRef.getId();
         CTFtnEdn ctFtnEdn = getCtFtnEdnById(footnotes, id);
-        ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(content.map(P.class::cast).collect(Collectors.toList()))));
+        List<Object> ctFtnEdnContent = ctFtnEdn.getContent();
+        List<Object> paras = Arrays.asList(footnoteBody(content.map(P.class::cast).collect(Collectors.toList())));
+        ctFtnEdnContent.addAll(paras);
         return r;
     }
 
@@ -130,7 +131,7 @@ public interface DocxFacadeFootnoteMixIn
         CTFootnotes ctFootnotes = factory().createCTFootnotes();
         List<CTFtnEdn> footnotes = ctFootnotes.getFootnote();
 
-        //    <w:footnote w:id="0" w:type="separator">
+        //    <w:footnote w:id="-1" w:type="separator">
         //        <w:p>
         //            <w:r>
         //                <w:separator/>
@@ -139,18 +140,32 @@ public interface DocxFacadeFootnoteMixIn
         //    </w:footnote>
         CTFtnEdn separator = getNextCtFtnEdn(footnotes);
         separator.setType(STFtnEdn.SEPARATOR);
-        separator.getContent().add(p(r(factory().createRSeparator())));
+        separator.setId(BigInteger.valueOf(-1));
+        separator.getContent().add(
+                p(
+                        r(
+                                factory().createRSeparator()
+                        )
+                )
+        );
 
-//        //    <w:footnote w:id="1" w:type="continuationSeparator">
-//        //        <w:p>
-//        //            <w:r>
-//        //                <w:continuationSeparator/>
-//        //            </w:r>
-//        //        </w:p>
-//        //    </w:footnote>
-//        CTFtnEdn continuation = getNextCtFtnEdn(footnotes);
-//        continuation.setType(STFtnEdn.CONTINUATION_SEPARATOR);
-//        continuation.getContent().add(p(r(objectfactory().createRContinuationSeparator())));
+        //    <w:footnote w:id="0" w:type="continuationSeparator">
+        //        <w:p>
+        //            <w:r>
+        //                <w:continuationSeparator/>
+        //            </w:r>
+        //        </w:p>
+        //    </w:footnote>
+        CTFtnEdn continuation = getNextCtFtnEdn(footnotes);
+        continuation.setType(STFtnEdn.CONTINUATION_SEPARATOR);
+        continuation.setId(BigInteger.ZERO);
+        continuation.getContent().add(
+                p(
+                        r(
+                                factory().createRContinuationSeparator()
+                        )
+                )
+        );
 
         return ctFootnotes;
     }
@@ -187,11 +202,12 @@ public interface DocxFacadeFootnoteMixIn
         RPr rPr = rPr(r);
         rPr.setRStyle(rStyle("FootnoteCharacters"));
 
-        objects.add(r);
-        objects.addAll(
-                footnoteParas.stream()
-                        .peek(para -> para.setPPr(pPr)
-                        ).collect(Collectors.toList()));
+        List<P> paras = footnoteParas.stream()
+                .peek(para -> para.setPPr(pPr)
+                ).collect(Collectors.toList());
+        objects.addAll(paras);
+        P firstP = paras.get(0);
+        firstP.getContent().add(0, r);
         return objects.toArray();
     }
 }
