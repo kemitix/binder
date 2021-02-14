@@ -1,13 +1,17 @@
 package net.kemitix.binder.docx.mdconvert;
 
 import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Document;
 import lombok.extern.java.Log;
+import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.markdown.DocumentModifier;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.markdown.NodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 @Log
@@ -18,14 +22,17 @@ public class MarkdownDocxConverter
 
     private final Parser parser;
     private final Instance<NodeHandler<Object>> nodeHandlers;
+    private final Instance<DocumentModifier> documentModifiers;
 
     @Inject
     public MarkdownDocxConverter(
             Parser parser,
-            @Docx Instance<NodeHandler<Object>> nodeHandlers
+            @Docx Instance<NodeHandler<Object>> nodeHandlers,
+            Instance<DocumentModifier> documentModifiers
     ) {
         this.parser = parser;
         this.nodeHandlers = nodeHandlers;
+        this.documentModifiers = documentModifiers;
     }
 
     @Override
@@ -38,4 +45,15 @@ public class MarkdownDocxConverter
         return nodeHandlers.stream();
     }
 
+    @Override
+    public Document fixUpDocument(
+            Document document,
+            Context context
+    ) {
+        var docReference = new AtomicReference<>(document);
+        documentModifiers.stream()
+                .forEachOrdered(modifier ->
+                        docReference.getAndUpdate(d -> modifier.apply(d, context)));
+        return docReference.get();
+    }
 }

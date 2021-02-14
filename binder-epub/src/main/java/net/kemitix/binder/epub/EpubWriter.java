@@ -4,10 +4,8 @@ import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import net.kemitix.binder.markdown.MarkdownConversionException;
-import net.kemitix.binder.spi.BinderConfig;
-import net.kemitix.binder.spi.BinderException;
-import net.kemitix.binder.spi.ManuscriptFormatException;
-import net.kemitix.binder.spi.ManuscriptWriter;
+import net.kemitix.binder.markdown.MarkdownOutputException;
+import net.kemitix.binder.spi.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -44,6 +42,9 @@ public class EpubWriter implements ManuscriptWriter {
         } catch (ManuscriptFormatException e) {
             throw new BinderException(String.format(
                     "Error creating epub file %s", epubFile), e);
+        } catch (MarkdownOutputException e) {
+            throw new BinderException(String.format(
+                    "Error creating epub file %s: %s [%s]", epubFile, e.getMessage(), e.getOutput()), e);
         }
         log.info("Wrote: " + epubFile);
     }

@@ -1,7 +1,5 @@
 package net.kemitix.binder.app;
 
-import org.jetbrains.annotations.NotNull;
-
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
@@ -46,7 +44,6 @@ public class InstanceStream<T> implements Instance<T> {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
     @Override
     public Iterator<T> iterator() {
         return instances.iterator();

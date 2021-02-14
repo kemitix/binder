@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.SneakyThrows;
+import net.kemitix.binder.spi.ManuscriptFormatException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
 import org.docx4j.wml.CTFootnotes;
@@ -20,20 +21,26 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public interface DocxFacadeFootnoteMixIn
         extends DocxFacadeParagraphMixIn {
 
     AtomicInteger footnoteRef();
-    
-    default R footnote(String ordinal, List<P> footnoteBody) {
-        //TODO add footnote bodies from FootnoteBlockDocxNodeHandler
-        // this will provide styles footnotes
-        return footnoteReference(footnoteBody);
+
+    /**
+     * Creates a Footnote with no body.
+     *
+     * <p>Use {@link #footnoteAddBody(R, Stream)} ()} to add tge body.</p>
+     * @param ordinal the ordinal of the footnote
+     * @return an R containing the footnote anchor as a subscript
+     */
+    default R footnote(String ordinal) {
+        return footnoteReference(ordinal);
     }
 
     @SneakyThrows
-    default R footnoteReference(List<P> footnoteBody) {
+    default R footnoteReference(String ordinal) {
         // in document.xml:
         //      <w:r>
         //        <w:rPr>
@@ -45,22 +52,50 @@ public interface DocxFacadeFootnoteMixIn
         CTFootnotes contents = footnotesPart.getContents();
         List<CTFtnEdn> footnotes = contents.getFootnote();
         CTFtnEdn ctFtnEdn = getNextCtFtnEdn(footnotes);
-        ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(footnoteBody)));
+//        //ctFtnEdn.getContent().addAll(Arrays.asList(footnoteBody(footnoteBody)));
         CTFtnEdnRef ctFtnEdnRef = factory().createCTFtnEdnRef();
-        ctFtnEdnRef.setId(ctFtnEdn.getId());
+        BigInteger id = ctFtnEdn.getId();
+        ctFtnEdnRef.setId(id);
         JAXBElement<CTFtnEdnRef> footnoteReference = factory().createRFootnoteReference(ctFtnEdnRef);
 
-        String footnoteOrdinal = ctFtnEdn.getId().toString();
+        String footnoteOrdinal = id.toString();
+        if (!footnoteOrdinal.equals(ordinal)) {
+            throw new RuntimeException(
+                    "Footnotes are not in order. Found %s, when expecting %s"
+                            .formatted(ordinal, footnoteOrdinal));
+        }
 
         R r = r(new Object[]{
-                footnoteReference,
-                t(footnoteOrdinal)
+                footnoteReference
         });
 
         RPr rPr = rPr(r);
         rPr.setRStyle(rStyle("FootnoteAnchor"));
 
         return r;
+    }
+
+    @SneakyThrows
+    default R footnoteAddBody(R r, Stream<Object> content) {
+        FootnotesPart footnotesPart = getFootnotesPart();
+        CTFootnotes contents = footnotesPart.getContents();
+        List<CTFtnEdn> footnotes = contents.getFootnote();
+        List<Object> rContent = r.getContent();
+        JAXBElement<CTFtnEdnRef> footnoteReference = (JAXBElement<CTFtnEdnRef>) rContent.get(0);
+        CTFtnEdnRef ctFtnEdnRef = footnoteReference.getValue();
+        BigInteger id = ctFtnEdnRef.getId();
+        CTFtnEdn ctFtnEdn = getCtFtnEdnById(footnotes, id);
+        List<Object> ctFtnEdnContent = ctFtnEdn.getContent();
+        List<Object> paras = Arrays.asList(footnoteBody(content.map(P.class::cast).collect(Collectors.toList())));
+        ctFtnEdnContent.addAll(paras);
+        return r;
+    }
+
+    default CTFtnEdn getCtFtnEdnById(List<CTFtnEdn> footnotes, BigInteger id) {
+        return footnotes.stream()
+                .filter(o -> o.getId().equals(id))
+                .findFirst()
+                .orElseThrow();
     }
 
     default CTFtnEdn getNextCtFtnEdn(List<CTFtnEdn> footnotes) {
@@ -96,7 +131,7 @@ public interface DocxFacadeFootnoteMixIn
         CTFootnotes ctFootnotes = factory().createCTFootnotes();
         List<CTFtnEdn> footnotes = ctFootnotes.getFootnote();
 
-        //    <w:footnote w:id="0" w:type="separator">
+        //    <w:footnote w:id="-1" w:type="separator">
         //        <w:p>
         //            <w:r>
         //                <w:separator/>
@@ -105,18 +140,32 @@ public interface DocxFacadeFootnoteMixIn
         //    </w:footnote>
         CTFtnEdn separator = getNextCtFtnEdn(footnotes);
         separator.setType(STFtnEdn.SEPARATOR);
-        separator.getContent().add(p(r(factory().createRSeparator())));
+        separator.setId(BigInteger.valueOf(-1));
+        separator.getContent().add(
+                p(
+                        r(
+                                factory().createRSeparator()
+                        )
+                )
+        );
 
-//        //    <w:footnote w:id="1" w:type="continuationSeparator">
-//        //        <w:p>
-//        //            <w:r>
-//        //                <w:continuationSeparator/>
-//        //            </w:r>
-//        //        </w:p>
-//        //    </w:footnote>
-//        CTFtnEdn continuation = getNextCtFtnEdn(footnotes);
-//        continuation.setType(STFtnEdn.CONTINUATION_SEPARATOR);
-//        continuation.getContent().add(p(r(objectfactory().createRContinuationSeparator())));
+        //    <w:footnote w:id="0" w:type="continuationSeparator">
+        //        <w:p>
+        //            <w:r>
+        //                <w:continuationSeparator/>
+        //            </w:r>
+        //        </w:p>
+        //    </w:footnote>
+        CTFtnEdn continuation = getNextCtFtnEdn(footnotes);
+        continuation.setType(STFtnEdn.CONTINUATION_SEPARATOR);
+        continuation.setId(BigInteger.ZERO);
+        continuation.getContent().add(
+                p(
+                        r(
+                                factory().createRContinuationSeparator()
+                        )
+                )
+        );
 
         return ctFootnotes;
     }
@@ -153,11 +202,12 @@ public interface DocxFacadeFootnoteMixIn
         RPr rPr = rPr(r);
         rPr.setRStyle(rStyle("FootnoteCharacters"));
 
-        objects.add(r);
-        objects.addAll(
-                footnoteParas.stream()
-                        .peek(para -> para.setPPr(pPr)
-                        ).collect(Collectors.toList()));
+        List<P> paras = footnoteParas.stream()
+                .peek(para -> para.setPPr(pPr)
+                ).collect(Collectors.toList());
+        objects.addAll(paras);
+        P firstP = paras.get(0);
+        firstP.getContent().add(0, r);
         return objects.toArray();
     }
 }

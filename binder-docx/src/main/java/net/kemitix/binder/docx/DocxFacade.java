@@ -27,7 +27,7 @@ public class DocxFacade
     private final WordprocessingMLPackage mlPackage;
 
     private final ObjectFactory factory = getWmlObjectFactory();
-    private final AtomicInteger myFootnoteRef = new AtomicInteger(0);
+    private final AtomicInteger myFootnoteRef = new AtomicInteger(-1);
 
     @Inject
     public DocxFacade(

@@ -3,7 +3,6 @@ package net.kemitix.binder.markdown;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
-import net.kemitix.binder.spi.Section;
 
 import java.util.stream.Stream;
 
@@ -14,9 +13,13 @@ public interface MarkdownConverter<T> {
     Stream<NodeHandler<T>> getNodeHandlers();
 
     default Stream<T> convert(Context context, String markdown) {
-        Document document = getParser().parse(markdown);
+        Document document = fixUpDocument(getParser().parse(markdown), context);
         Stream<T> accepted = accept(document, context);
         return accepted;
+    }
+
+    default Document fixUpDocument(Document document, Context context) {
+        return document;
     }
 
     default Stream<T> accept(Node node, Context context) {

@@ -191,10 +191,18 @@ public class DocxManuscript {
 
         // indent margins
         PPrBase.Ind ind = factory.createPPrBaseInd();
-        ind.setLeft(BigInteger.valueOf(339));
-        ind.setRight(BigInteger.valueOf(339));
-        ind.setHanging(BigInteger.valueOf(339));
+        BigInteger margin = BigInteger.valueOf(400);
+        ind.setLeft(margin);
+        ind.setRight(margin);
+        ind.setHanging(margin);
         pPr.setInd(ind);
+
+        // do not put space between paragraphs of the same style
+        PPrBase.Spacing spacing = factory.createPPrBaseSpacing();
+        spacing.setBefore(BigInteger.ZERO);
+        spacing.setAfter(BigInteger.valueOf(75));
+        pPr.setSpacing(spacing);
+//        pPr.setContextualSpacing(factory.createBooleanDefaultTrue());
 
         style.setPPr(pPr);
 

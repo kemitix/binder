@@ -1,5 +1,6 @@
 package net.kemitix.binder.docx.mdconvert;
 
+import lombok.extern.java.Log;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.markdown.TextNodeHandler;
 
@@ -7,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.stream.Stream;
 
+@Log
 @Docx
 @ApplicationScoped
 public class TextDocxNodeHandler
