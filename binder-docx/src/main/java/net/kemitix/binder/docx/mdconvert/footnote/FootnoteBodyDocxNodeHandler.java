@@ -33,8 +33,24 @@ public class FootnoteBodyDocxNodeHandler
     public Stream<Object> footnoteBody(String ordinal, Stream<Object> content, Context context) {
         Footnote<P, R> footnote = footnoteStore.get(context.getName(), ordinal);
         R placeholder = footnote.getPlaceholder();
-        docx.footnoteAddBody(placeholder, content);
+        docx.footnoteAddBody(placeholder, formatBody(content));
         return Stream.empty();
+    }
+
+    // insert a tab into the first run of each paragraph within the footnote body
+    private Stream<Object> formatBody(Stream<Object> content) {
+        return content.peek(o -> {
+            if (o instanceof P) {
+                var p = (P) o;
+                var r = p.getContent()
+                        .stream()
+                        .filter(po -> po instanceof R)
+                        .map(R.class::cast)
+                        .findFirst()
+                        .orElseThrow();
+                r.getContent().add(0, docx.tab());
+            }
+        });
     }
 
 }
