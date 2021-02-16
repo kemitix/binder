@@ -63,15 +63,31 @@ public interface DocxFacadeParagraphMixIn
     }
 
     default P alignLeft(P p) {
-        return align(JcEnumeration.LEFT, p);
+        return align(alignmentLeft(), p);
     }
 
     default P alignRight(P p) {
-        return align(JcEnumeration.RIGHT, p);
+        return align(alignmentRight(), p);
     }
 
     default P alignCenter(P p) {
-        return align(JcEnumeration.CENTER, p);
+        return align(alignmentCenter(), p);
+    }
+
+    default JcEnumeration alignmentBoth() {
+        return JcEnumeration.BOTH;
+    }
+
+    default JcEnumeration alignmentLeft() {
+        return JcEnumeration.LEFT;
+    }
+
+    default JcEnumeration alignmentRight() {
+        return JcEnumeration.RIGHT;
+    }
+
+    default JcEnumeration alignmentCenter() {
+        return JcEnumeration.CENTER;
     }
 
     default P drawings(Drawing[] drawings) {

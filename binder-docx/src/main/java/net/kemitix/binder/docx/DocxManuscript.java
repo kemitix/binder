@@ -12,16 +12,7 @@ import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.FontTablePart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.NumberingDefinitionsPart;
-import org.docx4j.wml.CTVerticalAlignRun;
-import org.docx4j.wml.Fonts;
-import org.docx4j.wml.HpsMeasure;
-import org.docx4j.wml.ObjectFactory;
-import org.docx4j.wml.PPr;
-import org.docx4j.wml.PPrBase;
-import org.docx4j.wml.RFonts;
-import org.docx4j.wml.RPr;
-import org.docx4j.wml.STVerticalAlignRun;
-import org.docx4j.wml.Style;
+import org.docx4j.wml.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -188,6 +179,9 @@ public class DocxManuscript {
         PPr pPr = factory.createPPr();
 
         pPr.setSuppressLineNumbers(factory.createBooleanDefaultTrue());
+
+        // fully justified
+        pPr.setJc(docx.jc(docx.alignmentBoth()));
 
         // indent margins
         PPrBase.Ind ind = factory.createPPrBaseInd();
