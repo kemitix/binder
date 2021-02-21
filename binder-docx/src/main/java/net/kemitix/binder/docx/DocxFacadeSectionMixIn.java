@@ -99,8 +99,9 @@ public interface DocxFacadeSectionMixIn
     }
 
     default SectPr sectPr(List<P> sectionPs) {
-        P last = last(sectionPs, P.class);
-        PPr pPr = pPr(last);
+        P p = factory().createP();
+        sectionPs.add(p);
+        PPr pPr = pPr(p);
         return get(pPr, PPr::getSectPr, pPr::setSectPr, factory()::createSectPr);
     }
 
@@ -123,10 +124,6 @@ public interface DocxFacadeSectionMixIn
         ctDocGrid.setLinePitch(topBottom);
 
         return sectPr;
-    }
-
-    default <T> T last(List<T> items, Class<? extends T> tClass) {
-        return items.get(items.size() - 1);
     }
 
     default SectPr.PgMar pgMar() {
