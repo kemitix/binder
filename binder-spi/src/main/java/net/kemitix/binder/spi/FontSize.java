@@ -1,14 +1,11 @@
 package net.kemitix.binder.spi;
 
-import net.kemitix.mon.TypeAlias;
+import net.kemitix.mon.Wrapper;
 
-public class FontSize extends TypeAlias<Integer> {
+public interface FontSize extends Wrapper<Integer> {
 
-    protected FontSize(Integer value) {
-        super(value);
+    static FontSize of(Integer fontSize) {
+        return () -> fontSize;
     }
 
-    public static FontSize of(Integer fontSize) {
-        return new FontSize(fontSize);
-    }
 }

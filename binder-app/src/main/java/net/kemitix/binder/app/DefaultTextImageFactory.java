@@ -63,7 +63,7 @@ public class DefaultTextImageFactory
             FontSpec fontSpec
     ) {
         Font titleFont = getFont(fontSpec);
-        int spaceWidth = fontSpec.size();
+        int spaceWidth = fontSpec.getSize().value();
         int padWidth = spaceWidth / 2;
         Rectangle2D stringBounds = getStringBounds(word, titleFont);
         int width = (int) stringBounds.getWidth() + padWidth;
@@ -85,7 +85,7 @@ public class DefaultTextImageFactory
     }
 
     private Font getFont(FontSpec fontSpec) {
-        FontFace fontFace = FontFace.of(fontUri, fontSpec.size(), "black");
+        FontFace fontFace = FontFace.of(fontUri, fontSpec.getSize().value(), "black");
         return fontSpec.derive(fontCache.loadFont(fontFace));
     }
 
