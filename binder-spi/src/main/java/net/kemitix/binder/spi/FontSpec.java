@@ -1,24 +1,21 @@
 package net.kemitix.binder.spi;
 
 import lombok.Builder;
+import lombok.Getter;
 
-import java.util.List;
 import java.awt.*;
 import java.awt.font.TextAttribute;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Builder
 public class FontSpec {
+    @Getter
     FontSize size;
     boolean ligatures;
     boolean kerning;
-
-    public int size() {
-        return size.getValue();
-    }
 
     public Font derive(Font font) {
         final Map<TextAttribute, Object> attributes = new HashMap<>();
