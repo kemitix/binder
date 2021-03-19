@@ -17,7 +17,7 @@
 
     <properties>
         <tiles-maven-plugin.version>2.19</tiles-maven-plugin.version>
-        <kemitix-tiles.version>2.11.0</kemitix-tiles.version>
+        <kemitix-tiles.version>3.0.1</kemitix-tiles.version>
 
         <lombok.version>1.18.18</lombok.version>
         <assertj.version>3.19.0</assertj.version>
@@ -162,7 +162,6 @@
                 <configuration>
                     <tiles>
                         <tile>net.kemitix.tiles:maven-plugins:${kemitix-tiles.version}</tile>
-<!--                        <tile>net.kemitix.tiles:enforcer:${kemitix-tiles.version}</tile>-->
                         <tile>net.kemitix.tiles:compiler-jdk-latest:${kemitix-tiles.version}</tile>
 <!--                        <tile>net.kemitix.tiles:huntbugs:${kemitix-tiles.version}</tile>-->
 <!--                        <tile>net.kemitix.tiles:pmd:${kemitix-tiles.version}</tile>-->
