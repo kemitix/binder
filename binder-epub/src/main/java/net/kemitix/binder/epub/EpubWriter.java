@@ -1,14 +1,18 @@
 package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.EpubBook;
-import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import net.kemitix.binder.markdown.MarkdownConversionException;
 import net.kemitix.binder.markdown.MarkdownOutputException;
-import net.kemitix.binder.spi.*;
+import net.kemitix.binder.spi.BinderConfig;
+import net.kemitix.binder.spi.BinderException;
+import net.kemitix.binder.spi.ManuscriptFormatException;
+import net.kemitix.binder.spi.ManuscriptWriter;
+import net.kemitix.mon.result.Result;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.io.File;
 
 /**
  * Writes the Epub file to disk
@@ -28,31 +32,30 @@ public class EpubWriter implements ManuscriptWriter {
         this.epubBook = epubBook;
     }
 
-    @SneakyThrows
-    public void write() {
-        String epubFile = binderConfig.getEpubFile().getAbsolutePath();
-        log.info("Writing: " + epubFile);
-        try {
+    public Result<Void> write() {
+        return Result.of(binderConfig::getEpubFile)
+                .map(File::getAbsolutePath)
+                .flatMap(this::writeEpubFile)
+                .onError(MarkdownConversionException.class, e -> {
+                    log.severe(e.getMessage());
+                    log.severe("Node: " + e.getNode());
+                    log.severe("Context: " + e.getContext());
+                    log.severe("Content: " + e.getContent());
+                });
+    }
+
+    private Result<Void> writeEpubFile(String epubFile) {
+        return Result.ofVoid(() -> {
+            log.info("Writing: " + epubFile);
             epubBook.writeToFile(epubFile);
-        } catch (MarkdownConversionException e) {
-            throw new BinderException(
-                    """
-                            %s
-                            Node: %s
-                            %s
-                            Content: %s
-                            """.formatted(e.getMessage(), e.getNode(),
-                            e.getContext(), e.getContent()),
-                    e
-            );
-        } catch (ManuscriptFormatException e) {
-            throw new BinderException(String.format(
-                    "Error creating epub file %s", epubFile), e);
-        } catch (MarkdownOutputException e) {
-            throw new BinderException(String.format(
-                    "Error creating epub file %s: %s [%s]", epubFile, e.getMessage(), e.getOutput()), e);
-        }
-        log.info("Wrote: " + epubFile);
+            log.info("Wrote: " + epubFile);
+        }).onError(ManuscriptFormatException.class, e ->
+                new BinderException(String.format(
+                        "Error creating epub file %s", epubFile), e)
+        ).onError(MarkdownOutputException.class, e ->
+                new BinderException(String.format(
+                        "Error creating epub file %s: %s [%s]", epubFile, e.getMessage(), e.getOutput()), e)
+        );
     }
 
 }

@@ -5,9 +5,11 @@ import net.kemitix.binder.markdown.MarkdownConversionException;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
 import net.kemitix.binder.spi.Metadata;
+import net.kemitix.mon.result.Result;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.io.File;
 
 @Log
 @ApplicationScoped
@@ -30,18 +32,25 @@ public class DocxWriter
     }
 
     @Override
-    public void write() {
-        String docxFile = binderConfig.getDocxFile().getAbsolutePath();
-        log.info("Writing: " + docxFile);
-        var docx = new DocxFacade(metadata);
-        try {
+    public Result<Void> write() {
+        return Result.ok(binderConfig.getDocxFile())
+                .map(File::getAbsolutePath)
+                .flatMap(this::writeDocxFile)
+                .onError(MarkdownConversionException.class, e -> {
+                    log.severe(e.getMessage());
+                    log.severe("Node: " + e.getNode());
+                    log.severe("Context: " + e.getContext());
+                    log.severe("Content: " + e.getContent());
+                })
+                ;
+    }
+
+    private Result<Void> writeDocxFile(String docxFile) {
+        return Result.ofVoid(() -> {
+            log.info("Writing: " + docxFile);
+            var docx = new DocxFacade(metadata);
             docxManuscript.writeToFile(docxFile, docx);
-        } catch (MarkdownConversionException e) {
-            log.severe(e.getMessage());
-            log.severe("Node: " + e.getNode());
-            log.severe("Context: " + e.getContext());
-            log.severe("Content: " + e.getContent());
-        }
-        log.info("Wrote: " + docxFile);
+            log.info("Wrote: " + docxFile);
+        });
     }
 }

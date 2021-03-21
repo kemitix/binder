@@ -5,9 +5,11 @@ import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
 import net.kemitix.binder.spi.Metadata;
+import net.kemitix.mon.result.Result;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.io.File;
 
 /**
  * Writes the proof files to disk
@@ -32,15 +34,23 @@ public class ProofWriter implements ManuscriptWriter {
     }
 
     @Override
-    public void write() {
-        var proofDir = binderConfig.getProofDir().getAbsolutePath();
-        log.info("Writing proofs to: " + proofDir);
-        proofs.stream()
-                .peek(proof -> log.info("Creating proof: " + proof.getTitle()))
-                .forEach(proof -> {
+    public Result<Void> write() {
+        return Result.ok(binderConfig.getProofDir())
+                .map(File::getAbsolutePath)
+                .peek(proofDir -> log.info("Writing proofs to: " + proofDir))
+                .flatMap(this::writeProofs)
+                .peek(x -> log.info("Wrote proofs"));
+    }
+
+    private Result<Void> writeProofs(String proofDir) {
+        return Result.applyOver(
+                proofs.stream(),
+                proof -> {
+                    log.info("Creating proof: " + proof.getTitle());
                     var docx = new DocxFacade(metadata);
                     proof.writeToFile(proofDir, docx);
-                });
-        log.info("Wrote proofs");
+                }
+        );
     }
+
 }
