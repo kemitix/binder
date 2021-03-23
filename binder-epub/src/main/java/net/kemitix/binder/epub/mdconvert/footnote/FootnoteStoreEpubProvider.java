@@ -2,6 +2,7 @@ package net.kemitix.binder.epub.mdconvert.footnote;
 
 import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.FootnoteStore;
+import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -22,7 +23,7 @@ public class FootnoteStoreEpubProvider {
         return new EpubFootnoteStore() {
             @Override
             public void add(
-                    String name,
+                    Section.Name name,
                     Footnote.Ordinal ordinal,
                     Footnote<EpubFootnote.Content, EpubFootnote.Placeholder> footnote
             ) {
@@ -30,12 +31,15 @@ public class FootnoteStoreEpubProvider {
             }
 
             @Override
-            public Footnote<EpubFootnote.Content, EpubFootnote.Placeholder> get(String name, Footnote.Ordinal ordinal) {
+            public Footnote<EpubFootnote.Content, EpubFootnote.Placeholder> get(
+                    Section.Name name,
+                    Footnote.Ordinal ordinal) {
                 return store.get(name, ordinal);
             }
 
             @Override
-            public Stream<Map.Entry<Footnote.Ordinal, List<EpubFootnote.Content>>> streamByName(String name) {
+            public Stream<Map.Entry<Footnote.Ordinal, List<EpubFootnote.Content>>>
+            streamByName(Section.Name name) {
                 return store.streamByName(name);
             }
         };

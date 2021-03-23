@@ -4,6 +4,7 @@ import coza.opencollab.epub.creator.model.Content;
 import net.kemitix.binder.epub.mdconvert.Tuple;
 import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.HtmlSection;
+import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -25,13 +26,14 @@ public class FootnoteHtmlContentGenerator {
     }
 
     public Stream<Content> createFootnotes(HtmlSection section) {
+        Section.Name sectionName = section.getName();
         return footnoteStore
-                .streamByName(section.getName())
+                .streamByName(sectionName)
                 .map(Tuple::of)
                 .map(t -> t.mapSecond(mergeContent()))
-                .map(t -> t.mapSecond(footnoteBody(section.getName())))
+                .map(t -> t.mapSecond(footnoteBody(sectionName)))
                 .map(t -> t.mapSecond(asBytes()))
-                .map(t -> t.mapFirst(backlink(section.getName())))
+                .map(t -> t.mapFirst(backlink(sectionName)))
                 .map(this::asContent)
                 .peek(content -> content.setSpine(false))
                 .peek(content -> content.setToc(false));
@@ -55,12 +57,12 @@ public class FootnoteHtmlContentGenerator {
         return new Content(href, body);
     }
 
-    private Function<Footnote.Ordinal, String> backlink(String name) {
+    private Function<Footnote.Ordinal, String> backlink(Section.Name name) {
         return ordinal -> "footnotes/%s/footnote-%s.html"
                 .formatted(name, ordinal);
     }
 
-    private BiFunction<Footnote.Ordinal, EpubFootnote.Content, EpubFootnote.Content> footnoteBody(String name) {
+    private BiFunction<Footnote.Ordinal, EpubFootnote.Content, EpubFootnote.Content> footnoteBody(Section.Name name) {
         return (ordinal, body) ->
                 EpubFootnote.content(
                         """

@@ -34,7 +34,7 @@ public interface Context {
             }
 
             @Override
-            public String getName() {
+            public Section.Name getName() {
                 return section.getName();
             }
 
@@ -96,8 +96,8 @@ public interface Context {
             }
 
             @Override
-            public String getName() {
-                return "";
+            public Section.Name getName() {
+                return Section.name("");
             }
 
             @Override
@@ -138,7 +138,7 @@ public interface Context {
 
     String getAuthor();
 
-    String getName();
+    Section.Name getName();
 
     Section.Align getAlign();
 

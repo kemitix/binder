@@ -2,6 +2,7 @@ package net.kemitix.binder.docx;
 
 import lombok.Getter;
 import net.kemitix.binder.spi.Metadata;
+import net.kemitix.binder.spi.Section;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
@@ -39,8 +40,8 @@ public class DocxFacade
         SectPr sectPr = mlPackage.getDocumentModel().getSections().get(0).getSectPr();
         sectPr.setPgSz(pgSz());
         sectPr.setPgMar(pgMar());
-        addBlankPageHeader(sectPr, "default");
-        addBlankPageFooter(sectPr, "default");
+        addBlankPageHeader(sectPr, Section.name("default"));
+        addBlankPageFooter(sectPr, Section.name("default"));
         sectPrType("oddPage", sectPr);
     }
 

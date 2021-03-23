@@ -2,8 +2,7 @@ package net.kemitix.binder.docx.mdconvert.footnote;
 
 import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.FootnoteStore;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
+import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -22,7 +21,7 @@ public class FootnoteStoreDocxProvider {
         return new DocxFootnoteStore() {
             @Override
             public void add(
-                    String name,
+                    Section.Name name,
                     Footnote.Ordinal ordinal,
                     Footnote<DocxFootnote.Content, DocxFootnote.Placeholder> footnote
             ) {
@@ -31,14 +30,15 @@ public class FootnoteStoreDocxProvider {
 
             @Override
             public Footnote<DocxFootnote.Content, DocxFootnote.Placeholder> get(
-                    String name,
+                    Section.Name name,
                     Footnote.Ordinal ordinal
             ) {
                 return store.get(name, ordinal);
             }
 
             @Override
-            public Stream<Map.Entry<Footnote.Ordinal, List<DocxFootnote.Content>>> streamByName(String name) {
+            public Stream<Map.Entry<Footnote.Ordinal, List<DocxFootnote.Content>>>
+            streamByName(Section.Name name) {
                 return store.streamByName(name);
             }
         };

@@ -6,11 +6,12 @@ import lombok.RequiredArgsConstructor;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.Footnote.Ordinal;
+import net.kemitix.binder.spi.Section;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class FootnoteAnchor {
-    private final String name;
+    private final Section.Name name;
     private final Ordinal ordinal;
     private final String htmlFile;
 

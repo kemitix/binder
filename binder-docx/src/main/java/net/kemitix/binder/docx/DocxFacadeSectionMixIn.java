@@ -2,6 +2,7 @@ package net.kemitix.binder.docx;
 
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.spi.Metadata;
+import net.kemitix.binder.spi.Section;
 import org.docx4j.UnitsOfMeasurement;
 import org.docx4j.wml.CTColumns;
 import org.docx4j.wml.CTDocGrid;
@@ -58,7 +59,7 @@ public interface DocxFacadeSectionMixIn
                 sizePage(
                         sectPrType("oddPage",
                                 sectPr(sectionPs)));
-        String name = context.getName();
+        Section.Name name = context.getName();
         String title = context.getTitle();
         if (context.hasHeader()) {
             addEvenPageHeader(sectPr, name, textParagraphCentered(title));

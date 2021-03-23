@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 public class HtmlManuscript {
 
     private MdManuscript mdManuscript;
-    private Map<String, String> htmlSections;
+    private Map<Section.Name, String> htmlSections;
 
     public static HtmlManuscript.HtmlBuilder htmlBuilder() {
         return mdManuscript -> htmlSections ->
@@ -42,7 +42,7 @@ public class HtmlManuscript {
     public interface HtmlBuilder {
         HtmlManuscript.HtmlBuilder.Stage1 metadata(MdManuscript mdManuscript);
         interface Stage1 {
-            HtmlManuscript htmlSections(Map<String, String> htmlSections);
+            HtmlManuscript htmlSections(Map<Section.Name, String> htmlSections);
         }
     }
 
