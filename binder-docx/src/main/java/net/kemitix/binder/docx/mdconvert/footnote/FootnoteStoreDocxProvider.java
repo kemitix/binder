@@ -20,17 +20,17 @@ public class FootnoteStoreDocxProvider {
     public DocxFootnoteStore footnoteStore() {
         return new DocxFootnoteStore() {
             @Override
-            public void add(String name, String ordinal, Footnote<P, R> footnote) {
+            public void add(String name, Footnote.Ordinal ordinal, Footnote<P, R> footnote) {
                 store.add(name, ordinal, footnote);
             }
 
             @Override
-            public Footnote<P, R> get(String name, String ordinal) {
+            public Footnote<P, R> get(String name, Footnote.Ordinal ordinal) {
                 return store.get(name, ordinal);
             }
 
             @Override
-            public Stream<Map.Entry<String, List<P>>> streamByName(String name) {
+            public Stream<Map.Entry<Footnote.Ordinal, List<P>>> streamByName(String name) {
                 return store.streamByName(name);
             }
         };

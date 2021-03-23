@@ -4,6 +4,7 @@ import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.EpubNodeHandler;
 import net.kemitix.binder.markdown.footnote.FootnoteAnchor;
 import net.kemitix.binder.markdown.footnote.FootnoteAnchorNodeHandler;
+import net.kemitix.binder.spi.Footnote;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.stream.Stream;
@@ -15,8 +16,8 @@ public class FootnoteAnchorEpubNodeHandler
 
     @Override
     public Stream<String> footnoteAnchor(FootnoteAnchor footnoteAnchor) {
-        String htmlFile = footnoteAnchor.getHtmlFile();
-        String ordinal = footnoteAnchor.getOrdinal();
+        var htmlFile = footnoteAnchor.getHtmlFile();
+        var ordinal = footnoteAnchor.getOrdinal();
         return Stream.of("""
                         <sup class="footnote-anchor"><a
                             id="back_note_%1$s"

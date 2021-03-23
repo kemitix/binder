@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.SneakyThrows;
+import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.ManuscriptFormatException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
@@ -35,12 +36,12 @@ public interface DocxFacadeFootnoteMixIn
      * @param ordinal the ordinal of the footnote
      * @return an R containing the footnote anchor as a subscript
      */
-    default R footnote(String ordinal) {
+    default R footnote(Footnote.Ordinal ordinal) {
         return footnoteReference(ordinal);
     }
 
     @SneakyThrows
-    default R footnoteReference(String ordinal) {
+    default R footnoteReference(Footnote.Ordinal ordinal) {
         // in document.xml:
         //      <w:r>
         //        <w:rPr>
@@ -58,7 +59,7 @@ public interface DocxFacadeFootnoteMixIn
         ctFtnEdnRef.setId(id);
         JAXBElement<CTFtnEdnRef> footnoteReference = factory().createRFootnoteReference(ctFtnEdnRef);
 
-        String footnoteOrdinal = id.toString();
+        Footnote.Ordinal footnoteOrdinal = Footnote.ordinal(id.toString());
         if (!footnoteOrdinal.equals(ordinal)) {
             throw new RuntimeException(
                     "Footnotes are not in order. Found %s, when expecting %s"

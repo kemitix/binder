@@ -28,7 +28,11 @@ public class FootnoteBodyEpubNodeHandler
     }
 
     @Override
-    public Stream<String> footnoteBody(String ordinal, Stream<String> content, Context context) {
+    public Stream<String> footnoteBody(
+            Footnote.Ordinal ordinal,
+            Stream<String> content,
+            Context context
+    ) {
         var body = content.collect(Collectors.joining())
                 .replaceAll(" ~PARA~ ", "</p><p>");
         var element = Jsoup.parseBodyFragment(body).body();

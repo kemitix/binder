@@ -13,9 +13,9 @@ public interface FootnoteStore<T, P> {
         return new FootnoteStoreImpl<>();
     }
 
-    void add(String name, String ordinal, Footnote<T, P> footnote);
+    void add(String name, Footnote.Ordinal ordinal, Footnote<T, P> footnote);
 
-    Footnote<T, P> get(String name, String ordinal);
+    Footnote<T, P> get(String name, Footnote.Ordinal ordinal);
 
-    Stream<Map.Entry<String, List<T>>> streamByName(String name);
+    Stream<Map.Entry<Footnote.Ordinal, List<T>>> streamByName(String name);
 }

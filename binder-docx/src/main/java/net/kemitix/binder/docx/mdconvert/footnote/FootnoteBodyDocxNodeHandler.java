@@ -30,7 +30,7 @@ public class FootnoteBodyDocxNodeHandler
     }
 
     @Override
-    public Stream<Object> footnoteBody(String ordinal, Stream<Object> content, Context context) {
+    public Stream<Object> footnoteBody(Footnote.Ordinal ordinal, Stream<Object> content, Context context) {
         Footnote<P, R> footnote = footnoteStore.get(context.getName(), ordinal);
         R placeholder = footnote.getPlaceholder();
         docx.footnoteAddBody(placeholder, formatBody(content));

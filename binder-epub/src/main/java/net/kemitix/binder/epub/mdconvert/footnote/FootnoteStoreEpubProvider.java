@@ -18,17 +18,17 @@ public class FootnoteStoreEpubProvider {
     public EpubFootnoteStore footnoteStore() {
         return new EpubFootnoteStore() {
             @Override
-            public void add(String name, String ordinal, Footnote<String, String> footnote) {
+            public void add(String name, Footnote.Ordinal ordinal, Footnote<String, String> footnote) {
                 store.add(name, ordinal, footnote);
             }
 
             @Override
-            public Footnote<String, String> get(String name, String ordinal) {
+            public Footnote<String, String> get(String name, Footnote.Ordinal ordinal) {
                 return store.get(name, ordinal);
             }
 
             @Override
-            public Stream<Map.Entry<String, List<String>>> streamByName(String name) {
+            public Stream<Map.Entry<Footnote.Ordinal, List<String>>> streamByName(String name) {
                 return store.streamByName(name);
             }
         };

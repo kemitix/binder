@@ -39,11 +39,11 @@ public class FootnoteAnchorDocxNodeHandler
 
     @Override
     public Stream<Object> footnoteAnchor(FootnoteAnchor footnoteAnchor) {
-        String name = footnoteAnchor.getName();
-        String ordinal = footnoteAnchor.getOrdinal();
-        R anchor = docx.footnote(ordinal);
-        DocxFootnote footnote = DocxFootnote.createDocx(ordinal, anchor, Stream.empty());
-        footnoteStore.add(name, ordinal, footnote);
+        var name = footnoteAnchor.getName();
+        var ordinal = footnoteAnchor.getOrdinal();
+        var anchor = docx.footnote(ordinal);
+        var docxFootnote = DocxFootnote.createDocx(ordinal, anchor, Stream.empty());
+        footnoteStore.add(name, ordinal, docxFootnote);
         return Stream.of(
                 anchor
         );

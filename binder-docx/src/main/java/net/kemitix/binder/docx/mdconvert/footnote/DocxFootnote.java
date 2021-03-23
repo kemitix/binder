@@ -9,11 +9,11 @@ import java.util.stream.Stream;
 
 public interface DocxFootnote
         extends Footnote<P, R> {
-    static DocxFootnote createDocx(String ordinal, R placeholder, Stream<P> content) {
+    static DocxFootnote createDocx(Ordinal ordinal, R placeholder, Stream<P> content) {
         Footnote<P, R> footnote = Footnote.create(ordinal, placeholder, content);
         return new DocxFootnote() {
             @Override
-            public String getOrdinal() {
+            public Ordinal getOrdinal() {
                 return footnote.getOrdinal();
             }
 

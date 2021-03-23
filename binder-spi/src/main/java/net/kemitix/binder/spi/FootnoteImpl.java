@@ -13,7 +13,7 @@ import java.util.List;
 public class FootnoteImpl<T, P>
         implements Footnote<T, P> {
 
-    private final String ordinal;
+    private final Ordinal ordinal;
     private final P placeholder;
     private final List<T> content;
 
