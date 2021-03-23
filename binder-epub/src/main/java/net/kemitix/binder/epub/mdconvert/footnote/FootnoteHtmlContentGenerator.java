@@ -8,8 +8,10 @@ import net.kemitix.binder.spi.HtmlSection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -26,7 +28,7 @@ public class FootnoteHtmlContentGenerator {
         return footnoteStore
                 .streamByName(section.getName())
                 .map(Tuple::of)
-                .map(t -> t.mapSecond(l -> String.join("", l)))
+                .map(t -> t.mapSecond(mergeContent()))
                 .map(t -> t.mapSecond(footnoteBody(section.getName())))
                 .map(t -> t.mapSecond(asBytes()))
                 .map(t -> t.mapFirst(backlink(section.getName())))
@@ -35,8 +37,16 @@ public class FootnoteHtmlContentGenerator {
                 .peek(content -> content.setToc(false));
     }
 
-    private Function<String, byte[]> asBytes() {
-        return s -> s.getBytes(StandardCharsets.UTF_8);
+    private Function<List<EpubFootnote.Content>, EpubFootnote.Content> mergeContent() {
+        return list ->
+                EpubFootnote.content(
+                        list.stream()
+                                .map(EpubFootnote.Content::getValue)
+                                .collect(Collectors.joining()));
+    }
+
+    private Function<EpubFootnote.Content, byte[]> asBytes() {
+        return s -> s.getValue().getBytes(StandardCharsets.UTF_8);
     }
 
     private Content asContent(Tuple<String, byte[]> t) {
@@ -50,9 +60,10 @@ public class FootnoteHtmlContentGenerator {
                 .formatted(name, ordinal);
     }
 
-    private BiFunction<Footnote.Ordinal, String, String> footnoteBody(String name) {
+    private BiFunction<Footnote.Ordinal, EpubFootnote.Content, EpubFootnote.Content> footnoteBody(String name) {
         return (ordinal, body) ->
-                """
+                EpubFootnote.content(
+                        """
                         <dl id="note_%1$s" class="footnote">
                           <dt class="footnote-return">
                             [<a href="../../issue/%3$s.html#back_note_%1$s" title="%1$s" class="footnote-return-link">←%1$s</a>]
@@ -61,8 +72,7 @@ public class FootnoteHtmlContentGenerator {
                             %2$s
                           </dd>
                         </dl>
-                        """
-                        .formatted(ordinal, body, name);
+                        """.formatted(ordinal, body, name));
     }
 
 }

@@ -12,23 +12,30 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class FootnoteStoreEpubProvider {
 
-    FootnoteStore<String, String> store = FootnoteStore.create(String.class, String.class);
+    FootnoteStore<EpubFootnote.Content, EpubFootnote.Placeholder> store =
+            FootnoteStore.create(
+                    EpubFootnote.Content.class,
+                    EpubFootnote.Placeholder.class);
 
     @Produces
     public EpubFootnoteStore footnoteStore() {
         return new EpubFootnoteStore() {
             @Override
-            public void add(String name, Footnote.Ordinal ordinal, Footnote<String, String> footnote) {
+            public void add(
+                    String name,
+                    Footnote.Ordinal ordinal,
+                    Footnote<EpubFootnote.Content, EpubFootnote.Placeholder> footnote
+            ) {
                 store.add(name, ordinal, footnote);
             }
 
             @Override
-            public Footnote<String, String> get(String name, Footnote.Ordinal ordinal) {
+            public Footnote<EpubFootnote.Content, EpubFootnote.Placeholder> get(String name, Footnote.Ordinal ordinal) {
                 return store.get(name, ordinal);
             }
 
             @Override
-            public Stream<Map.Entry<Footnote.Ordinal, List<String>>> streamByName(String name) {
+            public Stream<Map.Entry<Footnote.Ordinal, List<EpubFootnote.Content>>> streamByName(String name) {
                 return store.streamByName(name);
             }
         };
