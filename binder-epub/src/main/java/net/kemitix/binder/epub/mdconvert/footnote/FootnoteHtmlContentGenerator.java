@@ -54,11 +54,11 @@ public class FootnoteHtmlContentGenerator {
     private BiFunction<String, String, String> footnoteBody(String name) {
         return (ordinal, body) ->
                 """
-                        <dl>
-                          <dt>
-                            <a href="../../issue/%3$s.html#back-link-%1$s">%1$s</a>)
+                        <dl id="note_%1$s" class="footnote">
+                          <dt class="footnote-return">
+                            [<a href="../../issue/%3$s.html#back_note_%1$s" title="%1$s" class="footnote-return-link">←%1$s</a>]
                           </dt>
-                          <dd>
+                          <dd class="footnote-body">
                             %2$s
                           </dd>
                         </dl>

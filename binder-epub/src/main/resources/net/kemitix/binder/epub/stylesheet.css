@@ -1,5 +1,25 @@
 .footnote-anchor {
-    font-size: 0.75em;
-    line-height: normal;
-    vertical-align: super
+    font-size: 0.875em;
+    line-height: 1.2;
+    vertical-align: super;
+}
+
+.noteref {
+    text-decoration: none
+}
+
+.footnote-return {
+    display: block;
+    font-size: 1.125em;
+    line-height: 1.2
+}
+
+.footnote-return-link {
+    line-height: 1.2;
+    text-decoration: none
+}
+
+.footnote-body {
+    display: block;
+    margin-left: 40px
 }

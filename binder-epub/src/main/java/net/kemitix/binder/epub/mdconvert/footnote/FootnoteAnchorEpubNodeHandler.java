@@ -18,10 +18,12 @@ public class FootnoteAnchorEpubNodeHandler
         String htmlFile = footnoteAnchor.getHtmlFile();
         String ordinal = footnoteAnchor.getOrdinal();
         return Stream.of("""
-                        <sup class="footnoteAnchor-anchor"><a
-                            href="%2$s"
-                            title="%1$s" 
-                            id="back-link-%1$s">%1$s</a></sup> """
+                        <sup class="footnote-anchor">
+                          <a
+                            id="back_note_%1$s"
+                            href="%2$s#note_%1$s"
+                            title="%1$s"
+                            class="noteref">%1$s</a></sup> """
                 .formatted(ordinal, htmlFile)
         );
     }
