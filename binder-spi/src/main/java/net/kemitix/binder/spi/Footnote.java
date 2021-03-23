@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A footnote.
+ *
+ * @param <T> the type of the content of the footnote body stream
+ * @param <P> the type of the placeholder
+ */
 public interface Footnote<T, P> {
 
     static <T, P> Footnote<T, P> create(
