@@ -1,15 +1,12 @@
 package net.kemitix.binder.epub.mdconvert.footnote;
 
 import coza.opencollab.epub.creator.model.Content;
-import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.Tuple;
-import net.kemitix.binder.spi.FootnoteStoreImpl;
 import net.kemitix.binder.spi.HtmlSection;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;

@@ -4,8 +4,6 @@ import com.vladsch.flexmark.ext.footnotes.FootnoteBlock;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.NodeHandler;
-import net.kemitix.binder.spi.Footnote;
-import net.kemitix.binder.spi.FootnoteImpl;
 
 import java.util.stream.Stream;
 

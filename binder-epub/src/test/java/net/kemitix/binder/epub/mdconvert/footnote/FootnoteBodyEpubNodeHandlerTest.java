@@ -1,7 +1,6 @@
 package net.kemitix.binder.epub.mdconvert.footnote;
 
 import net.kemitix.binder.markdown.Context;
-import net.kemitix.binder.spi.FootnoteImpl;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
