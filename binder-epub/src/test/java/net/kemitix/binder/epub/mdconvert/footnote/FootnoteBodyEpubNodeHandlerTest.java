@@ -14,7 +14,8 @@ import static org.mockito.Mockito.mock;
 class FootnoteBodyEpubNodeHandlerTest
         implements WithAssertions {
 
-    FootnoteBodyEpubNodeHandler sut = new FootnoteBodyEpubNodeHandler();
+    FootnoteStoreEpubProvider footnoteStoreEpubProvider = new FootnoteStoreEpubProvider();
+    FootnoteBodyEpubNodeHandler sut = new FootnoteBodyEpubNodeHandler(footnoteStoreEpubProvider);
     Context context = mock(Context.class);
 
     @BeforeEach
