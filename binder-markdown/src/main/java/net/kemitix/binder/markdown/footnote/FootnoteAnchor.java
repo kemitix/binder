@@ -19,7 +19,7 @@ public class FootnoteAnchor {
     ) {
         String name = context.getName();
         String ordinal = footnote.getText().unescape();
-        String htmlFile = "../footnotes/" + name + "/footnote-%s.html"
+        String htmlFile = "footnotes/" + name + "/footnote-%s.html"
                 .formatted(ordinal);
         return new FootnoteAnchor(name, ordinal, htmlFile);
     }
