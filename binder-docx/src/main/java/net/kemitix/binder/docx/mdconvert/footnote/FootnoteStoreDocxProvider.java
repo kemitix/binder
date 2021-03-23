@@ -14,23 +14,31 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class FootnoteStoreDocxProvider {
 
-    FootnoteStore<P, R> store = FootnoteStore.create(P.class, R.class);
+    FootnoteStore<DocxFootnote.Content, DocxFootnote.Placeholder> store =
+            FootnoteStore.create(DocxFootnote.Content.class, DocxFootnote.Placeholder.class);
 
     @Produces
     public DocxFootnoteStore footnoteStore() {
         return new DocxFootnoteStore() {
             @Override
-            public void add(String name, Footnote.Ordinal ordinal, Footnote<P, R> footnote) {
+            public void add(
+                    String name,
+                    Footnote.Ordinal ordinal,
+                    Footnote<DocxFootnote.Content, DocxFootnote.Placeholder> footnote
+            ) {
                 store.add(name, ordinal, footnote);
             }
 
             @Override
-            public Footnote<P, R> get(String name, Footnote.Ordinal ordinal) {
+            public Footnote<DocxFootnote.Content, DocxFootnote.Placeholder> get(
+                    String name,
+                    Footnote.Ordinal ordinal
+            ) {
                 return store.get(name, ordinal);
             }
 
             @Override
-            public Stream<Map.Entry<Footnote.Ordinal, List<P>>> streamByName(String name) {
+            public Stream<Map.Entry<Footnote.Ordinal, List<DocxFootnote.Content>>> streamByName(String name) {
                 return store.streamByName(name);
             }
         };
