@@ -33,7 +33,7 @@ public class FootnoteHtmlContentGenerator {
                 .map(t -> t.mapSecond(mergeContent()))
                 .map(t -> t.mapSecond(footnoteBody(sectionName)))
                 .map(t -> t.mapSecond(asBytes()))
-                .map(t -> t.mapFirst(backlink(sectionName)))
+                .map(t -> t.mapFirst(contentHref(sectionName)))
                 .map(this::asContent)
                 .peek(content -> content.setSpine(false))
                 .peek(content -> content.setToc(false));
@@ -57,7 +57,7 @@ public class FootnoteHtmlContentGenerator {
         return new Content(href, body);
     }
 
-    private Function<Footnote.Ordinal, String> backlink(Section.Name name) {
+    private Function<Footnote.Ordinal, String> contentHref(Section.Name name) {
         return ordinal -> "footnotes/%s/footnote-%s.html"
                 .formatted(name, ordinal);
     }
