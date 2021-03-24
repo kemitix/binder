@@ -2,8 +2,7 @@ package net.kemitix.binder.docx.mdconvert.footnote;
 
 import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.FootnoteStore;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
+import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -14,23 +13,32 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class FootnoteStoreDocxProvider {
 
-    FootnoteStore<P, R> store = FootnoteStore.create(P.class, R.class);
+    FootnoteStore<DocxFootnote.Content, DocxFootnote.Placeholder> store =
+            FootnoteStore.create(DocxFootnote.Content.class, DocxFootnote.Placeholder.class);
 
     @Produces
     public DocxFootnoteStore footnoteStore() {
         return new DocxFootnoteStore() {
             @Override
-            public void add(String name, String ordinal, Footnote<P, R> footnote) {
+            public void add(
+                    Section.Name name,
+                    Footnote.Ordinal ordinal,
+                    Footnote<DocxFootnote.Content, DocxFootnote.Placeholder> footnote
+            ) {
                 store.add(name, ordinal, footnote);
             }
 
             @Override
-            public Footnote<P, R> get(String name, String ordinal) {
+            public Footnote<DocxFootnote.Content, DocxFootnote.Placeholder> get(
+                    Section.Name name,
+                    Footnote.Ordinal ordinal
+            ) {
                 return store.get(name, ordinal);
             }
 
             @Override
-            public Stream<Map.Entry<String, List<P>>> streamByName(String name) {
+            public Stream<Map.Entry<Footnote.Ordinal, List<DocxFootnote.Content>>>
+            streamByName(Section.Name name) {
                 return store.streamByName(name);
             }
         };

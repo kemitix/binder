@@ -1,6 +1,8 @@
 package net.kemitix.binder.docx;
 
 import lombok.SneakyThrows;
+import net.kemitix.binder.docx.mdconvert.footnote.DocxFootnote;
+import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.ManuscriptFormatException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.parts.WordprocessingML.FootnotesPart;
@@ -31,16 +33,18 @@ public interface DocxFacadeFootnoteMixIn
     /**
      * Creates a Footnote with no body.
      *
-     * <p>Use {@link #footnoteAddBody(R, Stream)} ()} to add tge body.</p>
+     * <p>Use {@link #footnoteAddBody(DocxFootnote.Placeholder, Stream)} to add
+     * the body.</p>
+     *
      * @param ordinal the ordinal of the footnote
      * @return an R containing the footnote anchor as a subscript
      */
-    default R footnote(String ordinal) {
+    default R footnote(Footnote.Ordinal ordinal) {
         return footnoteReference(ordinal);
     }
 
     @SneakyThrows
-    default R footnoteReference(String ordinal) {
+    default R footnoteReference(Footnote.Ordinal ordinal) {
         // in document.xml:
         //      <w:r>
         //        <w:rPr>
@@ -58,7 +62,7 @@ public interface DocxFacadeFootnoteMixIn
         ctFtnEdnRef.setId(id);
         JAXBElement<CTFtnEdnRef> footnoteReference = factory().createRFootnoteReference(ctFtnEdnRef);
 
-        String footnoteOrdinal = id.toString();
+        Footnote.Ordinal footnoteOrdinal = Footnote.ordinal(id.toString());
         if (!footnoteOrdinal.equals(ordinal)) {
             throw new RuntimeException(
                     "Footnotes are not in order. Found %s, when expecting %s"
@@ -76,19 +80,21 @@ public interface DocxFacadeFootnoteMixIn
     }
 
     @SneakyThrows
-    default R footnoteAddBody(R r, Stream<Object> content) {
+    default void footnoteAddBody(
+            DocxFootnote.Placeholder placeholder,
+            Stream<P> content
+    ) {
         FootnotesPart footnotesPart = getFootnotesPart();
         CTFootnotes contents = footnotesPart.getContents();
         List<CTFtnEdn> footnotes = contents.getFootnote();
-        List<Object> rContent = r.getContent();
+        List<Object> rContent = placeholder.getValue().getContent();
         JAXBElement<CTFtnEdnRef> footnoteReference = (JAXBElement<CTFtnEdnRef>) rContent.get(0);
         CTFtnEdnRef ctFtnEdnRef = footnoteReference.getValue();
         BigInteger id = ctFtnEdnRef.getId();
         CTFtnEdn ctFtnEdn = getCtFtnEdnById(footnotes, id);
         List<Object> ctFtnEdnContent = ctFtnEdn.getContent();
-        List<Object> paras = Arrays.asList(footnoteBody(content.map(P.class::cast).collect(Collectors.toList())));
+        List<Object> paras = Arrays.asList(footnoteBody(content.collect(Collectors.toList())));
         ctFtnEdnContent.addAll(paras);
-        return r;
     }
 
     default CTFtnEdn getCtFtnEdnById(List<CTFtnEdn> footnotes, BigInteger id) {

@@ -80,7 +80,7 @@ public class ManuscriptLoader {
             MdManuscript mdManuscript,
             MarkdownToHtml markdownToHtml
     ) {
-        Map<String, String> htmlSections = new LinkedHashMap<>();
+        Map<Section.Name, String> htmlSections = new LinkedHashMap<>();
         mdManuscript.getContents()
                 .forEach(section ->
                         htmlSections.put(

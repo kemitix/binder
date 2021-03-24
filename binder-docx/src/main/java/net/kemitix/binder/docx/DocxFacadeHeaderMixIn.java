@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.SneakyThrows;
+import net.kemitix.binder.spi.Section;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.relationships.Relationship;
@@ -16,7 +17,7 @@ import java.util.List;
 public interface DocxFacadeHeaderMixIn
         extends DocxFacadeParagraphMixIn {
 
-    default void addBlankPageHeader(SectPr sectPr, String name) {
+    default void addBlankPageHeader(SectPr sectPr, Section.Name name) {
         P[] emptyP = new P[]{zeroSpaceAfterP(p()), p()};
         addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
         addPageHeader(sectPr, name, HdrFtrRef.EVEN, emptyP);
@@ -26,7 +27,7 @@ public interface DocxFacadeHeaderMixIn
     @SneakyThrows
     default void addDefaultPageHeader(
             SectPr sectPr,
-            String name,
+            Section.Name name,
             P pageHeader
     ) {
         addPageHeader(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
@@ -37,7 +38,7 @@ public interface DocxFacadeHeaderMixIn
     @SneakyThrows
     default void addEvenPageHeader(
             SectPr sectPr,
-            String name,
+            Section.Name name,
             P pageHeader
     ) {
         addPageHeader(sectPr, name, HdrFtrRef.EVEN, new P[]{
@@ -48,7 +49,7 @@ public interface DocxFacadeHeaderMixIn
     @SneakyThrows
     default void addFirstPageHeader(
             SectPr sectPr,
-            String name,
+            Section.Name name,
             P pageHeader
     ) {
         addPageHeader(sectPr, name, HdrFtrRef.FIRST, new P[]{
@@ -59,7 +60,7 @@ public interface DocxFacadeHeaderMixIn
     @SneakyThrows
     default void addPageHeader(
             SectPr sectPr,
-            String name,
+            Section.Name name,
             HdrFtrRef hdrFtrRef,
             P[] headerContent
     ) {

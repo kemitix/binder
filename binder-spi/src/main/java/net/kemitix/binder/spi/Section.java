@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.With;
+import net.kemitix.mon.TypeAlias;
 
 import java.io.File;
 import java.util.Date;
@@ -16,39 +17,64 @@ import java.util.Date;
  * <p>All preludes, contents and codas are sections.</p>
  */
 @Setter
-@Getter
 @With
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Section {
 
+    @Getter
     private Type type;
+    @Getter
     private boolean toc = true; // show in table of contents
+    @Getter
     private boolean template = false; // should expand template variables
+    @Getter
     private boolean epub = true; // include in epub output
+    @Getter
     private boolean docx = true; // include in docx output
+    @Getter
     private String title; // the title, taken from the yaml header
     private String name; // the base filename
+    @Getter
     private String author;
+    @Getter
     private String bio = "TODO"; // the author bio
+    @Getter
     private float fontSize = 11;
+    @Getter
     private boolean header = true; // should there be a header
+    @Getter
     private boolean footer = true; // should there be a footer
+    @Getter
     private int page = 0; // page in paperback to toc
+    @Getter
     private Date date; // when/if should be published to website
+    @Getter
     private int copyright; // the year the story was copyrighted
+    @Getter
     private File filename; // the file loaded
+    @Getter
     private String markdown; // the markdown contents of the file, after removing yaml header
+    @Getter
     private Align align = Align.full; // full justify paragraphs
+    @Getter
     private boolean landmark = false; // is an epub landmark
+    @Getter
     private LandmarkType landmarkType;
-
+    @Getter
     private boolean last; // internal flag to mark last section in document
 
     public boolean isType(Type type) {
         return this.type.equals(type);
     }
 
+    public static Section.Name name(String name) {
+        return new Section.Name(name);
+    }
+
+    public Section.Name getName() {
+        return Section.name(name);
+    }
 
     public enum Type {
 
@@ -60,7 +86,7 @@ public class Section {
         ;
 
         public boolean isA(Section section) {
-            return section.getType().equals(this);
+            return section.type.equals(this);
         }
 
     }
@@ -98,6 +124,12 @@ public class Section {
 
         LandmarkType(String type) {
             this.value = type;
+        }
+    }
+
+    public static class Name extends TypeAlias<String> {
+        private Name(String name) {
+            super(name);
         }
     }
 }

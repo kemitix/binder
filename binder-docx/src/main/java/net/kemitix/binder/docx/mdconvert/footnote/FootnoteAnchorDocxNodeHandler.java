@@ -5,11 +5,6 @@ import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.docx.mdconvert.Docx;
 import net.kemitix.binder.markdown.footnote.FootnoteAnchor;
 import net.kemitix.binder.markdown.footnote.FootnoteAnchorNodeHandler;
-import net.kemitix.binder.spi.Footnote;
-import net.kemitix.binder.spi.FootnoteImpl;
-import net.kemitix.binder.spi.FootnoteStoreImpl;
-import org.docx4j.wml.P;
-import org.docx4j.wml.R;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -39,13 +34,13 @@ public class FootnoteAnchorDocxNodeHandler
 
     @Override
     public Stream<Object> footnoteAnchor(FootnoteAnchor footnoteAnchor) {
-        String name = footnoteAnchor.getName();
-        String ordinal = footnoteAnchor.getOrdinal();
-        R anchor = docx.footnote(ordinal);
-        DocxFootnote footnote = DocxFootnote.createDocx(ordinal, anchor, Stream.empty());
-        footnoteStore.add(name, ordinal, footnote);
+        var name = footnoteAnchor.getName();
+        var ordinal = footnoteAnchor.getOrdinal();
+        var anchor = DocxFootnote.placeholder(docx.footnote(ordinal));
+        var docxFootnote = DocxFootnote.createDocx(ordinal, anchor, Stream.empty());
+        footnoteStore.add(name, ordinal, docxFootnote);
         return Stream.of(
-                anchor
+                anchor.getValue()
         );
     }
 

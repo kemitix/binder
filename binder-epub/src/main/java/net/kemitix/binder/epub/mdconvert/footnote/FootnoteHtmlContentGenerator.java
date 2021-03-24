@@ -1,10 +1,10 @@
 package net.kemitix.binder.epub.mdconvert.footnote;
 
 import coza.opencollab.epub.creator.model.Content;
-import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.Tuple;
-import net.kemitix.binder.spi.FootnoteStoreImpl;
+import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.HtmlSection;
+import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -25,20 +26,29 @@ public class FootnoteHtmlContentGenerator {
     }
 
     public Stream<Content> createFootnotes(HtmlSection section) {
+        Section.Name sectionName = section.getName();
         return footnoteStore
-                .streamByName(section.getName())
+                .streamByName(sectionName)
                 .map(Tuple::of)
-                .map(t -> t.mapFirst(backlink(section.getName())))
-                .map(t -> t.mapSecond(l -> String.join("", l)))
-                .map(t -> t.mapSecond(footnoteBody(section.getName())))
+                .map(t -> t.mapSecond(mergeContent()))
+                .map(t -> t.mapSecond(footnoteBody(sectionName)))
                 .map(t -> t.mapSecond(asBytes()))
+                .map(t -> t.mapFirst(contentHref(sectionName)))
                 .map(this::asContent)
                 .peek(content -> content.setSpine(false))
                 .peek(content -> content.setToc(false));
     }
 
-    private Function<String, byte[]> asBytes() {
-        return s -> s.getBytes(StandardCharsets.UTF_8);
+    private Function<List<EpubFootnote.Content>, EpubFootnote.Content> mergeContent() {
+        return list ->
+                EpubFootnote.content(
+                        list.stream()
+                                .map(EpubFootnote.Content::getValue)
+                                .collect(Collectors.joining()));
+    }
+
+    private Function<EpubFootnote.Content, byte[]> asBytes() {
+        return s -> s.getValue().getBytes(StandardCharsets.UTF_8);
     }
 
     private Content asContent(Tuple<String, byte[]> t) {
@@ -47,23 +57,35 @@ public class FootnoteHtmlContentGenerator {
         return new Content(href, body);
     }
 
-    private Function<String, String> backlink(String name) {
-        return ("footnotes/" + name + "/footnote-%s.html")::formatted;
+    private Function<Footnote.Ordinal, String> contentHref(Section.Name name) {
+        return ordinal -> "footnotes/%s/footnote-%s.xhtml"
+                .formatted(name, ordinal);
     }
 
-    private BiFunction<String, String, String> footnoteBody(String name) {
+    private BiFunction<Footnote.Ordinal, EpubFootnote.Content, EpubFootnote.Content> footnoteBody(Section.Name name) {
         return (ordinal, body) ->
-                """
-                        <dl>
-                          <dt>
-                            <a href="../../issue/%3$s.html#back-link-%1$s">%1$s</a>)
-                          </dt>
-                          <dd>
-                            %2$s
-                          </dd>
-                        </dl>
+                EpubFootnote.content(
                         """
-                        .formatted(ordinal, body, name);
+                                <?xml version='1.0' encoding='utf-8'?>
+                                <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+                                  <head>
+                                    <title>Unknown</title>
+                                    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+                                    <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+                                    <link rel="stylesheet" type="text/css" href="page_styles.css"/>
+                                  </head>
+                                  <body class="calibre">
+                                    <dl id="note_%1$s" class="footnote">
+                                      <dt class="footnote-return">
+                                        [<a href="../../%3$s.xhtml#back_note_%1$s" title="%1$s" class="footnote-return-link">←%1$s</a>]
+                                      </dt>
+                                      <dd class="footnote-body">
+                                        %2$s
+                                      </dd>
+                                    </dl>
+                                  </body>
+                                </html>
+                                """.formatted(ordinal, body, name));
     }
 
 }

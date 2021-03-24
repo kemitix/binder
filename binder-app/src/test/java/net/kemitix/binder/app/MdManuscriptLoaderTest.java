@@ -134,7 +134,7 @@ public class MdManuscriptLoaderTest
             //then
             List<Section> prelude1s = mdManuscript.getContents()
                     .stream()
-                    .filter(section -> "prelude-1".equals(section.getName()))
+                    .filter(section -> Section.name("prelude-1").equals(section.getName()))
                     .collect(Collectors.toList());
             assertThat(prelude1s).hasSize(1);
             assertThat(prelude1s).satisfies(preludes -> {
@@ -158,7 +158,7 @@ public class MdManuscriptLoaderTest
             //then
             List<Section> prelude1s = mdManuscript.getContents()
                     .stream()
-                    .filter(section -> "toc".equals(section.getName()))
+                    .filter(section -> Section.name("toc").equals(section.getName()))
                     .collect(Collectors.toList());
             assertThat(prelude1s).hasSize(1);
             assertThat(prelude1s).satisfies(preludes -> {

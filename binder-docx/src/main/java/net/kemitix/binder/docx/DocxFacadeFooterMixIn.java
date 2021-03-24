@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.SneakyThrows;
+import net.kemitix.binder.spi.Section;
 import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.FooterPart;
 import org.docx4j.relationships.Relationship;
@@ -16,7 +17,7 @@ import java.util.List;
 public interface DocxFacadeFooterMixIn
         extends DocxFacadeParagraphMixIn {
     
-    default void addBlankPageFooter(SectPr sectPr, String name) {
+    default void addBlankPageFooter(SectPr sectPr, Section.Name name) {
         P[] emptyP = new P[]{zeroSpaceAfterP(p()), p()};
         addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, emptyP);
         addPageFooter(sectPr, name, HdrFtrRef.EVEN, emptyP);
@@ -26,7 +27,7 @@ public interface DocxFacadeFooterMixIn
     @SneakyThrows
     default void addDefaultPageFooter(
             SectPr sectPr,
-            String name,
+            Section.Name name,
             P pageFooter
     ) {
         addPageFooter(sectPr, name, HdrFtrRef.DEFAULT, new P[]{
@@ -37,7 +38,7 @@ public interface DocxFacadeFooterMixIn
     @SneakyThrows
     default void addEvenPageFooter(
             SectPr sectPr,
-            String name,
+            Section.Name name,
             P pageFooter
     ) {
         addPageFooter(sectPr, name, HdrFtrRef.EVEN, new P[]{
@@ -48,7 +49,7 @@ public interface DocxFacadeFooterMixIn
     @SneakyThrows
     default void addFirstPageFooter(
             SectPr sectPr,
-            String name,
+            Section.Name name,
             P pageFooter
     ) {
         addPageFooter(sectPr, name, HdrFtrRef.FIRST, new P[]{
@@ -59,7 +60,7 @@ public interface DocxFacadeFooterMixIn
     @SneakyThrows
     default void addPageFooter(
             SectPr sectPr,
-            String name,
+            Section.Name name,
             HdrFtrRef hdrFtrRef,
             P[] footerContent
     ) {
