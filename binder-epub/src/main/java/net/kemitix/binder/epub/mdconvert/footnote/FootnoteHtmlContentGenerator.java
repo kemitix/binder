@@ -58,7 +58,7 @@ public class FootnoteHtmlContentGenerator {
     }
 
     private Function<Footnote.Ordinal, String> contentHref(Section.Name name) {
-        return ordinal -> "footnotes/%s/footnote-%s.html"
+        return ordinal -> "footnotes/%s/footnote-%s.xhtml"
                 .formatted(name, ordinal);
     }
 
@@ -68,7 +68,7 @@ public class FootnoteHtmlContentGenerator {
                         """
                         <dl id="note_%1$s" class="footnote">
                           <dt class="footnote-return">
-                            [<a href="../../issue/%3$s.html#back_note_%1$s" title="%1$s" class="footnote-return-link">←%1$s</a>]
+                            [<a href="../../%3$s.xhtml#back_note_%1$s" title="%1$s" class="footnote-return-link">←%1$s</a>]
                           </dt>
                           <dd class="footnote-body">
                             %2$s

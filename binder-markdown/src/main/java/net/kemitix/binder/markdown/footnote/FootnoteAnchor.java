@@ -21,7 +21,7 @@ public class FootnoteAnchor {
     ) {
         var name = context.getName();
         var ordinal = Footnote.ordinal(footnote.getText().unescape());
-        var htmlFile = "footnotes/%s/footnote-%s.html"
+        var htmlFile = "footnotes/%s/footnote-%s.xhtml"
                 .formatted(name, ordinal);
         return new FootnoteAnchor(name, ordinal, htmlFile);
     }
