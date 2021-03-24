@@ -66,15 +66,26 @@ public class FootnoteHtmlContentGenerator {
         return (ordinal, body) ->
                 EpubFootnote.content(
                         """
-                        <dl id="note_%1$s" class="footnote">
-                          <dt class="footnote-return">
-                            [<a href="../../%3$s.xhtml#back_note_%1$s" title="%1$s" class="footnote-return-link">←%1$s</a>]
-                          </dt>
-                          <dd class="footnote-body">
-                            %2$s
-                          </dd>
-                        </dl>
-                        """.formatted(ordinal, body, name));
+                                <?xml version='1.0' encoding='utf-8'?>
+                                <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+                                  <head>
+                                    <title>Unknown</title>
+                                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                                    <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+                                    <link rel="stylesheet" type="text/css" href="page_styles.css"/>
+                                  </head>
+                                  <body class="calibre">
+                                    <dl id="note_%1$s" class="footnote">
+                                      <dt class="footnote-return">
+                                        [<a href="../../%3$s.xhtml#back_note_%1$s" title="%1$s" class="footnote-return-link">←%1$s</a>]
+                                      </dt>
+                                      <dd class="footnote-body">
+                                        %2$s
+                                      </dd>
+                                    </dl>
+                                  </body>
+                                </html>
+                                """.formatted(ordinal, body, name));
     }
 
 }
