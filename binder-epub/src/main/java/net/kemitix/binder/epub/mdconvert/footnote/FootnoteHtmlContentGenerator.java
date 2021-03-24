@@ -70,7 +70,7 @@ public class FootnoteHtmlContentGenerator {
                                 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
                                   <head>
                                     <title>Unknown</title>
-                                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                                    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
                                     <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
                                     <link rel="stylesheet" type="text/css" href="page_styles.css"/>
                                   </head>
