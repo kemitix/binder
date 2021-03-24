@@ -3,9 +3,11 @@ package net.kemitix.binder.epub.mdconvert.footnote;
 import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.EpubNodeHandler;
 import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.markdown.MarkdownOutputException;
 import net.kemitix.binder.markdown.footnote.FootnoteBodyNodeHandler;
 import net.kemitix.binder.spi.Footnote;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -33,6 +35,13 @@ public class FootnoteBodyEpubNodeHandler
         var body = content.collect(Collectors.joining())
                 .replaceAll(" ~PARA~ ", "</p><p>");
         var element = Jsoup.parseBodyFragment(body).body();
+        var children = element.children();
+        if (children.first().is("p")) {
+            var sup = new Element("sup");
+            children.first().insertChildren(0, sup.text(ordinal.getValue()));
+        } else {
+            throw new MarkdownOutputException("Generated footnote body should start with a paragraph", body);
+        }
         var placeholder = EpubFootnote.placeholder("");
         var html = EpubFootnote.content(element.html());
         var footnote =
