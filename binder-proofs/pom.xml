@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>binder-parent</artifactId>
+        <groupId>net.kemitix.binder</groupId>
+        <version>1.2.0</version>
+        <relativePath>../binder-parent/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>binder-proofs</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.kemitix.binder</groupId>
+            <artifactId>binder-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kemitix.binder</groupId>
+            <artifactId>binder-markdown</artifactId>
+        </dependency>
+    </dependencies>
+</project>

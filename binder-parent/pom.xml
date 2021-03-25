@@ -67,6 +67,11 @@
                 <artifactId>binder-docx</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>net.kemitix.binder</groupId>
+                <artifactId>binder-proofs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.projectlombok</groupId>
