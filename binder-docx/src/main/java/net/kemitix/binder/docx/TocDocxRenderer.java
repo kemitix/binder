@@ -64,6 +64,7 @@ public class TocDocxRenderer
         Context context = Context.create(section);
         return Stream.of(
                 new DocxContent(
+                        section.getName(),
                         docx.finaliseTitlePage(context, contents))
         );
     }

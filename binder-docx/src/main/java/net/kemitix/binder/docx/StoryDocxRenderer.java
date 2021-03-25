@@ -60,6 +60,7 @@ public class StoryDocxRenderer
         docx.addStyle(docx.paraStyle(context));
         return Stream.of(
                 new DocxContent(
+                        section.getName(),
                         docx.finaliseSection(context, contents))
         );
     }

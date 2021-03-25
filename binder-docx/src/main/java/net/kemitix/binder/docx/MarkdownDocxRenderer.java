@@ -5,7 +5,6 @@ import net.kemitix.binder.markdown.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
-import org.docx4j.wml.P;
 import org.docx4j.wml.Style;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -54,6 +53,7 @@ public class MarkdownDocxRenderer
         docx.addStyle(docx.paraStyle(context));
         return Stream.of(
                 new DocxContent(
+                        section.getName(),
                         docx.finaliseTitlePage(context, contents))
         );
     }

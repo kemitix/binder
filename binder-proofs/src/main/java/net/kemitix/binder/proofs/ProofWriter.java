@@ -31,7 +31,7 @@ public class ProofWriter implements ManuscriptWriter {
         var proofDir = binderConfig.getProofDir().getAbsolutePath();
         log.info("Writing proofs to: " + proofDir);
         proofs.stream()
-                .forEach(proof -> proof.writeToDir(proofDir));
+                .forEach(proof -> proof.writeToFile(proofDir));
         log.info("Wrote proofs");
     }
 }
