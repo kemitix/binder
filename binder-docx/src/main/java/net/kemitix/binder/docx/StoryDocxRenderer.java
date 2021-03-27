@@ -1,7 +1,7 @@
 package net.kemitix.binder.docx;
 
 import net.kemitix.binder.docx.mdconvert.Docx;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
@@ -22,17 +22,14 @@ import java.util.stream.Stream;
 public class StoryDocxRenderer
         implements DocxRenderer {
 
-    private final DocxFacade docx;
     private final DocxImageFacade docxImage;
-    private final MarkdownConverter<Object> converter;
+    private final MarkdownConverter<Object, DocxRenderHolder> converter;
 
     @Inject
     public StoryDocxRenderer(
-            DocxFacade docx,
             DocxImageFacade docxImage,
-            @Docx MarkdownConverter<Object> converter
+            @Docx MarkdownConverter<Object, DocxRenderHolder> converter
     ) {
-        this.docx = docx;
         this.docxImage = docxImage;
         this.converter = converter;
     }
@@ -43,20 +40,18 @@ public class StoryDocxRenderer
     }
 
     @Override
-    public Stream<DocxContent> render(Section section) {
+    public Stream<DocxContent> render(Section section, Context<DocxRenderHolder> context) {
+        var docx = context.getRenderer().getDocx();
         List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
-        contents.addAll(title(section));
+        contents.addAll(title(docx, section));
         contents.add(docx.textParagraphCentered(section.getAuthor()));
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
-        contents.addAll(converter.convert(
-                Context.create(section),
-                section.getMarkdown()
-        ).collect(Collectors.toList()));
-        contents.addAll(aboutAuthor(section));
-        Context context = Context.create(section);
+        contents.addAll(converter.convert(context, section.getMarkdown())
+                .collect(Collectors.toList()));
+        contents.addAll(aboutAuthor(section, context));
         docx.addStyle(docx.paraStyle(context));
         return Stream.of(
                 new DocxContent(
@@ -65,8 +60,11 @@ public class StoryDocxRenderer
         );
     }
 
-    private Collection<?> aboutAuthor(Section section) {
-        Object[] convert = converter.convert(Context.create(), section.getBio()).toArray();
+    private Collection<?> aboutAuthor(Section section, Context<DocxRenderHolder> context) {
+        Object[] convert = converter.convert(
+                context,
+                section.getBio()
+        ).toArray();
         if (convert.length > 1) {
             throw new RuntimeException("More than one paragraph in Author Bio");
         }
@@ -74,6 +72,7 @@ public class StoryDocxRenderer
             throw new RuntimeException("Author Bio markdown should be a paragraph");
         }
         P authorBio = (P) convert[0];
+        var docx = context.getRenderer().getDocx();
         return Arrays.asList(
                 docx.keepWithNext(docx.p()),
                 docx.keepWithNext(docx.textParagraphCentered(
@@ -87,7 +86,10 @@ public class StoryDocxRenderer
         );
     }
 
-    private List<Object> title(Section sec) {
+    private List<Object> title(
+            DocxFacade docx,
+            Section sec
+    ) {
         String title = Objects.requireNonNullElse(sec.getTitle(), "");
         if (title.length() > 0) {
             return Arrays.asList(
@@ -95,7 +97,7 @@ public class StoryDocxRenderer
                     docx.drawings(
                             docxImage.textImages(
                                     title,
-                                    FontSize.of(240))),
+                                    FontSize.of(240), docx)),
                     docx.textParagraph("")
             );
         }

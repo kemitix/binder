@@ -2,11 +2,12 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.ast.SoftLineBreak;
 import com.vladsch.flexmark.util.ast.Node;
+import net.kemitix.binder.spi.Context;
 
 import java.util.stream.Stream;
 
-public interface SoftLineBreakNodeHandler<T>
-        extends NodeHandler<T> {
+public interface SoftLineBreakNodeHandler<T, R>
+        extends NodeHandler<T, R> {
 
     @Override
     default Class<? extends Node> getNodeClass() {
@@ -14,9 +15,9 @@ public interface SoftLineBreakNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content, Context context) {
-        return softLineBreakBody();
+    default Stream<T> body(Node node, Stream<T> content, Context<R> context) {
+        return softLineBreakBody(context);
     }
 
-    Stream<T> softLineBreakBody();
+    Stream<T> softLineBreakBody(Context<R> context);
 }

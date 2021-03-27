@@ -1,12 +1,20 @@
 package net.kemitix.binder.proofs;
 
+import lombok.SneakyThrows;
 import net.kemitix.binder.docx.DocxContent;
 import net.kemitix.binder.docx.DocxFacade;
+import net.kemitix.binder.docx.DocxFactory;
 import net.kemitix.binder.docx.DocxManuscript;
+import net.kemitix.binder.docx.DocxMdRenderer;
+import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Metadata;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class Proof
         extends DocxManuscript {
@@ -15,19 +23,47 @@ public class Proof
 
     public Proof(
             DocxContent docxContent,
-            DocxFacade docx,
-            Metadata metadata
-    ) {
-        super(Collections.singletonList(docxContent), docx, metadata);
+            Metadata metadata,
+            MdManuscript mdManuscript,
+            DocxMdRenderer docxMdRenderer
+    )  {
+        super(metadata, mdManuscript, docxMdRenderer);
         this.docxContent = docxContent;
     }
 
+    @SneakyThrows
     @Override
-    public void writeToFile(String dirName) {
-        var fileName = Paths.get(dirName)
-                .resolve(docxContent.getSectionName().getValue())
+    public void writeToFile(String dirName, DocxFacade docx) {
+        var dirPath = getDirPath(dirName);
+        var filePath = getFilePath(dirPath);
+        super.writeToFile(filePath, docx);
+    }
+
+    private Path getDirPath(String dirName) throws IOException {
+        var dirPath = Paths.get(dirName);
+        if (!dirPath.toFile().exists()) {
+            Files.createDirectory(dirPath);
+        }
+        return dirPath;
+    }
+
+    private String getFilePath(Path dirPath) {
+        return dirPath
+                .resolve(getFileName())
                 .toFile()
                 .getAbsolutePath();
-        super.writeToFile(fileName);
+    }
+
+    private String getFileName() {
+        return "%s.docx".formatted(docxContent.getSectionName().getValue());
+    }
+
+    @Override
+    protected Collection<?> getContents(DocxFacade docx) {
+        var contents = new DocxFactory()
+                .create(getMdManuscript(), getDocxMdRenderer(), () -> docx);
+        return contents.stream()
+                .flatMap(docxContent -> docxContent.getContents().stream())
+                .collect(Collectors.toList());
     }
 }

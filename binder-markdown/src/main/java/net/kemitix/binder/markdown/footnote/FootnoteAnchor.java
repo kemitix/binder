@@ -3,7 +3,7 @@ package net.kemitix.binder.markdown.footnote;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.Footnote.Ordinal;
 import net.kemitix.binder.spi.Section;

@@ -2,7 +2,7 @@ package net.kemitix.binder.spi;
 
 import javax.enterprise.inject.Instance;
 
-public interface AggregateRenderer<R extends Renderer<T, O>, T, O> {
+public interface AggregateRenderer<R extends Renderer<T, O, C>, T, O, C> {
 
     default R findRenderer(
             Section section,

@@ -1,7 +1,10 @@
 package net.kemitix.binder.docx;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
+import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Metadata;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.jaxb.Context;
@@ -29,29 +32,31 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class DocxManuscript {
 
-    private final List<DocxContent> contents;
-
-    private final DocxFacade docx;
     private final Metadata metadata;
+    @Getter(AccessLevel.PROTECTED)
+    private final MdManuscript mdManuscript;
+    @Getter(AccessLevel.PROTECTED)
+    private final DocxMdRenderer docxMdRenderer;
     private final ObjectFactory factory = new ObjectFactory();
 
     @Inject
     public DocxManuscript(
-            List<DocxContent> contents,
-            DocxFacade docx,
-            Metadata metadata
+            Metadata metadata,
+            MdManuscript mdManuscript,
+            DocxMdRenderer docxMdRenderer
     ) {
-        this.contents = contents;
-        this.docx = docx;
         this.metadata = metadata;
+        this.mdManuscript = mdManuscript;
+        this.docxMdRenderer = docxMdRenderer;
     }
 
-    public void writeToFile(String fileName) {
+    public void writeToFile(String fileName, DocxFacade docx) {
         configureFontMapping();
         try {
             File file = new File(fileName);
             Files.deleteIfExists(file.toPath());
-            createMainDocument().save(file);
+            createMainDocument(docx).save(file);
+            log.info("Wrote: " + file);
         } catch (Docx4JException | JAXBException | IOException e) {
             throw new RuntimeException(
                     "Error saving file: %s".formatted(fileName), e);
@@ -64,15 +69,15 @@ public class DocxManuscript {
         XHTMLImporterImpl.addFontMapping("Century Gothic", rfonts);
     }
 
-    private WordprocessingMLPackage createMainDocument()
+    private WordprocessingMLPackage createMainDocument(DocxFacade docx)
             throws InvalidFormatException, JAXBException {
         var wordMLPackage = docx.getMlPackage();
         var mainDocument = wordMLPackage.getMainDocumentPart();
         mainDocument.addTargetPart(numberingDefinitionPart());
         fontDefinitionsPart(mainDocument);
-        styleDefinitionsPart(mainDocument);
+        styleDefinitionsPart(mainDocument, docx);
         enabledEvenAndOddHeaders(mainDocument);
-        mainDocument.getContent().addAll(getContents());
+        mainDocument.getContent().addAll(getContents(docx));
         return wordMLPackage;
     }
 
@@ -93,13 +98,13 @@ public class DocxManuscript {
     }
 
     @SneakyThrows
-    private void styleDefinitionsPart(MainDocumentPart mainDocument) {
+    private void styleDefinitionsPart(MainDocumentPart mainDocument, DocxFacade docx) {
         var part = mainDocument.getStyleDefinitionsPart(true);
 
         List<Style> styles = part.getContents().getStyle();
-        styles.add(styleFootnote());
+        styles.add(styleFootnote(docx));
         styles.add(styleFootnoteAnchor());
-        styles.add(styleFootnoteCharacters());
+        styles.add(styleFootnoteCharacters(docx));
 
         RFonts rFonts = factory.createRFonts();
         rFonts.setAscii("Cambria");
@@ -138,7 +143,7 @@ public class DocxManuscript {
     // The character within the footnote indicating the id of the
     // footnote. Matches the character that appears in the footnote
     // anchor.
-    private Style styleFootnoteCharacters() {
+    private Style styleFootnoteCharacters(DocxFacadeStyleMixIn docx) {
         Style style = factory.createStyle();
 
         style.setType("character");
@@ -162,7 +167,7 @@ public class DocxManuscript {
     }
 
     // The body of the footnote text.
-    private Style styleFootnote() {
+    private Style styleFootnote(DocxFacade docx) {
         Style style = factory.createStyle();
 
         style.setType("paragraph");
@@ -217,7 +222,9 @@ public class DocxManuscript {
         return part;
     }
 
-    private Collection<?> getContents() {
+    protected Collection<?> getContents(DocxFacade docx) {
+        var contents = new DocxFactory()
+                .create(mdManuscript, docxMdRenderer, () -> docx);
         return contents.stream()
                 .flatMap(docxContent -> docxContent.getContents().stream())
                 .collect(Collectors.toList());

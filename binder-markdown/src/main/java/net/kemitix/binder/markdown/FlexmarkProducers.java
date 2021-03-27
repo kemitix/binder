@@ -9,6 +9,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 @ApplicationScoped
 public class FlexmarkProducers {

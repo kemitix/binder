@@ -1,7 +1,7 @@
 package net.kemitix.binder.docx.mdconvert;
 
 import net.kemitix.binder.docx.DocxFacade;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import org.docx4j.wml.P;
 
 import java.util.stream.Stream;

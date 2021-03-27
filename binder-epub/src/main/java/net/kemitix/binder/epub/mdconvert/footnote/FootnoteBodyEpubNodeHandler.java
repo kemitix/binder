@@ -1,8 +1,9 @@
 package net.kemitix.binder.epub.mdconvert.footnote;
 
+import net.kemitix.binder.epub.EpubRenderHolder;
 import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.EpubNodeHandler;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.MarkdownOutputException;
 import net.kemitix.binder.markdown.footnote.FootnoteBodyNodeHandler;
 import net.kemitix.binder.spi.Footnote;
@@ -17,7 +18,8 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class FootnoteBodyEpubNodeHandler
-        implements FootnoteBodyNodeHandler<String>, EpubNodeHandler {
+        implements FootnoteBodyNodeHandler<String, EpubRenderHolder>,
+        EpubNodeHandler {
 
     private final EpubFootnoteStore footnoteStore;
 
@@ -30,7 +32,7 @@ public class FootnoteBodyEpubNodeHandler
     public Stream<String> footnoteBody(
             Footnote.Ordinal ordinal,
             Stream<String> content,
-            Context context
+            Context<EpubRenderHolder> context
     ) {
         var body = content.collect(Collectors.joining())
                 .replaceAll(" ~PARA~ ", "</p><p>");

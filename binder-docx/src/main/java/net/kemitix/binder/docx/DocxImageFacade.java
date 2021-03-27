@@ -29,7 +29,6 @@ public class DocxImageFacade {
 
     private final TextImageFactory textImageFactory;
     private final Metadata metadata;
-    private final DocxFacadeMixIn docx;
 
     private final int dpi = 640;
     private final Map<FontSize, ImagePartCache> imagePartCaches =
@@ -40,15 +39,17 @@ public class DocxImageFacade {
     @Inject
     public DocxImageFacade(
             TextImageFactory textImageFactory,
-            Metadata metadata,
-            DocxFacadeMixIn docx
+            Metadata metadata
     ) {
         this.textImageFactory = textImageFactory;
         this.metadata = metadata;
-        this.docx = docx;
     }
 
-    public Drawing[] textImages(String text, FontSize fontSize) {
+    public Drawing[] textImages(
+            String text,
+            FontSize fontSize,
+            DocxFacade docx
+    ) {
         var imagePartCache = getImagePartCache(fontSize);
         var fontSpec = FontSpec.builder()
                 .size(fontSize)
@@ -57,7 +58,7 @@ public class DocxImageFacade {
                 .build();
         return words(text)
                 .flatMap(word -> textImageFactory.createImages(word, fontSpec).stream())
-                .map(image -> imagePart(image, imagePartCache))
+                .map(image -> imagePart(image, imagePartCache, docx))
                 .map(imagePart -> inline(imagePart, fontSize))
                 .map(this::drawing)
                 .toArray(Drawing[]::new);
@@ -111,7 +112,8 @@ public class DocxImageFacade {
 
     private BinaryPartAbstractImage imagePart(
             TextImage image,
-            Map<String, BinaryPartAbstractImage> imagePartCache
+            Map<String, BinaryPartAbstractImage> imagePartCache,
+            DocxFacade docx
     ) {
         return imagePartCache.computeIfAbsent(image.getWord(),
                 word -> {

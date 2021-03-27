@@ -2,9 +2,11 @@ package net.kemitix.binder.docx.mdconvert.footnote;
 
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.docx.DocxFacade;
+import net.kemitix.binder.docx.DocxRenderHolder;
 import net.kemitix.binder.docx.mdconvert.Docx;
 import net.kemitix.binder.markdown.footnote.FootnoteAnchor;
 import net.kemitix.binder.markdown.footnote.FootnoteAnchorNodeHandler;
+import net.kemitix.binder.spi.Context;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -13,17 +15,14 @@ import java.util.stream.Stream;
 @Docx
 @ApplicationScoped
 public class FootnoteAnchorDocxNodeHandler
-        implements FootnoteAnchorNodeHandler<Object> {
+        implements FootnoteAnchorNodeHandler<Object, DocxRenderHolder> {
 
-    private final DocxFacade docx;
     private final DocxFootnoteStore footnoteStore;
 
     @Inject
     public FootnoteAnchorDocxNodeHandler(
-            DocxFacade docx,
             DocxFootnoteStore footnoteStore
     ) {
-        this.docx = docx;
         this.footnoteStore = footnoteStore;
     }
 
@@ -33,7 +32,11 @@ public class FootnoteAnchorDocxNodeHandler
     }
 
     @Override
-    public Stream<Object> footnoteAnchor(FootnoteAnchor footnoteAnchor) {
+    public Stream<Object> footnoteAnchor(
+            FootnoteAnchor footnoteAnchor,
+            Context<DocxRenderHolder> context
+    ) {
+        var docx = context.getRenderer().getDocx();
         var name = footnoteAnchor.getName();
         var ordinal = footnoteAnchor.getOrdinal();
         var anchor = DocxFootnote.placeholder(docx.footnote(ordinal));

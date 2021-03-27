@@ -1,6 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.Section;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
@@ -16,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.docx4j.jaxb.Context.getWmlObjectFactory;
 
-@ApplicationScoped
 public class DocxFacade
         implements DocxFacadeSectionMixIn,
         DocxFacadeStyleMixIn,
@@ -30,10 +30,10 @@ public class DocxFacade
     private final ObjectFactory factory = getWmlObjectFactory();
     private final AtomicInteger myFootnoteRef = new AtomicInteger(-1);
 
-    @Inject
+    @SneakyThrows
     public DocxFacade(
             Metadata metadata
-    ) throws InvalidFormatException {
+    )  {
         this.metadata = metadata;
 
         mlPackage = WordprocessingMLPackage.createPackage();

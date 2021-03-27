@@ -5,6 +5,7 @@ import lombok.extern.java.Log;
 import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.markdown.DocumentNodeHandler;
 import net.kemitix.binder.spi.AggregateRenderer;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
@@ -21,17 +22,17 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class TocEpubRenderer
         implements EpubRenderer,
-        AggregateRenderer<EpubTocItemRenderer, HtmlSection, String> {
+        AggregateRenderer<EpubTocItemRenderer, HtmlSection, String, EpubRenderHolder> {
 
     private final HtmlManuscript htmlManuscript;
     private final Instance<EpubTocItemRenderer> tocItemRenderers;
-    private final DocumentNodeHandler<String> documentNodeHandler;
+    private final DocumentNodeHandler<String, EpubRenderHolder> documentNodeHandler;
 
     @Inject
     public TocEpubRenderer(
             HtmlManuscript htmlManuscript,
             Instance<EpubTocItemRenderer> tocItemRenderers,
-            @Epub DocumentNodeHandler<String> documentNodeHandler
+            @Epub DocumentNodeHandler<String, EpubRenderHolder> documentNodeHandler
     ) {
         this.htmlManuscript = htmlManuscript;
         this.tocItemRenderers = tocItemRenderers;
@@ -44,7 +45,10 @@ public class TocEpubRenderer
     }
 
     @Override
-    public Stream<Content> render(HtmlSection htmlSection) {
+    public Stream<Content> render(
+            HtmlSection htmlSection,
+            Context<EpubRenderHolder> epubRenderHolder
+    ) {
         StringBuilder htmlBuilder = new StringBuilder();
         htmlBuilder.append("<ul>");
         htmlManuscript.sections()
@@ -52,7 +56,7 @@ public class TocEpubRenderer
                 .filter(HtmlSection::isToc)
                 .flatMap(section ->
                         findRenderer(section, tocItemRenderers)
-                                .render(section))
+                                .render(section, epubRenderHolder))
                 .forEach(htmlBuilder::append);
         htmlBuilder.append("</ul>");
         String body = htmlBuilder.toString();

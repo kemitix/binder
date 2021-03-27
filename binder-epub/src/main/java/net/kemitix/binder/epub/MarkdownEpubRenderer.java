@@ -4,11 +4,10 @@ import coza.opencollab.epub.creator.model.Content;
 import lombok.NoArgsConstructor;
 import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.footnote.FootnoteHtmlContentGenerator;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
-import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -23,12 +22,12 @@ import static java.util.stream.Collectors.joining;
 public class MarkdownEpubRenderer
         implements EpubRenderer {
 
-    private MarkdownConverter<String> converter;
+    private MarkdownConverter<String, EpubRenderHolder> converter;
     private FootnoteHtmlContentGenerator footnoteHtmlContentGenerator;
 
     @Inject
     public MarkdownEpubRenderer(
-            @Epub MarkdownConverter<String> converter,
+            @Epub MarkdownConverter<String, EpubRenderHolder> converter,
             FootnoteHtmlContentGenerator footnoteHtmlContentGenerator) {
         this.converter = converter;
         this.footnoteHtmlContentGenerator = footnoteHtmlContentGenerator;
@@ -40,15 +39,22 @@ public class MarkdownEpubRenderer
     }
 
     @Override
-    public Stream<Content> render(HtmlSection section) {
+    public Stream<Content> render(
+            HtmlSection section,
+            Context<EpubRenderHolder> context
+    ) {
         String markdown = section.getMarkdown();
         return renderMarkdown(section, markdown);
     }
 
-    protected Stream<Content> renderMarkdown(HtmlSection section, String markdown) {
+    protected Stream<Content> renderMarkdown(
+            HtmlSection section,
+            String markdown
+    ) {
+        EpubRenderHolder epubRenderHolder = new EpubRenderHolder() {};
         String contents =
                 converter.convert(
-                        Context.create(section),
+                        Context.create(section, epubRenderHolder),
                         markdown
                 ).collect(joining());
         byte[] content = contents.getBytes(StandardCharsets.UTF_8);

@@ -1,6 +1,6 @@
 package net.kemitix.binder.epub.mdconvert;
 
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 
 import java.util.stream.Stream;
 

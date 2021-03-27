@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.kemitix.binder.spi.Section;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 public class DocxContent {
 
