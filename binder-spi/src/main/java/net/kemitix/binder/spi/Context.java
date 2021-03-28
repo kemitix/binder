@@ -2,8 +2,8 @@ package net.kemitix.binder.spi;
 
 import java.util.Objects;
 
-public interface Context<R> {
-    static <R> Context<R> create(Section section, R renderer) {
+public interface Context<R extends RenderHolder<?>> {
+    static <R extends RenderHolder<?>> Context<R> create(Section section, R renderer) {
         return new Context<>() {
 
             @Override
@@ -67,7 +67,7 @@ public interface Context<R> {
             }
 
             @Override
-            public R getRenderer() {
+            public R getRendererHolder() {
                 return renderer;
             }
 
@@ -80,7 +80,7 @@ public interface Context<R> {
         };
     }
 
-    static <R> Context<R> create(R renderer) {
+    static <R extends RenderHolder<?>> Context<R> create(R renderer) {
         return new Context<>() {
 
             @Override
@@ -139,7 +139,7 @@ public interface Context<R> {
             }
 
             @Override
-            public R getRenderer() {
+            public R getRendererHolder() {
                 return renderer;
             }
 
@@ -170,7 +170,7 @@ public interface Context<R> {
 
     boolean isLastSection();
 
-    R getRenderer();
+    R getRendererHolder();
 
     boolean startOnOddPage();
 }

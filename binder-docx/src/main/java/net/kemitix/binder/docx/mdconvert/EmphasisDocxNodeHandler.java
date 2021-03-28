@@ -7,7 +7,6 @@ import net.kemitix.binder.spi.Context;
 import org.docx4j.wml.R;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.util.stream.Stream;
 
 @Docx
@@ -21,7 +20,7 @@ public class EmphasisDocxNodeHandler
             Context<DocxRenderHolder> context
     ) {
         if (content instanceof R) {
-            DocxFacade docx = context.getRenderer().getDocx();
+            var docx = context.getRendererHolder().getRenderer();
             R r = (R) content;
             Object italic =
                     docx.italic(r);

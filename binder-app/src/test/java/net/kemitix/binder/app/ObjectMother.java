@@ -42,7 +42,7 @@ public class ObjectMother {
                 .markdownToHtml(
                         new TemplateEngine(
                                 velocityProvider.velocityEngine(),
-                                velocityProvider.context()),
+                                velocityProvider.velocityContext()),
                         markdownParser(),
                         htmlRenderer());
     }

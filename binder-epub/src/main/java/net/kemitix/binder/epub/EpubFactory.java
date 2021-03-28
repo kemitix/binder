@@ -67,7 +67,7 @@ public class EpubFactory {
                     Context<EpubRenderHolder> context =
                             Context.create(
                                     htmlSection,
-                                    new EpubRenderHolder() {});
+                                    EpubRenderHolder.create());
                     return epubSectionRenderer.render(
                             htmlSection,
                             context);

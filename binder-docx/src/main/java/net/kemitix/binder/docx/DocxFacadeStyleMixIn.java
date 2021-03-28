@@ -69,7 +69,7 @@ public interface DocxFacadeStyleMixIn
         return get(style, Style::getRPr, style::setRPr, factory()::createRPr);
     }
 
-    default Style paraStyle(Context context) {
+    default Style paraStyle(Context<DocxRenderHolder> context) {
         return fontSize(
                 context.getFontSize(),
                 createParaStyleBasedOn(

@@ -32,7 +32,7 @@ public class PlateDocxRenderer
 
     @Override
     public Stream<DocxContent> render(Section section, Context<DocxRenderHolder> context) {
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         //TODO: use Arrays.asList(...)
         List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
