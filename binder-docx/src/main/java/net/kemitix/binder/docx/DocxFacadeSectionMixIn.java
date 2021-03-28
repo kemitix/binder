@@ -1,6 +1,6 @@
 package net.kemitix.binder.docx;
 
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.Section;
 import org.docx4j.UnitsOfMeasurement;

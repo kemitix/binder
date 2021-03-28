@@ -10,6 +10,7 @@ import com.vladsch.flexmark.util.ast.NodeVisitor;
 import com.vladsch.flexmark.util.ast.VisitHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import net.kemitix.binder.spi.Context;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;

@@ -1,11 +1,12 @@
 package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.util.ast.Node;
+import net.kemitix.binder.spi.Context;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public interface NodeHandler<T> {
+public interface NodeHandler<T, R> {
 
     Class<? extends Node> getNodeClass();
 
@@ -15,8 +16,8 @@ public interface NodeHandler<T> {
 
     default Stream<T> handle(
             Node node,
-            MarkdownConverter<T> converter,
-            Context context
+            MarkdownConverter<T, R> converter,
+            Context<R> context
     ) {
         Stream<T> children = handleChildren(node, converter, context);
         return Stream.concat(
@@ -32,14 +33,14 @@ public interface NodeHandler<T> {
         return object;
     }
 
-    default Stream<T> body(Node node, Stream<T> content, Context context) {
+    default Stream<T> body(Node node, Stream<T> content, Context<R> context) {
         return content;
     }
 
     default Stream<T> handleChildren(
             Node node,
-            MarkdownConverter<T> converter,
-            Context context
+            MarkdownConverter<T, R> converter,
+            Context<R> context
     ) {
         if (node.getFirstChild() != null) {
             return converter.accept(node.getFirstChild(), context);
@@ -53,8 +54,8 @@ public interface NodeHandler<T> {
 
     default Stream<T> handleNext(
             Node node,
-            MarkdownConverter<T> converter,
-            Context context
+            MarkdownConverter<T, R> converter,
+            Context<R> context
     ) {
         if (node.getNext() != null) {
             return converter.accept(node.getNext(), context);

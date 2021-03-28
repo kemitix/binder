@@ -1,5 +1,6 @@
 package net.kemitix.binder.epub.mdconvert;
 
+import net.kemitix.binder.epub.EpubRenderHolder;
 import net.kemitix.binder.markdown.DocumentNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -11,13 +12,15 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class DocumentEpubNodeHandler
-        implements DocumentNodeHandler<String>, EpubNodeHandler {
+        implements DocumentNodeHandler<String, EpubRenderHolder>,
+        EpubNodeHandler {
 
     private final String stylesheetHref;
 
     @Inject
     public DocumentEpubNodeHandler(
-            @Named String stylesheetHref) {
+            @Named String stylesheetHref
+    ) {
         this.stylesheetHref = stylesheetHref;
     }
 

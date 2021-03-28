@@ -1,6 +1,6 @@
 package net.kemitix.binder.epub.mdconvert.footnote;
 
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.Section;
 import org.assertj.core.api.WithAssertions;

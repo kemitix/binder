@@ -49,6 +49,10 @@
             <groupId>net.kemitix.binder</groupId>
             <artifactId>binder-docx</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.kemitix.binder</groupId>
+            <artifactId>binder-proofs</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.quarkus</groupId>

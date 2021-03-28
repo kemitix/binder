@@ -2,11 +2,12 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.ast.HardLineBreak;
 import com.vladsch.flexmark.util.ast.Node;
+import net.kemitix.binder.spi.Context;
 
 import java.util.stream.Stream;
 
-public interface HardLineBreakNodeHandler<T>
-        extends NodeHandler<T> {
+public interface HardLineBreakNodeHandler<T, R>
+        extends NodeHandler<T, R> {
 
     @Override
     default Class<? extends Node> getNodeClass() {
@@ -14,10 +15,10 @@ public interface HardLineBreakNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content, Context context) {
-        return lineBreak();
+    default Stream<T> body(Node node, Stream<T> content, Context<R> context) {
+        return lineBreak(context);
     }
 
-    Stream<T> lineBreak();
+    Stream<T> lineBreak(Context<R> context);
 
 }

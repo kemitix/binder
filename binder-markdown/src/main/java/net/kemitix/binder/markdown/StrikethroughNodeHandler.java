@@ -2,13 +2,14 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.ext.gfm.strikethrough.Strikethrough;
 import com.vladsch.flexmark.util.ast.Node;
+import net.kemitix.binder.spi.Context;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public interface StrikethroughNodeHandler<T>
-        extends NodeHandler<T> {
+public interface StrikethroughNodeHandler<T, R>
+        extends NodeHandler<T, R> {
 
     @Override
     default Class<? extends Node> getNodeClass() {
@@ -16,7 +17,7 @@ public interface StrikethroughNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content, Context context) {
+    default Stream<T> body(Node node, Stream<T> content, Context<R> context) {
         List<T> collect = content.collect(Collectors.toList());
         if (collect.size() != 1) {
             //noinspection unchecked
@@ -24,9 +25,9 @@ public interface StrikethroughNodeHandler<T>
                     "Not passed a single content item: %d sent".formatted(collect.size()),
                     node, (List<Object>) collect, context);
         }
-        return strikethroughBody(collect.get(0));
+        return strikethroughBody(collect.get(0), context);
     }
 
-    Stream<T> strikethroughBody(T content);
+    Stream<T> strikethroughBody(T content, Context<R> context);
 
 }

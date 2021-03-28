@@ -2,6 +2,7 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.util.ast.Node;
 import lombok.Getter;
+import net.kemitix.binder.spi.Context;
 
 import java.util.List;
 

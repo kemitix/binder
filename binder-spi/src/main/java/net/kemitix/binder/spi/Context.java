@@ -1,12 +1,10 @@
-package net.kemitix.binder.markdown;
-
-import net.kemitix.binder.spi.Section;
+package net.kemitix.binder.spi;
 
 import java.util.Objects;
 
-public interface Context {
-    static Context create(Section section) {
-        return new Context() {
+public interface Context<R> {
+    static <R> Context<R> create(Section section, R renderer) {
+        return new Context<>() {
 
             @Override
             public String toString() {
@@ -68,12 +66,17 @@ public interface Context {
                 return section.isLast();
             }
 
+            @Override
+            public R getRenderer() {
+                return renderer;
+            }
+
             //TODO access values in Section as required
         };
     }
 
-    static Context create() {
-        return new Context() {
+    static <R> Context<R> create(R renderer) {
+        return new Context<>() {
 
             @Override
             public String toString() {
@@ -129,6 +132,11 @@ public interface Context {
             public boolean isLastSection() {
                 return false;
             }
+
+            @Override
+            public R getRenderer() {
+                return renderer;
+            }
         };
     }
 
@@ -151,4 +159,6 @@ public interface Context {
     boolean hasFooter();
 
     boolean isLastSection();
+
+    R getRenderer();
 }

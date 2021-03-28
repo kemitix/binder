@@ -4,20 +4,16 @@ import lombok.extern.java.Log;
 import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Section;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Log
-@ApplicationScoped
 public class DocxFactory {
 
-    @Produces
-    @ApplicationScoped
     public List<DocxContent> create(
             MdManuscript mdManuscript,
-            DocxMdRenderer docxMdRenderer
+            DocxMdRenderer docxMdRenderer,
+            DocxRenderHolder docxRenderHolder
     ) {
         List<Section> sections = mdManuscript.getContents();
         if (sections.size() > 0) {
@@ -27,7 +23,7 @@ public class DocxFactory {
         return sections
                 .stream()
                 .filter(Section::isDocx)
-                .flatMap(docxMdRenderer::render)
+                .flatMap((Section section) -> docxMdRenderer.render(section, docxRenderHolder))
                 .collect(Collectors.toList());
     }
 

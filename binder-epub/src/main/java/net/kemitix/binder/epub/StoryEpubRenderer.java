@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.footnote.FootnoteHtmlContentGenerator;
 import net.kemitix.binder.markdown.MarkdownConverter;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
 
@@ -21,7 +22,7 @@ public class StoryEpubRenderer
 
     @Inject
     public StoryEpubRenderer(
-            @Epub MarkdownConverter<String> converter,
+            @Epub MarkdownConverter<String, EpubRenderHolder> converter,
             FootnoteHtmlContentGenerator footnoteHtmlContentGenerator) {
         super(converter, footnoteHtmlContentGenerator);
     }
@@ -32,7 +33,10 @@ public class StoryEpubRenderer
     }
 
     @Override
-    public Stream<Content> render(HtmlSection section) {
+    public Stream<Content> render(
+            HtmlSection section,
+            Context<EpubRenderHolder> context
+    ) {
         String markdown = section.getMarkdown() + aboutAuthor(section);
         return renderMarkdown(section, markdown);
     }

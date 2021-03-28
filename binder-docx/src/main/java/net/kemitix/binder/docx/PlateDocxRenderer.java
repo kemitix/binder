@@ -1,7 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.extern.java.Log;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
 
@@ -16,15 +16,12 @@ import java.util.stream.Stream;
 public class PlateDocxRenderer
         implements DocxRenderer {
 
-    private final DocxFacade docx;
     private final DocxImageFacade docxImage;
 
     @Inject
     public PlateDocxRenderer(
-            DocxFacade docx,
             DocxImageFacade docxImage
     ) {
-        this.docx = docx;
         this.docxImage = docxImage;
     }
 
@@ -34,7 +31,8 @@ public class PlateDocxRenderer
     }
 
     @Override
-    public Stream<DocxContent> render(Section section) {
+    public Stream<DocxContent> render(Section section, Context<DocxRenderHolder> context) {
+        var docx = context.getRenderer().getDocx();
         //TODO: use Arrays.asList(...)
         List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
@@ -44,7 +42,7 @@ public class PlateDocxRenderer
                 docx.drawings(
                         docxImage.textImages(
                                 section.getTitle(),
-                                FontSize.of(512))));
+                                FontSize.of(512), docx)));
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
@@ -52,11 +50,11 @@ public class PlateDocxRenderer
                 docx.drawings(
                         docxImage.textImages(
                                 section.getMarkdown(),
-                                FontSize.of(240))));
+                                FontSize.of(240), docx)));
         contents.add(docx.textParagraph(""));
-        Context context = Context.create(section);
         return Stream.of(
                 new DocxContent(
+                        section.getName(),
                         docx.finaliseTitlePage(context, contents))
         );
     }
