@@ -71,6 +71,11 @@ public interface Context<R extends RenderHolder<?>> {
                 return renderer;
             }
 
+            @Override
+            public boolean startOnOddPage() {
+                return section.startOnOddPage();
+            }
+
             //TODO access values in Section as required
         };
     }
@@ -137,6 +142,11 @@ public interface Context<R extends RenderHolder<?>> {
             public R getRendererHolder() {
                 return renderer;
             }
+
+            @Override
+            public boolean startOnOddPage() {
+                return false;
+            }
         };
     }
 
@@ -161,4 +171,6 @@ public interface Context<R extends RenderHolder<?>> {
     boolean isLastSection();
 
     R getRendererHolder();
+
+    boolean startOnOddPage();
 }
