@@ -2,11 +2,12 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public interface NodeHandler<T, R> {
+public interface NodeHandler<T, R extends RenderHolder<?>> {
 
     Class<? extends Node> getNodeClass();
 

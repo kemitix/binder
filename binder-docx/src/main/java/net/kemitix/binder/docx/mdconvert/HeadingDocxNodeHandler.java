@@ -21,7 +21,7 @@ public class HeadingDocxNodeHandler
             String text,
             Context<DocxRenderHolder> context
     ) {
-        DocxFacade docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         if (text.isBlank()) {
             return Stream.of(
                     docx.styledP(
@@ -37,7 +37,7 @@ public class HeadingDocxNodeHandler
 
     @Override
     public Stream<Object> blankBreak(Context<DocxRenderHolder> context) {
-        DocxFacade docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         return Stream.of(
                 docx.textParagraphCentered(EM_DASH + EM_DASH + EM_DASH)
         );
@@ -51,7 +51,7 @@ public class HeadingDocxNodeHandler
             String name,
             Context<DocxRenderHolder> context
     ) {
-        DocxFacade docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         return Stream.of(
                 docx.p(),
                 docx.keepWithNext(

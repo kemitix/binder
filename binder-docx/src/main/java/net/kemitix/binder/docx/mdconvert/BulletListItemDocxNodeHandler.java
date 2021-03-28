@@ -25,7 +25,7 @@ public class BulletListItemDocxNodeHandler
             String text,
             Context<DocxRenderHolder> context
     ) {
-        DocxFacade docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         return Stream.of(docx.bulletItem(text));
     }
 

@@ -17,7 +17,7 @@ public class StoryDocxTocItemRenderer
 
     @Override
     public Stream<Object> render(Section source, Context<DocxRenderHolder> context) {
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         return Stream.of(
                 docx.tocItem(
                         Integer.toString(source.getPage()),

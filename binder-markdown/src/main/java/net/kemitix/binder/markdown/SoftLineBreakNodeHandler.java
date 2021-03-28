@@ -3,10 +3,11 @@ package net.kemitix.binder.markdown;
 import com.vladsch.flexmark.ast.SoftLineBreak;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 
 import java.util.stream.Stream;
 
-public interface SoftLineBreakNodeHandler<T, R>
+public interface SoftLineBreakNodeHandler<T, R extends RenderHolder<?>>
         extends NodeHandler<T, R> {
 
     @Override

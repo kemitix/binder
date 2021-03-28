@@ -21,7 +21,7 @@ public class BlockQuoteDocxNodeHandler
     ) {
         if (content instanceof P) {
             P p = (P) content;
-            DocxFacade docx = context.getRenderer().getDocx();
+            var docx = context.getRendererHolder().getRenderer();
             Object blockquote =
                     docx.blockquote(p);
             return Stream.of(

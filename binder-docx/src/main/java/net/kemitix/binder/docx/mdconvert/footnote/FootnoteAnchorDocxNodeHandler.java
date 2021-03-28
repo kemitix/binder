@@ -1,7 +1,6 @@
 package net.kemitix.binder.docx.mdconvert.footnote;
 
 import com.vladsch.flexmark.util.ast.Node;
-import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.docx.DocxRenderHolder;
 import net.kemitix.binder.docx.mdconvert.Docx;
 import net.kemitix.binder.markdown.footnote.FootnoteAnchor;
@@ -36,7 +35,7 @@ public class FootnoteAnchorDocxNodeHandler
             FootnoteAnchor footnoteAnchor,
             Context<DocxRenderHolder> context
     ) {
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         var name = footnoteAnchor.getName();
         var ordinal = footnoteAnchor.getOrdinal();
         var anchor = DocxFootnote.placeholder(docx.footnote(ordinal));

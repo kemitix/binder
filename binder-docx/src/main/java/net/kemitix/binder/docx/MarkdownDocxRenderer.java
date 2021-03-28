@@ -40,7 +40,7 @@ public class MarkdownDocxRenderer
             Section section,
             Context<DocxRenderHolder> context
     ) {
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         List<Object> contents = new ArrayList<>();
         addTitle(docx, section, contents);
         List<Object> sectionPs =

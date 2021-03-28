@@ -12,13 +12,13 @@ public class MarkdownConversionException
 
     private final Node node;
     private final List<Object> content;
-    private final Context context;
+    private final Context<?> context;
 
     public MarkdownConversionException(
             String message,
             Node node,
             List<Object> content,
-            Context context
+            Context<?> context
     ) {
         super(message);
         this.node = node;

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.Footnote.Ordinal;
+import net.kemitix.binder.spi.RenderHolder;
 import net.kemitix.binder.spi.Section;
 
 @Getter
@@ -17,7 +18,7 @@ public class FootnoteAnchor {
 
     public static FootnoteAnchor create(
             com.vladsch.flexmark.ext.footnotes.Footnote footnote,
-            Context context
+            Context<? extends RenderHolder<?>> context
     ) {
         var name = context.getName();
         var ordinal = Footnote.ordinal(footnote.getText().unescape());
