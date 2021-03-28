@@ -23,7 +23,7 @@ public interface DocxFacadeSectionMixIn
     Metadata metadata();
 
     default List<P> finaliseTitlePage(
-            Context context,
+            Context<DocxRenderHolder> context,
             List<Object> pageContent
     ) {
         // force into a list of P - we have an invalid section if this results in ClassCastException
@@ -48,7 +48,7 @@ public interface DocxFacadeSectionMixIn
     }
 
     default List<P> finaliseSection(
-            Context context,
+            Context<DocxRenderHolder> context,
             List<Object> pageContent
     ) {
         // force into a list of P - we have an invalid section if this results in ClassCastException

@@ -1,24 +1,28 @@
 package net.kemitix.binder.epub.mdconvert.footnote;
 
+import net.kemitix.binder.epub.EpubRenderHolder;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.Footnote;
 import net.kemitix.binder.spi.Section;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
+@ExtendWith(MockitoExtension.class)
 class FootnoteBodyEpubNodeHandlerTest
         implements WithAssertions {
 
     FootnoteStoreEpubProvider footnoteStoreEpubProvider = new FootnoteStoreEpubProvider();
     FootnoteBodyEpubNodeHandler sut = new FootnoteBodyEpubNodeHandler(footnoteStoreEpubProvider);
-    Context context = mock(Context.class);
+    @Mock Context<EpubRenderHolder> context;
 
     @BeforeEach
     void setUp() {

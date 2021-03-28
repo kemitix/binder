@@ -17,7 +17,7 @@ public class HeadingEpubNodeHandler
     public Stream<String> hierarchicalHeader(
             int level,
             String text,
-            Context context
+            Context<EpubRenderHolder> context
     ) {
         return align("h%d".formatted(level), text, context);
     }

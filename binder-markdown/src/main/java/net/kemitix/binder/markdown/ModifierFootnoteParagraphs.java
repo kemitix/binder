@@ -11,6 +11,7 @@ import com.vladsch.flexmark.util.ast.VisitHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -22,14 +23,17 @@ import java.util.Optional;
 @Log
 @ApplicationScoped
 public class ModifierFootnoteParagraphs
-        implements DocumentModifier{
+        implements DocumentModifier {
 
     NodeVisitor findFootnotes = new NodeVisitor(
             new VisitHandler<>(FootnoteBlock.class, this::visitFootnoteBlock)
     );
 
     @Override
-    public Document apply(Document document, Context context) {
+    public Document apply(
+            Document document,
+            Context<? extends RenderHolder<?>> context
+    ) {
         findFootnotes.visit(document);
         return document;
     }

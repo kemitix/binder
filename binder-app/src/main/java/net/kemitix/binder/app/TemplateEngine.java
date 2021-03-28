@@ -20,31 +20,31 @@ public class TemplateEngine {
     private static final String NOT_A_COMMENT = "X-not-a-comment-X";
 
     private final VelocityEngine velocityEngine;
-    private final Context context;
+    private final Context velocityContext;
 
     @Inject
     public TemplateEngine(
             VelocityEngine velocityEngine,
-            Context context
+            Context velocityContext
     ) {
         this.velocityEngine = velocityEngine;
-        this.context = context;
+        this.velocityContext = velocityContext;
     }
 
     public String resolve(
             String templateBody,
             Section section,
             MdManuscript mdManuscript) {
-        context.put("s", section);
-        context.put("m", mdManuscript.getMetadata());
-        context.put("c", mdManuscript.getContents());
-        context.put("copyrights", copyrights(mdManuscript));
-        context.put("toc", toc(mdManuscript));
+        velocityContext.put("s", section);
+        velocityContext.put("m", mdManuscript.getMetadata());
+        velocityContext.put("c", mdManuscript.getContents());
+        velocityContext.put("copyrights", copyrights(mdManuscript));
+        velocityContext.put("toc", toc(mdManuscript));
         Writer writer = new StringWriter();
         // Double hashes are comments in velocity, but at the start of a line
         // they are level two headers in markdown.
         // This style of comment is not supported, and are broken
-        velocityEngine.evaluate(context, writer, "",
+        velocityEngine.evaluate(velocityContext, writer, "",
                 templateBody.replaceAll(DOUBLE_HASH, NOT_A_COMMENT));
         return writer.toString()
                 .replaceAll(NOT_A_COMMENT, DOUBLE_HASH);

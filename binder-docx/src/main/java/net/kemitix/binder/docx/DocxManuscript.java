@@ -224,7 +224,7 @@ public class DocxManuscript {
 
     protected Collection<?> getContents(DocxFacade docx) {
         var contents = new DocxFactory()
-                .create(mdManuscript, docxMdRenderer, () -> docx);
+                .create(mdManuscript, docxMdRenderer, DocxRenderHolder.create(docx));
         return contents.stream()
                 .flatMap(docxContent -> docxContent.getContents().stream())
                 .collect(Collectors.toList());

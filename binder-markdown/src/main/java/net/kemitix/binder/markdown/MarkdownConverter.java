@@ -4,10 +4,11 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 
 import java.util.stream.Stream;
 
-public interface MarkdownConverter<T, R> {
+public interface MarkdownConverter<T, R extends RenderHolder<?>> {
 
     Parser getParser();
 
@@ -18,7 +19,10 @@ public interface MarkdownConverter<T, R> {
         return accept(document, context);
     }
 
-    default Document fixUpDocument(Document document, Context context) {
+    default Document fixUpDocument(
+            Document document,
+            Context<R> context
+    ) {
         return document;
     }
 

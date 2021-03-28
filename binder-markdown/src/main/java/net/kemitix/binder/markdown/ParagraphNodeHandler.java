@@ -3,10 +3,11 @@ package net.kemitix.binder.markdown;
 import com.vladsch.flexmark.ast.Paragraph;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 
 import java.util.stream.Stream;
 
-public interface ParagraphNodeHandler<T, R>
+public interface ParagraphNodeHandler<T, R extends RenderHolder<?>>
         extends NodeHandler<T, R> {
 
     @Override

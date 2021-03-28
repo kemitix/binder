@@ -3,11 +3,12 @@ package net.kemitix.binder.markdown;
 import com.vladsch.flexmark.ast.Heading;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 import net.kemitix.binder.spi.Section;
 
 import java.util.stream.Stream;
 
-public interface HeadingNodeHandler<T, R>
+public interface HeadingNodeHandler<T, R extends RenderHolder<?>>
         extends NodeHandler<T, R> {
 
     default Class<? extends Node> getNodeClass() {

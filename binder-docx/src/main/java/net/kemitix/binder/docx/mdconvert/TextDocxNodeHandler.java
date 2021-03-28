@@ -16,7 +16,7 @@ public class TextDocxNodeHandler
 
     @Override
     public Stream<Object> textBody(String text, Context<DocxRenderHolder> context) {
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         return Stream.of(
                 docx.r(
                         docx.t(text)

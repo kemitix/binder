@@ -5,10 +5,11 @@ import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.NodeHandler;
 import net.kemitix.binder.spi.Footnote;
+import net.kemitix.binder.spi.RenderHolder;
 
 import java.util.stream.Stream;
 
-public interface FootnoteBodyNodeHandler<T, R>
+public interface FootnoteBodyNodeHandler<T, R extends RenderHolder<?>>
         extends NodeHandler<T, R> {
 
     @Override

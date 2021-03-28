@@ -18,7 +18,7 @@ public class ParagraphDocxNodeHandler
             Stream<Object> content,
             Context<DocxRenderHolder> context
     ) {
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         return alignP(
                 docx.styledP(
                         context.getParaStyleName(),

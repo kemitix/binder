@@ -3,11 +3,12 @@ package net.kemitix.binder.markdown;
 import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 import net.kemitix.binder.spi.Section;
 
 import java.util.stream.Stream;
 
-public interface DocumentNodeHandler<T, R>
+public interface DocumentNodeHandler<T, R extends RenderHolder<?>>
         extends NodeHandler<T, R> {
 
     @Override
