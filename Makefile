@@ -12,13 +12,13 @@ test:
 
 dev:
 	mvn -pl binder quarkus:dev \
-		-Dquarkus.args="~/cossmass/issues/005-2021-05-may/"
+		-Dquarkus.args="~/cossmass/issues/006-2021-09-september/"
 
 run:
 	( \
 		cd binder/target && \
 		java -jar binder-runner.jar \
-			~/cossmass/issues/005-2021-05-may/ \
+			~/cossmass/issues/006-2021-09-september/ \
 	)
 
 clean:
