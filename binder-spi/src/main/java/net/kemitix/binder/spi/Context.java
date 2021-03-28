@@ -71,6 +71,11 @@ public interface Context<R> {
                 return renderer;
             }
 
+            @Override
+            public boolean startOnOddPage() {
+                return section.startOnOddPage();
+            }
+
             //TODO access values in Section as required
         };
     }
@@ -137,6 +142,11 @@ public interface Context<R> {
             public R getRenderer() {
                 return renderer;
             }
+
+            @Override
+            public boolean startOnOddPage() {
+                return false;
+            }
         };
     }
 
@@ -161,4 +171,6 @@ public interface Context<R> {
     boolean isLastSection();
 
     R getRenderer();
+
+    boolean startOnOddPage();
 }
