@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <tiles-maven-plugin.version>2.19</tiles-maven-plugin.version>
+        <tiles-maven-plugin.version>2.20</tiles-maven-plugin.version>
         <kemitix-tiles.version>3.0.1</kemitix-tiles.version>
 
         <lombok.version>1.18.18</lombok.version>
