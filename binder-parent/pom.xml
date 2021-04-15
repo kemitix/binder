@@ -26,7 +26,7 @@
         <jakartaee-api.version>8.0.0</jakartaee-api.version>
         <snakeyaml.version>1.28</snakeyaml.version>
         <epub-creator.version>1.1.0</epub-creator.version>
-        <docx4j-ImportXHTML.version>8.0.0</docx4j-ImportXHTML.version>
+        <docx4j-ImportXHTML.version>8.2.1</docx4j-ImportXHTML.version>
         <docx4j-JAXB-ReferenceImpl.version>11.2.8</docx4j-JAXB-ReferenceImpl.version>
         <velocity-engine.version>2.3</velocity-engine.version>
         <awt-color-factory.version>1.0.2</awt-color-factory.version>
