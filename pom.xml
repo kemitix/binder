@@ -23,6 +23,7 @@
         <module>binder-docx</module>
         <module>binder</module>
         <module>binder-markdown</module>
+        <module>binder-proofs</module>
     </modules>
 
     <build>

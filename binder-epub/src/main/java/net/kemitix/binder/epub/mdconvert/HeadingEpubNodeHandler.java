@@ -1,6 +1,7 @@
 package net.kemitix.binder.epub.mdconvert;
 
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.epub.EpubRenderHolder;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.HeadingNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -9,19 +10,20 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class HeadingEpubNodeHandler
-        implements HeadingNodeHandler<String>,
-        EpubNodeHandler, AlignableParagraph {
+        implements HeadingNodeHandler<String, EpubRenderHolder>,
+        EpubNodeHandler,
+        AlignableParagraph {
 
     public Stream<String> hierarchicalHeader(
             int level,
             String text,
-            Context context
+            Context<EpubRenderHolder> context
     ) {
         return align("h%d".formatted(level), text, context);
     }
 
     @Override
-    public Stream<String> blankBreak() {
+    public Stream<String> blankBreak(Context<EpubRenderHolder> context) {
         return Stream.of(
                 """
                 <p style="text-align: center">———</p>
@@ -30,7 +32,10 @@ public class HeadingEpubNodeHandler
     }
 
     @Override
-    public Stream<String> namedBreak(String name) {
+    public Stream<String> namedBreak(
+            String name,
+            Context<EpubRenderHolder> context
+    ) {
         return Stream.of(
                 """
                 <p>\s</p>

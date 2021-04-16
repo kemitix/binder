@@ -2,12 +2,13 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.ast.Paragraph;
 import com.vladsch.flexmark.util.ast.Node;
-import net.kemitix.binder.spi.Section;
+import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 
 import java.util.stream.Stream;
 
-public interface ParagraphNodeHandler<T>
-        extends NodeHandler<T> {
+public interface ParagraphNodeHandler<T, R extends RenderHolder<?>>
+        extends NodeHandler<T, R> {
 
     @Override
     default Class<? extends Node> getNodeClass() {
@@ -15,9 +16,9 @@ public interface ParagraphNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content, Context context) {
+    default Stream<T> body(Node node, Stream<T> content, Context<R> context) {
         return paragraphBody(content, context);
     }
 
-    Stream<T> paragraphBody(Stream<T> content, Context context);
+    Stream<T> paragraphBody(Stream<T> content, Context<R> context);
 }

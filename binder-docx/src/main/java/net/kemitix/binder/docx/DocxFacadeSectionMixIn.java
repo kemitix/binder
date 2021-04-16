@@ -1,6 +1,6 @@
 package net.kemitix.binder.docx;
 
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.Section;
 import org.docx4j.UnitsOfMeasurement;
@@ -23,17 +23,19 @@ public interface DocxFacadeSectionMixIn
     Metadata metadata();
 
     default List<P> finaliseTitlePage(
-            Context context,
+            Context<DocxRenderHolder> context,
             List<Object> pageContent
     ) {
         // force into a list of P - we have an invalid section if this results in ClassCastException
         List<P> sectionPs = pageContent.stream()
                 .map(P.class::cast)
                 .collect(Collectors.toList());
-        SectPr sectPr =
-                sizePage(
-                        sectPrType("oddPage",
-                                sectPr(sectionPs)));
+        SectPr sectPrContent = sectPr(sectionPs);
+        SectPr sectPrType =
+        context.startOnOddPage()
+                ? sectPrType("oddPage", sectPrContent)
+                : sectPrContent;
+        SectPr sectPr = sizePage(sectPrType);
         if (context.hasHeader()) {
             addDefaultPageHeader(sectPr, context.getName(), p());
         } else {
@@ -48,7 +50,7 @@ public interface DocxFacadeSectionMixIn
     }
 
     default List<P> finaliseSection(
-            Context context,
+            Context<DocxRenderHolder> context,
             List<Object> pageContent
     ) {
         // force into a list of P - we have an invalid section if this results in ClassCastException

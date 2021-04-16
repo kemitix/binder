@@ -2,12 +2,14 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
+import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 import net.kemitix.binder.spi.Section;
 
 import java.util.stream.Stream;
 
-public interface DocumentNodeHandler<T>
-        extends NodeHandler<T> {
+public interface DocumentNodeHandler<T, R extends RenderHolder<?>>
+        extends NodeHandler<T, R> {
 
     @Override
     default Class<? extends Node> getNodeClass() {
@@ -18,7 +20,7 @@ public interface DocumentNodeHandler<T>
     default Stream<T> body(
             Node node,
             Stream<T> content,
-            Context context
+            Context<R> context
     ) {
         String title = context.getTitle();
         if (context.isType(Section.Type.story)) {

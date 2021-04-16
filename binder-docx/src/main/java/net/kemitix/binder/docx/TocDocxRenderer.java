@@ -1,7 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.extern.java.Log;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlManuscript;
@@ -18,23 +18,20 @@ import java.util.stream.Stream;
 @ApplicationScoped
 public class TocDocxRenderer
         implements DocxRenderer,
-        AggregateRenderer<DocxTocItemRenderer, Section, Object> {
+        AggregateRenderer<DocxTocItemRenderer, Section, Object, DocxRenderHolder> {
 
     private final HtmlManuscript htmlManuscript;
     private final Instance<DocxTocItemRenderer> tocItemRenderers;
-    private final DocxFacade docx;
     private final DocxImageFacade docxImage;
 
     @Inject
     public TocDocxRenderer(
             HtmlManuscript htmlManuscript,
             Instance<DocxTocItemRenderer> tocItemRenderers,
-            DocxFacade docx,
             DocxImageFacade docxImage
     ) {
         this.htmlManuscript = htmlManuscript;
         this.tocItemRenderers = tocItemRenderers;
-        this.docx = docx;
         this.docxImage = docxImage;
     }
 
@@ -44,7 +41,8 @@ public class TocDocxRenderer
     }
 
     @Override
-    public Stream<DocxContent> render(Section section) {
+    public Stream<DocxContent> render(Section section, Context<DocxRenderHolder> context) {
+        var docx = context.getRendererHolder().getRenderer();
         //TODO: use Arrays.asList(...)
         List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
@@ -52,18 +50,18 @@ public class TocDocxRenderer
                 docx.drawings(
                         docxImage.textImages(
                                 "Contents",
-                                FontSize.of(240))));
+                                FontSize.of(240), docx)));
         contents.add(docx.textParagraph(""));
         htmlManuscript.sections()
                 .filter(Section::isDocx)
                 .filter(Section::isToc)
                 .flatMap(s ->
                         findRenderer(s, tocItemRenderers)
-                                .render(s))
+                                .render(s, context))
                 .forEach(contents::add);
-        Context context = Context.create(section);
         return Stream.of(
                 new DocxContent(
+                        section.getName(),
                         docx.finaliseTitlePage(context, contents))
         );
     }

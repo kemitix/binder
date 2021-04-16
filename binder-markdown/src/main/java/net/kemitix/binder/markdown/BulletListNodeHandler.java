@@ -2,12 +2,13 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.ast.BulletList;
 import com.vladsch.flexmark.util.ast.Node;
-import net.kemitix.binder.spi.Section;
+import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 
 import java.util.stream.Stream;
 
-public interface BulletListNodeHandler<T>
-        extends NodeHandler<T> {
+public interface BulletListNodeHandler<T, R extends RenderHolder<?>>
+        extends NodeHandler<T, R> {
 
     @Override
     default Class<? extends Node> getNodeClass() {
@@ -15,11 +16,15 @@ public interface BulletListNodeHandler<T>
     }
 
     @Override
-    default Stream<T> body(Node node, Stream<T> content, Context context) {
-        return bulletListBody(content);
+    default Stream<T> body(
+            Node node,
+            Stream<T> content,
+            Context<R> context
+    ) {
+        return bulletListBody(content, context);
     }
 
-    default Stream<T> bulletListBody(Stream<T> content) {
+    default Stream<T> bulletListBody(Stream<T> content, Context<R> context) {
         return content;
     }
 }

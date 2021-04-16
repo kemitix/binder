@@ -21,7 +21,7 @@ public class VelocityProvider {
 
     @Produces
     @ApplicationScoped
-    Context context() {
+    Context velocityContext() {
         Context context = new VelocityContext();
         context.put("timestamp", Instant.now().toString());
         return context;

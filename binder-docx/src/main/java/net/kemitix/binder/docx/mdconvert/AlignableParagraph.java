@@ -1,7 +1,8 @@
 package net.kemitix.binder.docx.mdconvert;
 
 import net.kemitix.binder.docx.DocxFacade;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 import org.docx4j.wml.P;
 
 import java.util.stream.Stream;
@@ -11,7 +12,7 @@ public interface AlignableParagraph {
     default Stream<Object> alignP(
             P p,
             DocxFacade docx,
-            Context context
+            Context<? extends RenderHolder<?>> context
     ) {
         P alignedP = switch (context.getAlign()) {
             case right -> docx.alignRight(p);

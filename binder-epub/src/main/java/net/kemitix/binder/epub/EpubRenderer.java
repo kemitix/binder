@@ -7,7 +7,7 @@ import net.kemitix.binder.spi.Renderer;
 import java.nio.charset.StandardCharsets;
 
 public interface EpubRenderer
-        extends Renderer<HtmlSection, Content> {
+        extends Renderer<HtmlSection, Content, EpubRenderHolder> {
 
     default Content htmlContent(
             String href,

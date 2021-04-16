@@ -1,5 +1,6 @@
 package net.kemitix.binder.epub;
 
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
 
@@ -17,7 +18,10 @@ public class DefaultEpubTocItemRenderer
     }
 
     @Override
-    public Stream<String> render(HtmlSection section) {
+    public Stream<String> render(
+            HtmlSection section,
+            Context<EpubRenderHolder> context
+    ) {
         return Stream.of(
                 "<li><a href=\"%s\">%s</a></li>"
                         .formatted(

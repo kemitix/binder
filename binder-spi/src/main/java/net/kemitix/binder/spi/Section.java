@@ -63,6 +63,7 @@ public class Section {
     private LandmarkType landmarkType;
     @Getter
     private boolean last; // internal flag to mark last section in document
+    private boolean startOnOddPage = true; // start each new section on an odd numbered page
 
     public boolean isType(Type type) {
         return this.type.equals(type);
@@ -74,6 +75,10 @@ public class Section {
 
     public Section.Name getName() {
         return Section.name(name);
+    }
+
+    public boolean startOnOddPage() {
+        return startOnOddPage;
     }
 
     public enum Type {

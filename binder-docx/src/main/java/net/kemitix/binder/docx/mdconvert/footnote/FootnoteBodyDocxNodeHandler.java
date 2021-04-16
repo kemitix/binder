@@ -1,8 +1,8 @@
 package net.kemitix.binder.docx.mdconvert.footnote;
 
-import net.kemitix.binder.docx.DocxFacade;
+import net.kemitix.binder.docx.DocxRenderHolder;
 import net.kemitix.binder.docx.mdconvert.Docx;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.footnote.FootnoteBodyNodeHandler;
 import net.kemitix.binder.spi.Footnote;
 import org.docx4j.wml.P;
@@ -15,17 +15,14 @@ import java.util.stream.Stream;
 @Docx
 @ApplicationScoped
 public class FootnoteBodyDocxNodeHandler
-        implements FootnoteBodyNodeHandler<Object> {
+        implements FootnoteBodyNodeHandler<Object, DocxRenderHolder> {
 
-    private final DocxFacade docx;
     private final DocxFootnoteStore footnoteStore;
 
     @Inject
     public FootnoteBodyDocxNodeHandler(
-            DocxFacade docx,
             DocxFootnoteStore footnoteStore
     ) {
-        this.docx = docx;
         this.footnoteStore = footnoteStore;
     }
 
@@ -33,17 +30,22 @@ public class FootnoteBodyDocxNodeHandler
     public Stream<Object> footnoteBody(
             Footnote.Ordinal ordinal,
             Stream<Object> content,
-            Context context
+            Context<DocxRenderHolder> context
     ) {
         var footnote = footnoteStore.get(context.getName(), ordinal);
         var placeholder = footnote.getPlaceholder();
         var pStream = content.map(P.class::cast);
-        docx.footnoteAddBody(placeholder, formatBody(pStream));
+        var docx = context.getRendererHolder().getRenderer();
+        docx.footnoteAddBody(placeholder, formatBody(pStream, context));
         return Stream.empty();
     }
 
     // insert a tab into the first run of each paragraph within the footnote body
-    private Stream<P> formatBody(Stream<P> content) {
+    private Stream<P> formatBody(
+            Stream<P> content,
+            Context<DocxRenderHolder> context
+    ) {
+        var docx = context.getRendererHolder().getRenderer();
         return content
                 .peek(p -> {
                     var r = p.getContent()

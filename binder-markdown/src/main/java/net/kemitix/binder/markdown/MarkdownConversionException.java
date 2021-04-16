@@ -2,6 +2,7 @@ package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.util.ast.Node;
 import lombok.Getter;
+import net.kemitix.binder.spi.Context;
 
 import java.util.List;
 
@@ -11,13 +12,13 @@ public class MarkdownConversionException
 
     private final Node node;
     private final List<Object> content;
-    private final Context context;
+    private final Context<?> context;
 
     public MarkdownConversionException(
             String message,
             Node node,
             List<Object> content,
-            Context context
+            Context<?> context
     ) {
         super(message);
         this.node = node;

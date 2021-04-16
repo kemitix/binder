@@ -1,33 +1,27 @@
 package net.kemitix.binder.docx.mdconvert;
 
 import net.kemitix.binder.docx.DocxFacade;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.docx.DocxRenderHolder;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.HeadingNodeHandler;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
 @Docx
 @ApplicationScoped
 public class HeadingDocxNodeHandler
-        implements HeadingNodeHandler<Object>,
+        implements HeadingNodeHandler<Object, DocxRenderHolder>,
         AlignableParagraph {
-
-    private final DocxFacade docx;
-
-    @Inject
-    public HeadingDocxNodeHandler(DocxFacade docx) {
-        this.docx = docx;
-    }
 
     @Override
     public Stream<Object> hierarchicalHeader(
             int level,
             String text,
-            Context context
+            Context<DocxRenderHolder> context
     ) {
+        var docx = context.getRendererHolder().getRenderer();
         if (text.isBlank()) {
             return Stream.of(
                     docx.styledP(
@@ -42,7 +36,8 @@ public class HeadingDocxNodeHandler
     }
 
     @Override
-    public Stream<Object> blankBreak() {
+    public Stream<Object> blankBreak(Context<DocxRenderHolder> context) {
+        var docx = context.getRendererHolder().getRenderer();
         return Stream.of(
                 docx.textParagraphCentered(EM_DASH + EM_DASH + EM_DASH)
         );
@@ -52,7 +47,11 @@ public class HeadingDocxNodeHandler
     private static final String NO_BREAK_SPACE = "\u00A0";
 
     @Override
-    public Stream<Object> namedBreak(String name) {
+    public Stream<Object> namedBreak(
+            String name,
+            Context<DocxRenderHolder> context
+    ) {
+        var docx = context.getRendererHolder().getRenderer();
         return Stream.of(
                 docx.p(),
                 docx.keepWithNext(

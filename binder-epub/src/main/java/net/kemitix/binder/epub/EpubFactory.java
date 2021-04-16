@@ -6,6 +6,7 @@ import coza.opencollab.epub.creator.model.EpubBook;
 import coza.opencollab.epub.creator.model.Landmark;
 import coza.opencollab.epub.creator.model.TocLink;
 import net.kemitix.binder.spi.BinderConfig;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Metadata;
@@ -62,7 +63,15 @@ public class EpubFactory {
     private void addSections(EpubBook epub) {
         htmlManuscript.sections()
                 .filter(HtmlSection::isEpub)
-                .flatMap(epubSectionRenderer::render)
+                .flatMap((HtmlSection htmlSection) -> {
+                    Context<EpubRenderHolder> context =
+                            Context.create(
+                                    htmlSection,
+                                    EpubRenderHolder.create());
+                    return epubSectionRenderer.render(
+                            htmlSection,
+                            context);
+                })
                 .forEach(epub::addContent);
     }
 

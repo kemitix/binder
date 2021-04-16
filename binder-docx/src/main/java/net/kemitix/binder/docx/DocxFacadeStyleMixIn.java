@@ -1,7 +1,7 @@
 package net.kemitix.binder.docx;
 
 import lombok.SneakyThrows;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import org.docx4j.wml.HpsMeasure;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.Style;
@@ -69,7 +69,7 @@ public interface DocxFacadeStyleMixIn
         return get(style, Style::getRPr, style::setRPr, factory()::createRPr);
     }
 
-    default Style paraStyle(Context context) {
+    default Style paraStyle(Context<DocxRenderHolder> context) {
         return fontSize(
                 context.getFontSize(),
                 createParaStyleBasedOn(

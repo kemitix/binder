@@ -1,12 +1,10 @@
 package net.kemitix.binder.docx;
 
 import net.kemitix.binder.docx.mdconvert.Docx;
-import net.kemitix.binder.markdown.Context;
+import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.Section;
-import org.docx4j.wml.P;
-import org.docx4j.wml.Style;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,17 +18,14 @@ import java.util.stream.Stream;
 public class MarkdownDocxRenderer
         implements DocxRenderer {
 
-    private final DocxFacade docx;
     private final DocxImageFacade docxImage;
-    private final MarkdownConverter<Object> converter;
+    private final MarkdownConverter<Object, DocxRenderHolder> converter;
 
     @Inject
     public MarkdownDocxRenderer(
-            DocxFacade docx,
             DocxImageFacade docxImage,
-            @Docx MarkdownConverter<Object> converter
+            @Docx MarkdownConverter<Object, DocxRenderHolder> converter
     ) {
-        this.docx = docx;
         this.docxImage = docxImage;
         this.converter = converter;
     }
@@ -41,10 +36,13 @@ public class MarkdownDocxRenderer
     }
 
     @Override
-    public Stream<DocxContent> render(Section section) {
+    public Stream<DocxContent> render(
+            Section section,
+            Context<DocxRenderHolder> context
+    ) {
+        var docx = context.getRendererHolder().getRenderer();
         List<Object> contents = new ArrayList<>();
-        addTitle(section, contents);
-        Context context = Context.create(section);
+        addTitle(docx, section, contents);
         List<Object> sectionPs =
                 converter.convert(
                         context,
@@ -54,16 +52,16 @@ public class MarkdownDocxRenderer
         docx.addStyle(docx.paraStyle(context));
         return Stream.of(
                 new DocxContent(
+                        section.getName(),
                         docx.finaliseTitlePage(context, contents))
         );
     }
 
-    private Style charStyle(Section section) {
-        String styleName = "section-%s-char".formatted(section.getName());
-        return docx.createCharStyleBasedOn(styleName, "D");
-    }
-
-    private void addTitle(Section sec, List<Object> contents) {
+    private void addTitle(
+            DocxFacade docx,
+            Section sec,
+            List<Object> contents
+    ) {
         String title = getTitle(sec);
         if (title.length() > 0) {
             contents.add(docx.textParagraph(""));
@@ -71,7 +69,7 @@ public class MarkdownDocxRenderer
                     docx.drawings(
                             docxImage.textImages(
                                     title,
-                                    FontSize.of(240))));
+                                    FontSize.of(240), docx)));
             contents.add(docx.textParagraph(""));
         }
     }
