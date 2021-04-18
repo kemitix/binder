@@ -6,7 +6,6 @@ import org.docx4j.wml.R;
 import org.docx4j.wml.STTabJc;
 import org.docx4j.wml.Tabs;
 
-import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -14,8 +13,8 @@ public interface DocxFacadeTabMixIn
         extends DocxFacadeMixIn {
 
     default PPrBase.Ind tabIndent(
-            @Nullable Integer left,
-            @Nullable Integer right,
+            Integer left,
+            Integer right,
             int hanging
     ) {
         PPrBase.Ind ind = factory().createPPrBaseInd();
