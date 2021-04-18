@@ -16,7 +16,7 @@ public class StrongEmphasisDocxNodeHandler
     @Override
     public Stream<Object> strongEmphasisBody(Object content, Context<DocxRenderHolder> context) {
         if (content instanceof R) {
-            var docx = context.getRenderer().getDocx();
+            var docx = context.getRendererHolder().getRenderer();
             R r = (R) content;
             return Stream.of(
                     docx.bold(r)

@@ -51,7 +51,7 @@ public class MarkdownEpubRenderer
             HtmlSection section,
             String markdown
     ) {
-        EpubRenderHolder epubRenderHolder = new EpubRenderHolder() {};
+        EpubRenderHolder epubRenderHolder = EpubRenderHolder.create();
         String contents =
                 converter.convert(
                         Context.create(section, epubRenderHolder),

@@ -16,7 +16,7 @@ public class StrikethroughDocxNodeHandler
     @Override
     public Stream<Object> strikethroughBody(Object content, Context<DocxRenderHolder> context) {
         if (content instanceof R) {
-            var docx = context.getRenderer().getDocx();
+            var docx = context.getRendererHolder().getRenderer();
             R r = (R) content;
             Object italic =
                     docx.strikethrough(r);

@@ -20,7 +20,7 @@ public class DefaultDocxTocItemRenderer
     public Stream<Object> render(
             Section source,
             Context<DocxRenderHolder> context) {
-        DocxFacade docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         return Stream.of(docx.tocItem("", source.getTitle()));
     }
 }

@@ -9,7 +9,7 @@ import java.util.stream.Stream;
  * @param <O> the type of the output stream
  * @param <R> the type of the context
  */
-public interface Renderer<T, O, R> {
+public interface Renderer<T, O, R extends RenderHolder<?>> {
     boolean canHandle(Section section);
 
     Stream<O> render(T source, Context<R> context);

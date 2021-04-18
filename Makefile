@@ -16,8 +16,8 @@ dev:
 
 run:
 	( \
-		cd binder/target && \
-		java -jar binder-runner.jar \
+		cd binder/target/quarkus-app && \
+		java -jar quarkus-run.jar \
 			~/cossmass/issues/006-2021-09-september/ \
 	)
 

@@ -1,6 +1,5 @@
 package net.kemitix.binder.docx.mdconvert.footnote;
 
-import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.docx.DocxRenderHolder;
 import net.kemitix.binder.docx.mdconvert.Docx;
 import net.kemitix.binder.spi.Context;
@@ -36,7 +35,7 @@ public class FootnoteBodyDocxNodeHandler
         var footnote = footnoteStore.get(context.getName(), ordinal);
         var placeholder = footnote.getPlaceholder();
         var pStream = content.map(P.class::cast);
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         docx.footnoteAddBody(placeholder, formatBody(pStream, context));
         return Stream.empty();
     }
@@ -46,7 +45,7 @@ public class FootnoteBodyDocxNodeHandler
             Stream<P> content,
             Context<DocxRenderHolder> context
     ) {
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         return content
                 .peek(p -> {
                     var r = p.getContent()

@@ -4,10 +4,11 @@ import com.vladsch.flexmark.ext.footnotes.Footnote;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.NodeHandler;
+import net.kemitix.binder.spi.RenderHolder;
 
 import java.util.stream.Stream;
 
-public interface FootnoteAnchorNodeHandler<T, R>
+public interface FootnoteAnchorNodeHandler<T, R extends RenderHolder<?>>
         extends NodeHandler<T, R> {
 
     default Class<? extends Node> getNodeClass() {

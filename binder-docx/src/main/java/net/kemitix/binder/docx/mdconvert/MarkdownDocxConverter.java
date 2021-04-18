@@ -49,7 +49,7 @@ public class MarkdownDocxConverter
     @Override
     public Document fixUpDocument(
             Document document,
-            Context context
+            Context<DocxRenderHolder> context
     ) {
         var docReference = new AtomicReference<>(document);
         documentModifiers.stream()

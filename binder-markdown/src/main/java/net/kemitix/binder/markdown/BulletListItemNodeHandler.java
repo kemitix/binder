@@ -3,10 +3,11 @@ package net.kemitix.binder.markdown;
 import com.vladsch.flexmark.ast.BulletListItem;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
+import net.kemitix.binder.spi.RenderHolder;
 
 import java.util.stream.Stream;
 
-public interface BulletListItemNodeHandler<T, R>
+public interface BulletListItemNodeHandler<T, R extends RenderHolder<?>>
         extends NodeHandler<T, R> {
 
     default Class<? extends Node> getNodeClass() {

@@ -41,7 +41,7 @@ public class StoryDocxRenderer
 
     @Override
     public Stream<DocxContent> render(Section section, Context<DocxRenderHolder> context) {
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
@@ -72,7 +72,7 @@ public class StoryDocxRenderer
             throw new RuntimeException("Author Bio markdown should be a paragraph");
         }
         P authorBio = (P) convert[0];
-        var docx = context.getRenderer().getDocx();
+        var docx = context.getRendererHolder().getRenderer();
         return Arrays.asList(
                 docx.keepWithNext(docx.p()),
                 docx.keepWithNext(docx.textParagraphCentered(
