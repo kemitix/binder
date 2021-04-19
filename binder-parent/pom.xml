@@ -27,7 +27,7 @@
         <snakeyaml.version>1.28</snakeyaml.version>
         <epub-creator.version>1.1.0</epub-creator.version>
         <docx4j-ImportXHTML.version>8.2.1</docx4j-ImportXHTML.version>
-        <docx4j-JAXB-ReferenceImpl.version>11.2.8</docx4j-JAXB-ReferenceImpl.version>
+        <docx4j-JAXB-ReferenceImpl.version>11.2.9</docx4j-JAXB-ReferenceImpl.version>
         <velocity-engine.version>2.3</velocity-engine.version>
         <awt-color-factory.version>1.0.2</awt-color-factory.version>
         <mon.version>2.3.0</mon.version>
