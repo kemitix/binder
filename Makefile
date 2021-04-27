@@ -7,18 +7,23 @@ install: .install
 	mvn install
 	touch .install
 
+build:
+	mvn package
+
 test:
-	mvn test ${RUN_PARAMS}
+	mvn test
 
 dev:
 	mvn -pl binder quarkus:dev \
-		-Dquarkus.args="~/cossmass/issues/005-2021-05-may/"
+		-Dquarkus.args="~/cossmass/issues/006-2021-09-september/"
 
 run:
 	( \
 		cd binder/target/quarkus-app && \
-		java -jar quarkus-run.jar \
-			~/cossmass/issues/005-2021-05-may/ \
+		java \
+			--class-path "../../../*/target/" \
+			-jar quarkus-run.jar \
+			~/cossmass/issues/006-2021-09-september/ \
 	)
 
 clean:
