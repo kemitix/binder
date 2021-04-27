@@ -19,10 +19,9 @@ dev:
 
 run:
 	( \
-		BASE=${PWD} && \
 		cd binder/target/quarkus-app && \
 		java \
-			--class-path $BASE/*/target/ \
+			--class-path "../../../*/target/" \
 			-jar quarkus-run.jar \
 			~/cossmass/issues/006-2021-09-september/ \
 	)
