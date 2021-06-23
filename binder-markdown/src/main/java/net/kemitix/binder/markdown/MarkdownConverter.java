@@ -52,9 +52,12 @@ public interface MarkdownConverter<T, R extends RenderHolder<?>> {
                             MarkdownConverter<T, R> converter,
                             Context<R> context
                     ) {
-                        throw new RuntimeException(
-                                "Unhandled Markdown Type: %s".formatted(
-                                        aClass.getSimpleName()));
+                        throw new UnhandledMarkdownException(
+                                aClass.getSimpleName(),
+                                context.getName(),
+                                node.getChars().unescape(),
+                                node.getLineNumber()
+                        );
                     }
                 });
     }

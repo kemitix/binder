@@ -50,10 +50,15 @@ public class DocxManuscript {
         this.docxMdRenderer = docxMdRenderer;
     }
 
+    public String getTitle() {
+        return metadata.getTitle();
+    }
+
     public void writeToFile(String fileName, DocxFacade docx) {
         configureFontMapping();
         try {
             File file = new File(fileName);
+            log.info("Writing: " + file);
             Files.deleteIfExists(file.toPath());
             createMainDocument(docx).save(file);
             log.info("Wrote: " + file);

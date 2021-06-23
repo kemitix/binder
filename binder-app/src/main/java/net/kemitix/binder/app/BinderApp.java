@@ -1,6 +1,7 @@
 package net.kemitix.binder.app;
 
 import lombok.extern.java.Log;
+import net.kemitix.binder.markdown.UnhandledMarkdownException;
 import net.kemitix.binder.spi.BinderException;
 import net.kemitix.binder.spi.ManuscriptWriter;
 
@@ -26,6 +27,8 @@ public class BinderApp {
         try {
             writers.stream()
                     .forEach(ManuscriptWriter::write);
+        } catch (UnhandledMarkdownException e) {
+            log.severe(e.getMessage());
         } catch (BinderException e) {
             log.severe(e.getMessage());
         }
