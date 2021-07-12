@@ -32,7 +32,7 @@
         <awt-color-factory.version>1.0.2</awt-color-factory.version>
         <mon.version>2.3.0</mon.version>
         <commons-text.version>1.9</commons-text.version>
-        <jsoup.version>1.13.1</jsoup.version>
+        <jsoup.version>1.14.1</jsoup.version>
     </properties>
 
     <dependencyManagement>
