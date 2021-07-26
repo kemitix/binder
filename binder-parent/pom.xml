@@ -16,6 +16,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <microprofile.version>4.1</microprofile.version>
         <tiles-maven-plugin.version>2.22</tiles-maven-plugin.version>
         <kemitix-tiles.version>3.0.1</kemitix-tiles.version>
 
@@ -23,7 +24,6 @@
         <assertj.version>3.20.2</assertj.version>
         <junit.version>5.7.2</junit.version>
         <mockito-junit-jupiter.version>3.11.2</mockito-junit-jupiter.version>
-        <jakartaee-api.version>8.0.0</jakartaee-api.version>
         <snakeyaml.version>1.29</snakeyaml.version>
         <epub-creator.version>1.1.0</epub-creator.version>
         <docx4j-ImportXHTML.version>8.2.1</docx4j-ImportXHTML.version>
@@ -37,6 +37,13 @@
 
     <dependencyManagement>
         <dependencies>
+          <dependency>
+            <groupId>org.eclipse.microprofile</groupId>
+            <artifactId>microprofile</artifactId>
+            <version>${microprofile.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+          </dependency>
             <dependency>
                 <groupId>net.kemitix.binder</groupId>
                 <artifactId>binder</artifactId>
@@ -83,12 +90,6 @@
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>jakarta.platform</groupId>
-                <artifactId>jakarta.jakartaee-api</artifactId>
-                <version>${jakartaee-api.version}</version>
             </dependency>
 
             <dependency>
