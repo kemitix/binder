@@ -13,15 +13,16 @@
     <artifactId>binder-spi</artifactId>
 
     <dependencies>
+      <dependency>
+        <groupId>org.eclipse.microprofile</groupId>
+        <artifactId>microprofile</artifactId>
+        <type>pom</type>
+        <scope>provided</scope>
+      </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.kemitix</groupId>
