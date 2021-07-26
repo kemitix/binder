@@ -1,6 +1,5 @@
 package net.kemitix.binder.docx.mdconvert;
 
-import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.docx.DocxRenderHolder;
 import net.kemitix.binder.markdown.EmphasisNodeHandler;
 import net.kemitix.binder.spi.Context;
