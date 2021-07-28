@@ -20,16 +20,9 @@ public interface NodeHandler<T, R extends RenderHolder<?>> {
             MarkdownConverter<T, R> converter,
             Context<R> context
     ) {
-        Stream<T> children = handleChildren(node, converter, context);
-        return Stream.concat(
-                requireNonNull(body(node, children, context), "body", node),
-                requireNonNull(handleNext(node, converter, context), "handleNext", node)
-        );
-    }
-
-    default <O> O requireNonNull(O object, String tag, Node node) {
+        Stream<T> object = body(node, handleChildren(node, converter, context), context);
         if (Objects.isNull(object)) {
-            throw new MarkdownOutputException("Element is null: %s [%s]".formatted(tag, node.toString()), node.toString());
+            throw new MarkdownOutputException("Element is null", node.toString());
         }
         return object;
     }

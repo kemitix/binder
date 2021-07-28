@@ -26,9 +26,14 @@ public interface MarkdownConverter<T, R extends RenderHolder<?>> {
         return document;
     }
 
-    default Stream<T> accept(Node node, Context<R> context) {
-        NodeHandler<T, R> handler = findHandler(node.getClass());
-        return handler.handle(node, this, context);
+    default Stream<T> accept(Node rootNode, Context<R> context) {
+        final Stream.Builder<T> builder = Stream.builder();
+        Nodes.of(rootNode).getNodes().forEach(node -> {
+            findHandler(node.getClass())
+                    .handle(node, this, context)
+                    .forEach(builder);
+        });
+        return builder.build();
     }
 
     default NodeHandler<T, R> findHandler(Class<? extends Node> aClass) {
