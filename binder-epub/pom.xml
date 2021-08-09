@@ -13,6 +13,12 @@
     <artifactId>binder-epub</artifactId>
 
     <dependencies>
+      <dependency>
+        <groupId>org.eclipse.microprofile</groupId>
+        <artifactId>microprofile</artifactId>
+        <type>pom</type>
+        <scope>provided</scope>
+      </dependency>
         <dependency>
             <groupId>net.kemitix.binder</groupId>
             <artifactId>binder-spi</artifactId>
@@ -26,12 +32,6 @@
         <dependency>
             <groupId>net.kemitix</groupId>
             <artifactId>epub-creator</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
