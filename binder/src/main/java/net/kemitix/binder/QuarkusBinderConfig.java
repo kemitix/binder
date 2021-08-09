@@ -22,12 +22,18 @@ public class QuarkusBinderConfig
 
     private String binderDirectory() {
         return environment("BINDER_DIR")
-                .replaceFirst("^~", environment("user.home"));
+                .replaceFirst("^~", property("user.home"));
     }
 
     private String environment(String s) {
         return Objects.requireNonNull(
                 System.getenv(s),
+                "Undefined environment variable: " + s);
+    }
+
+    private String property(String s) {
+        return Objects.requireNonNull(
+                System.getProperty(s),
                 "Undefined property: " + s);
     }
 
