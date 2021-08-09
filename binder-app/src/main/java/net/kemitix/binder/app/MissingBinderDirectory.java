@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.io.File;
 
 /**
- * Thrown when the BINDER_DIRECTORY is missing.
+ * Thrown when directory in the BINDER_DIR environment variable is missing.
  */
 @Getter
 public class MissingBinderDirectory extends IllegalArgumentException {
