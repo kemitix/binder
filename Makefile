@@ -14,8 +14,7 @@ test:
 	mvn test
 
 dev:
-	mvn -pl binder quarkus:dev \
-		-Dquarkus.args="~/cossmass/issues/006-2021-09-september/"
+	mvn -pl binder quarkus:dev
 
 run:
 	( \
@@ -23,7 +22,6 @@ run:
 		java \
 			--class-path "../../../*/target/" \
 			-jar quarkus-run.jar \
-			~/cossmass/issues/006-2021-09-september/ \
 	)
 
 clean:
