@@ -22,7 +22,7 @@ public class StoryEpubTocItemRenderer
             Context<EpubRenderHolder> context
     ) {
         return Stream.of(
-                "<li><a href=\"%s\">%s</a> by %s</li>"
+                "<li><a href=\"%s\">%s</a></br>by %s</li>"
                         .formatted(
                                 section.getHref(),
                                 section.getTitle(),
