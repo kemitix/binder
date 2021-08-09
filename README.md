@@ -8,7 +8,7 @@ https://img.shields.io/github/release-date/kemitix/binder?style=for-the-badge)
 
 ## Command Line Arguments
 
-* BINDER_DIRECTORY - the directory containing the manuscript
+* BINDER_DIR - the directory containing the manuscript (i.e. `binder.yaml`)
 
 ## Structure and Dependencies
 

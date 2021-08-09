@@ -21,19 +21,19 @@ public class QuarkusBinderConfig
             new File(binderDirectory());
 
     private String binderDirectory() {
-        return property("BINDER_DIRECTORY")
-                .replaceFirst("^~", property("user.home"));
+        return environment("BINDER_DIR")
+                .replaceFirst("^~", environment("user.home"));
     }
 
-    private String property(String s) {
+    private String environment(String s) {
         return Objects.requireNonNull(
-                System.getProperty(s),
+                System.getenv(s),
                 "Undefined property: " + s);
     }
 
     @PostConstruct
     void init() {
-        log.info(String.format("BINDER_DIRECTORY: %s", scanDirectory));
+        log.info(String.format("BINDER_DIR: %s", scanDirectory));
     }
 
 }
