@@ -18,9 +18,6 @@ public class BinderMain implements QuarkusApplication {
 
     @Override
     public int run(String[] args) {
-        if (args.length >= 1) {
-            System.setProperty("BINDER_DIRECTORY", args[0]);
-        }
         app.run(args);
         return 0;
     }
