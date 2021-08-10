@@ -6,6 +6,7 @@ import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.RenderHolder;
 
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public interface MarkdownConverter<T, R extends RenderHolder<?>> {
@@ -40,31 +41,35 @@ public interface MarkdownConverter<T, R extends RenderHolder<?>> {
         return getNodeHandlers()
                 .filter(handler -> handler.canHandle(aClass))
                 .findFirst()
-                .orElseGet(() -> new NodeHandler<T, R>() {
-                    @Override
-                    public boolean canHandle(Class<? extends Node> ignoredClass) {
-                        return true;
-                    }
+                .orElseGet(unhandledMarkdownHandler(aClass));
+    }
 
-                    @Override
-                    public Class<? extends Node> getNodeClass() {
-                        return null;
-                    }
+    private Supplier<NodeHandler<T, R>> unhandledMarkdownHandler(Class<? extends Node> aClass) {
+        return () -> new NodeHandler<T, R>() {
+            @Override
+            public boolean canHandle(Class<? extends Node> ignoredClass) {
+                return true;
+            }
 
-                    @Override
-                    public Stream<T> handle(
-                            Node node,
-                            MarkdownConverter<T, R> converter,
-                            Context<R> context
-                    ) {
-                        throw new UnhandledMarkdownException(
-                                aClass.getSimpleName(),
-                                context.getName(),
-                                node.getChars().unescape(),
-                                node.getLineNumber()
-                        );
-                    }
-                });
+            @Override
+            public Class<? extends Node> getNodeClass() {
+                return null;
+            }
+
+            @Override
+            public Stream<T> handle(
+                    Node node,
+                    MarkdownConverter<T, R> converter,
+                    Context<R> context
+            ) {
+                throw new UnhandledMarkdownException(
+                        aClass.getSimpleName(),
+                        context.getName(),
+                        node.getChars().unescape(),
+                        node.getLineNumber()
+                );
+            }
+        };
     }
 
 }
