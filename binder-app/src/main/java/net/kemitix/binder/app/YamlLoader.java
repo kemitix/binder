@@ -12,10 +12,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class YamlLoader {
+
+    public static final Pattern UNSAFE_AMP_PATTERN = Pattern.compile("&[^a]");
 
     public  <T> T loadFile(
             File file,
@@ -38,12 +43,23 @@ public class YamlLoader {
                 .dropWhile("---"::equals)
                 .takeWhile(line -> !line.equals("---"))
                 .collect(Collectors.toList());
-        String body = lines.stream().skip(header.size() + 2)
+        int headerLines = header.size() + 2;
+        AtomicInteger lineCounter = new AtomicInteger(headerLines);
+        String body = lines.stream().skip(headerLines)
+                .map(line -> validateContent(line, file, lineCounter.incrementAndGet()))
                 .collect(Collectors.joining(System.lineSeparator()));
         Section section = parseYamlFromFile(file, Section.class,
                 String.join(System.lineSeparator(), header));
         section.setMarkdown(body);
         return section;
+    }
+
+    private String validateContent(String body, File file, int lineCounter) {
+        if (UNSAFE_AMP_PATTERN.matcher(body).find()) {
+            throw new RuntimeException("Invalid unescaped ampersand in %s at line %d"
+                    .formatted(file, lineCounter));
+        }
+        return body;
     }
 
     private List<String> loadRequiredFile(File file) {
