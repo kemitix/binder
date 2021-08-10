@@ -5,10 +5,11 @@ import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
 import lombok.extern.java.Log;
 import net.kemitix.binder.docx.DocxRenderHolder;
-import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.DocumentModifier;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.markdown.NodeHandler;
+import net.kemitix.binder.spi.Context;
+import net.kemitix.mon.maybe.Maybe;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -16,7 +17,6 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
@@ -59,8 +59,8 @@ public class MarkdownDocxConverter
     }
 
     @Override
-    public Optional<NodeHandler<Object, DocxRenderHolder>> lookupHandler(Class<? extends Node> aClass) {
-        return Optional.ofNullable(nodeHandlerMap.get(aClass));
+    public Maybe<NodeHandler<Object, DocxRenderHolder>> lookupHandler(Class<? extends Node> aClass) {
+        return Maybe.maybe(nodeHandlerMap.get(aClass));
     }
 
     @Override

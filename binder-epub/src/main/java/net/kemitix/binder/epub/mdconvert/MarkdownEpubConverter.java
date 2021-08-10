@@ -5,6 +5,7 @@ import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.epub.EpubRenderHolder;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.markdown.NodeHandler;
+import net.kemitix.mon.maybe.Maybe;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -12,8 +13,6 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Epub
@@ -41,8 +40,8 @@ public class MarkdownEpubConverter
     }
 
     @Override
-    public Optional<NodeHandler<String, EpubRenderHolder>> lookupHandler(Class<? extends Node> aClass) {
-        return Optional.ofNullable(nodeHandlerMap.get(aClass));
+    public Maybe<NodeHandler<String, EpubRenderHolder>> lookupHandler(Class<? extends Node> aClass) {
+        return Maybe.maybe(nodeHandlerMap.get(aClass));
     }
 
     @Override

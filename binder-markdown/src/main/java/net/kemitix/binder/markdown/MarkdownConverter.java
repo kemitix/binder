@@ -5,6 +5,7 @@ import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.RenderHolder;
+import net.kemitix.mon.maybe.Maybe;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -43,10 +44,11 @@ public interface MarkdownConverter<T, R extends RenderHolder<?>> {
                 .orElseGet(unhandledMarkdownHandler(aClass));
     }
 
-    default Optional<NodeHandler<T, R>> lookupHandler(Class<? extends Node> aClass) {
-        return getNodeHandlers()
-                .filter(handler -> handler.canHandle(aClass))
-                .findFirst();
+    default Maybe<NodeHandler<T, R>> lookupHandler(Class<? extends Node> aClass) {
+        return Maybe.fromOptional(
+                getNodeHandlers()
+                        .filter(handler -> handler.canHandle(aClass))
+                        .findFirst());
     }
 
     private Supplier<NodeHandler<T, R>> unhandledMarkdownHandler(Class<? extends Node> aClass) {
