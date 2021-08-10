@@ -8,6 +8,6 @@ import javax.enterprise.context.ApplicationScoped;
 @Docx
 @ApplicationScoped
 public class HtmlEntityDocxNodeHandler
-        implements HtmlEntityNodeHandler<String, DocxRenderHolder> {
+        implements HtmlEntityNodeHandler<Object, DocxRenderHolder> {
 
 }
