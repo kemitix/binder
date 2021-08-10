@@ -3,6 +3,7 @@ package net.kemitix.binder.epub;
 import coza.opencollab.epub.creator.model.Content;
 import lombok.NoArgsConstructor;
 import net.kemitix.binder.epub.mdconvert.Epub;
+import net.kemitix.binder.epub.mdconvert.footnote.FootnoteAsideContentGenerator;
 import net.kemitix.binder.epub.mdconvert.footnote.FootnoteHtmlContentGenerator;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
@@ -24,13 +25,17 @@ public class MarkdownEpubRenderer
 
     private MarkdownConverter<String, EpubRenderHolder> converter;
     private FootnoteHtmlContentGenerator footnoteHtmlContentGenerator;
+    private FootnoteAsideContentGenerator footnoteAsideContentGenerator;
 
     @Inject
     public MarkdownEpubRenderer(
             @Epub MarkdownConverter<String, EpubRenderHolder> converter,
-            FootnoteHtmlContentGenerator footnoteHtmlContentGenerator) {
+            FootnoteHtmlContentGenerator footnoteHtmlContentGenerator,
+            FootnoteAsideContentGenerator footnoteAsideContentGenerator
+    ) {
         this.converter = converter;
         this.footnoteHtmlContentGenerator = footnoteHtmlContentGenerator;
+        this.footnoteAsideContentGenerator = footnoteAsideContentGenerator;
     }
 
     @Override
@@ -56,11 +61,13 @@ public class MarkdownEpubRenderer
                 converter.convert(
                         Context.create(section, epubRenderHolder),
                         markdown
-                ).collect(joining());
+                ).collect(joining()) +
+                        footnoteAsideContentGenerator.createFootnotes(section);
         byte[] content = contents.getBytes(StandardCharsets.UTF_8);
+        Stream<Content> supplemental = Stream.empty();//footnoteHtmlContentGenerator.createFootnotes(section);
         return Stream.concat(
                 createContent(section, content),
-                footnoteHtmlContentGenerator.createFootnotes(section)
+                supplemental
         );
     }
 
