@@ -29,40 +29,44 @@ class FootnoteBodyEpubNodeHandlerTest
         given(context.getName()).willReturn(Section.name("test"));
     }
 
-    @Test void insertsOrdinalOnSimpleParagraph() {
+    @Test
+    void doNotInsertOrdinalOnSimpleParagraph() {
         //given
         var content = Stream.of("<p>body text</p>");
         //when
         var result = sut.footnoteBody(Footnote.ordinal("1"), content, context).collect(Collectors.joining());
         //then
-        assertThat(result).isEqualTo("<p><sup>1</sup>body text</p>");
+        assertThat(result).isEqualTo("<p>body text</p>");
     }
 
-    @Test void insertsOrdinalOnStyledParagraph() {
+    @Test
+    void doNotInsertOrdinalOnStyledParagraph() {
         //given
         var content = Stream.of("<p styled>body text</p>");
         //when
         var result = sut.footnoteBody(Footnote.ordinal("1"), content, context).collect(Collectors.joining());
         //then
-        assertThat(result).isEqualTo("<p styled><sup>1</sup>body text</p>");
+        assertThat(result).isEqualTo("<p styled>body text</p>");
     }
 
-    @Test void insertsOrdinalOnFirstSimpleParagraph() {
+    @Test
+    void doNotinsertOrdinalOnFirstSimpleParagraph() {
         //given
         var content = Stream.of("<p>body text</p><p>para 2</p>");
         //when
         var result = sut.footnoteBody(Footnote.ordinal("1"), content, context).collect(Collectors.joining());
         //then
-        assertThat(result).isEqualTo("<p><sup>1</sup>body text</p>\n<p>para 2</p>");
+        assertThat(result).isEqualTo("<p>body text</p>\n<p>para 2</p>");
     }
 
-    @Test void insertsOrdinalOnFirstStyledParagraph() {
+    @Test
+    void doNotInsertOrdinalOnFirstStyledParagraph() {
         //given
         var content = Stream.of("<p styled>body text</p><p>para 2</p>");
         //when
         var result = sut.footnoteBody(Footnote.ordinal("1"), content, context).collect(Collectors.joining());
         //then
-        assertThat(result).isEqualTo("<p styled><sup>1</sup>body text</p>\n<p>para 2</p>");
+        assertThat(result).isEqualTo("<p styled>body text</p>\n<p>para 2</p>");
     }
 
 }

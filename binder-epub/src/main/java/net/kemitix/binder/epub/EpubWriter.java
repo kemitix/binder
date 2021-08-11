@@ -35,10 +35,16 @@ public class EpubWriter implements ManuscriptWriter {
         try {
             epubBook.writeToFile(epubFile);
         } catch (MarkdownConversionException e) {
-            log.severe(e.getMessage());
-            log.severe("Node: " + e.getNode());
-            log.severe("Context: " + e.getContext());
-            log.severe("Content: " + e.getContent());
+            throw new BinderException(
+                    """
+                            %s
+                            Node: %s
+                            %s
+                            Content: %s
+                            """.formatted(e.getMessage(), e.getNode(),
+                            e.getContext(), e.getContent()),
+                    e
+            );
         } catch (ManuscriptFormatException e) {
             throw new BinderException(String.format(
                     "Error creating epub file %s", epubFile), e);

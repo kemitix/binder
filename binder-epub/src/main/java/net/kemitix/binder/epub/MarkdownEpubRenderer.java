@@ -3,6 +3,7 @@ package net.kemitix.binder.epub;
 import coza.opencollab.epub.creator.model.Content;
 import lombok.NoArgsConstructor;
 import net.kemitix.binder.epub.mdconvert.Epub;
+import net.kemitix.binder.epub.mdconvert.footnote.FootnoteAsideGenerator;
 import net.kemitix.binder.epub.mdconvert.footnote.FootnoteHtmlContentGenerator;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
@@ -24,13 +25,17 @@ public class MarkdownEpubRenderer
 
     private MarkdownConverter<String, EpubRenderHolder> converter;
     private FootnoteHtmlContentGenerator footnoteHtmlContentGenerator;
+    private FootnoteAsideGenerator footnoteAsideGenerator;
 
     @Inject
     public MarkdownEpubRenderer(
             @Epub MarkdownConverter<String, EpubRenderHolder> converter,
-            FootnoteHtmlContentGenerator footnoteHtmlContentGenerator) {
+            FootnoteHtmlContentGenerator footnoteHtmlContentGenerator,
+            FootnoteAsideGenerator footnoteAsideGenerator
+    ) {
         this.converter = converter;
         this.footnoteHtmlContentGenerator = footnoteHtmlContentGenerator;
+        this.footnoteAsideGenerator = footnoteAsideGenerator;
     }
 
     @Override
@@ -57,10 +62,14 @@ public class MarkdownEpubRenderer
                         Context.create(section, epubRenderHolder),
                         markdown
                 ).collect(joining());
-        byte[] content = contents.getBytes(StandardCharsets.UTF_8);
+        String contentsWithAsides = contents.substring(0, contents.length() - 16)
+                + footnoteAsideGenerator.createFootnotes(section)
+                + contents.substring(contents.length() - 16);
+        byte[] content = contentsWithAsides.getBytes(StandardCharsets.UTF_8);
+        Stream<Content> supplemental = Stream.empty();//footnoteHtmlContentGenerator.createFootnotes(section);
         return Stream.concat(
                 createContent(section, content),
-                footnoteHtmlContentGenerator.createFootnotes(section)
+                supplemental
         );
     }
 

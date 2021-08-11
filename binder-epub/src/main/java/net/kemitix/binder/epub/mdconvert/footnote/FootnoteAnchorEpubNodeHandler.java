@@ -6,7 +6,6 @@ import net.kemitix.binder.epub.mdconvert.EpubNodeHandler;
 import net.kemitix.binder.markdown.footnote.FootnoteAnchor;
 import net.kemitix.binder.markdown.footnote.FootnoteAnchorNodeHandler;
 import net.kemitix.binder.spi.Context;
-import net.kemitix.binder.spi.Footnote;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.stream.Stream;
@@ -27,10 +26,11 @@ public class FootnoteAnchorEpubNodeHandler
         return Stream.of("""
                         <sup class="footnote-anchor"><a
                             id="back_note_%1$s"
-                            href="%2$s#note_%1$s"
+                            href="#note_%1$s"
+                            epub:type="noteref"
                             title="%1$s"
-                            class="noteref">%1$s</a></sup> """
-                .formatted(ordinal, htmlFile)
+                            class="noteref">%1$s</a></sup>\s"""
+                .formatted(ordinal)
         );
     }
 }
