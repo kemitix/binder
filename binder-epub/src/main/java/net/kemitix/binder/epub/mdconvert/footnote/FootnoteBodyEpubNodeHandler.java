@@ -37,13 +37,6 @@ public class FootnoteBodyEpubNodeHandler
         var body = content.collect(Collectors.joining())
                 .replaceAll(" ~PARA~ ", "</p><p>");
         var element = Jsoup.parseBodyFragment(body).body();
-        var children = element.children();
-        if (children.first().is("p")) {
-            var sup = new Element("sup");
-            children.first().insertChildren(0, sup.text(ordinal.getValue()));
-        } else {
-            throw new MarkdownOutputException("Generated footnote body should start with a paragraph", body);
-        }
         var placeholder = EpubFootnote.placeholder("");
         var html = EpubFootnote.content(element.html());
         var footnote =
