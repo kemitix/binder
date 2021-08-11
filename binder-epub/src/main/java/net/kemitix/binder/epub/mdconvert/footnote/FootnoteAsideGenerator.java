@@ -13,12 +13,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-public class FootnoteAsideContentGenerator {
+public class FootnoteAsideGenerator {
 
     private final EpubFootnoteStore footnoteStore;
 
     @Inject
-    public FootnoteAsideContentGenerator(EpubFootnoteStore footnoteStore) {
+    public FootnoteAsideGenerator(EpubFootnoteStore footnoteStore) {
         this.footnoteStore = footnoteStore;
     }
 

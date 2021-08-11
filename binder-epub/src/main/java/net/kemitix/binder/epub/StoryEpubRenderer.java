@@ -3,7 +3,7 @@ package net.kemitix.binder.epub;
 import coza.opencollab.epub.creator.model.Content;
 import lombok.NoArgsConstructor;
 import net.kemitix.binder.epub.mdconvert.Epub;
-import net.kemitix.binder.epub.mdconvert.footnote.FootnoteAsideContentGenerator;
+import net.kemitix.binder.epub.mdconvert.footnote.FootnoteAsideGenerator;
 import net.kemitix.binder.epub.mdconvert.footnote.FootnoteHtmlContentGenerator;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.Context;
@@ -25,9 +25,9 @@ public class StoryEpubRenderer
     public StoryEpubRenderer(
             @Epub MarkdownConverter<String, EpubRenderHolder> converter,
             FootnoteHtmlContentGenerator footnoteHtmlContentGenerator,
-            FootnoteAsideContentGenerator footnoteAsideContentGenerator
+            FootnoteAsideGenerator footnoteAsideGenerator
     ) {
-        super(converter, footnoteHtmlContentGenerator, footnoteAsideContentGenerator);
+        super(converter, footnoteHtmlContentGenerator, footnoteAsideGenerator);
     }
 
     @Override
