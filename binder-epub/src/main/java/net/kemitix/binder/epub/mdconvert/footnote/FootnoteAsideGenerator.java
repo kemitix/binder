@@ -7,6 +7,7 @@ import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -28,6 +29,8 @@ public class FootnoteAsideGenerator {
                 .map(Tuple::of)
                 .map(t -> t.mapSecond(mergeContent()))
                 .map(t -> t.mapSecond(footnoteBody()))
+                .sorted(Comparator.comparingInt(t ->
+                        Integer.parseInt(t.getFirst().getValue())))
                 .map(Tuple::getSecond)
                 .collect(Collectors.joining());
     }
