@@ -61,12 +61,11 @@ public class MarkdownEpubRenderer
                 converter.convert(
                         Context.create(section, epubRenderHolder),
                         markdown
-                ).collect(joining())
-                        +
-                        //FIXME - asides should be withing the BODY and HTML tags of the above
-                        footnoteAsideGenerator.createFootnotes(section)
-                ;
-        byte[] content = contents.getBytes(StandardCharsets.UTF_8);
+                ).collect(joining());
+        String contentsWithAsides = contents.substring(0, contents.length() - 16)
+                + footnoteAsideGenerator.createFootnotes(section)
+                + contents.substring(contents.length() - 16);
+        byte[] content = contentsWithAsides.getBytes(StandardCharsets.UTF_8);
         Stream<Content> supplemental = Stream.empty();//footnoteHtmlContentGenerator.createFootnotes(section);
         return Stream.concat(
                 createContent(section, content),
