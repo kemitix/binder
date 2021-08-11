@@ -1,7 +1,6 @@
-package net.kemitix.binder.epub.mdconvert;
+package net.kemitix.binder.markdown;
 
 import com.vladsch.flexmark.util.ast.Node;
-import net.kemitix.binder.markdown.MarkdownConversionException;
 import net.kemitix.binder.spi.Context;
 
 import java.util.List;

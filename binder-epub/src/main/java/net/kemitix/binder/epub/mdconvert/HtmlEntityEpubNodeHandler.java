@@ -3,6 +3,7 @@ package net.kemitix.binder.epub.mdconvert;
 import com.vladsch.flexmark.util.ast.Node;
 import net.kemitix.binder.epub.EpubRenderHolder;
 import net.kemitix.binder.markdown.HtmlEntityNodeHandler;
+import net.kemitix.binder.markdown.UnsupportedHtmlEntityException;
 import net.kemitix.binder.spi.Context;
 
 import javax.enterprise.context.ApplicationScoped;
