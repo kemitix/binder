@@ -5,12 +5,13 @@ import net.kemitix.binder.markdown.MarkdownConversionException;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
 import net.kemitix.binder.spi.Metadata;
+import net.kemitix.mon.reader.Reader;
 import net.kemitix.mon.result.Result;
 import net.kemitix.mon.result.ResultVoid;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.io.File;
+import java.util.logging.Logger;
 
 @Log
 @ApplicationScoped
@@ -35,18 +36,46 @@ public class DocxWriter
     @Override
     public ResultVoid write() {
         DocxFacade docx = new DocxFacade(metadata);
-        return Result.ok(binderConfig.getDocxFile())
-                .map(File::getAbsolutePath)
-                .peek(docxFile -> log.info("Writing: " + docxFile))
-                .thenWithV(f -> () -> docxManuscript.writeToFile(f, docx)
-                        .onSuccess(() -> log.info("Wrote: " + f)))
-                .onError(MarkdownConversionException.class, e -> {
-                    log.severe(e.getMessage());
-                    log.severe("Node: " + e.getNode());
-                    log.severe("Context: " + e.getContext());
-                    log.severe("Content: " + e.getContent());
-                })
-                ;
+        return doWrite().run(new WriteDocxEnv() {
+            @Override
+            public Logger log() {
+                return null;
+            }
+
+            @Override
+            public String file() {
+                return binderConfig.getDocxFile().getAbsolutePath();
+            }
+
+            @Override
+            public DocxManuscript manuscript() {
+                return docxManuscript;
+            }
+
+            @Override
+            public DocxFacade docx() {
+                return docx;
+            }
+        });
     }
 
+    private static Reader<WriteDocxEnv, ResultVoid> doWrite() {
+        return env -> Result.ok(env.file())
+                .peek(docxFile -> env.log().info("Writing: " + docxFile))
+                .thenWithV(f -> () -> env.manuscript().writeToFile(f, env.docx())
+                        .onSuccess(() -> env.log().info("Wrote: " + f)))
+                .onError(MarkdownConversionException.class, e -> {
+                    env.log().severe(e.getMessage());
+                    env.log().severe("Node: " + e.getNode());
+                    env.log().severe("Context: " + e.getContext());
+                    env.log().severe("Content: " + e.getContent());
+                });
+    }
+
+    interface WriteDocxEnv {
+        Logger log();
+        String file();
+        DocxManuscript manuscript();
+        DocxFacade docx();
+    }
 }
