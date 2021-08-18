@@ -6,9 +6,10 @@ import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Metadata;
+import net.kemitix.mon.result.Result;
+import net.kemitix.mon.result.ResultVoid;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.jaxb.Context;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.PartName;
@@ -21,7 +22,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.Collection;
@@ -54,18 +54,15 @@ public class DocxManuscript {
         return metadata.getTitle();
     }
 
-    public void writeToFile(String fileName, DocxFacade docx) {
-        configureFontMapping();
-        try {
-            File file = new File(fileName);
-            log.info("Writing: " + file);
-            Files.deleteIfExists(file.toPath());
-            createMainDocument(docx).save(file);
-            log.info("Wrote: " + file);
-        } catch (Docx4JException | JAXBException | IOException e) {
-            throw new RuntimeException(
-                    "Error saving file: %s".formatted(fileName), e);
-        }
+    public ResultVoid writeToFile(String fileName, DocxFacade docx) {
+        return Result.ok()
+                .andThen(this::configureFontMapping)
+                .inject(() -> new File(fileName))
+                .peek(file -> log.info("Writing: " + file))
+                .thenWith(file -> () -> Files.deleteIfExists(file.toPath()))
+                .thenWith(file -> () -> createMainDocument(docx).save(file))
+                .peek(file -> log.info("Wrote: " + file))
+                .toVoid();
     }
 
     private void configureFontMapping() {

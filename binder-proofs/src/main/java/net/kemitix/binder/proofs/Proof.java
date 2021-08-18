@@ -8,6 +8,8 @@ import net.kemitix.binder.docx.DocxManuscript;
 import net.kemitix.binder.docx.DocxMdRenderer;
 import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Metadata;
+import net.kemitix.mon.result.Result;
+import net.kemitix.mon.result.ResultVoid;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,10 +35,11 @@ public class Proof
 
     @SneakyThrows
     @Override
-    public void writeToFile(String dirName, DocxFacade docx) {
+    public ResultVoid writeToFile(String dirName, DocxFacade docx) {
         var dirPath = getDirPath(dirName);
         var filePath = getFilePath(dirPath);
         super.writeToFile(filePath, docx);
+        return Result.ok();
     }
 
     private Path getDirPath(String dirName) throws IOException {

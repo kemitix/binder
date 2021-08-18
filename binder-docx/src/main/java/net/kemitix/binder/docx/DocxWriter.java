@@ -6,6 +6,7 @@ import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.mon.result.Result;
+import net.kemitix.mon.result.ResultVoid;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -32,7 +33,8 @@ public class DocxWriter
     }
 
     @Override
-    public Result<Void> write() {
+    public ResultVoid write() {
+        DocxFacade docx = new DocxFacade(metadata);
         return Result.ok(binderConfig.getDocxFile())
                 .map(File::getAbsolutePath)
                 .flatMap(this::writeDocxFile)

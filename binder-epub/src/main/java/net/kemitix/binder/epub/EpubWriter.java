@@ -9,6 +9,7 @@ import net.kemitix.binder.spi.BinderException;
 import net.kemitix.binder.spi.ManuscriptFormatException;
 import net.kemitix.binder.spi.ManuscriptWriter;
 import net.kemitix.mon.result.Result;
+import net.kemitix.mon.result.ResultVoid;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -32,10 +33,10 @@ public class EpubWriter implements ManuscriptWriter {
         this.epubBook = epubBook;
     }
 
-    public Result<Void> write() {
+    public ResultVoid write() {
         return Result.of(binderConfig::getEpubFile)
                 .map(File::getAbsolutePath)
-                .flatMap(this::writeEpubFile)
+                .flatMapV(this::writeEpubFile)
                 .onError(MarkdownConversionException.class, e -> {
                     log.severe(e.getMessage());
                     log.severe("Node: " + e.getNode());
@@ -44,7 +45,7 @@ public class EpubWriter implements ManuscriptWriter {
                 });
     }
 
-    private Result<Void> writeEpubFile(String epubFile) {
+    private ResultVoid writeEpubFile(String epubFile) {
         return Result.ofVoid(() -> {
             log.info("Writing: " + epubFile);
             epubBook.writeToFile(epubFile);

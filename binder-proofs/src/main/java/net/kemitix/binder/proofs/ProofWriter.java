@@ -6,6 +6,7 @@ import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.mon.result.Result;
+import net.kemitix.mon.result.ResultVoid;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -34,7 +35,7 @@ public class ProofWriter implements ManuscriptWriter {
     }
 
     @Override
-    public Result<Void> write() {
+    public ResultVoid write() {
         return Result.ok(binderConfig.getProofDir())
                 .map(File::getAbsolutePath)
                 .peek(proofDir -> log.info("Writing proofs to: " + proofDir))
@@ -42,15 +43,14 @@ public class ProofWriter implements ManuscriptWriter {
                 .peek(x -> log.info("Wrote proofs"));
     }
 
-    private Result<Void> writeProofs(String proofDir) {
+    private ResultVoid writeProofs(String proofDir) {
         return Result.applyOver(
                 proofs.stream(),
                 proof -> {
                     log.info("Creating proof: " + proof.getTitle());
                     var docx = new DocxFacade(metadata);
                     proof.writeToFile(proofDir, docx);
-                }
-        );
+                });
     }
 
 }

@@ -1,9 +1,9 @@
 package net.kemitix.binder.spi;
 
-import net.kemitix.mon.result.Result;
+import net.kemitix.mon.result.ResultVoid;
 
 public interface ManuscriptWriter {
 
-    Result<Void> write();
+    ResultVoid write();
 
 }
