@@ -39,8 +39,8 @@ public class ProofWriter implements ManuscriptWriter {
         return Result.ok(binderConfig.getProofDir())
                 .map(File::getAbsolutePath)
                 .peek(proofDir -> log.info("Writing proofs to: " + proofDir))
-                .flatMap(this::writeProofs)
-                .peek(x -> log.info("Wrote proofs"));
+                .thenWithV(d -> () -> writeProofs(d)
+                        .onSuccess(() -> log.info("Wrote proofs")));
     }
 
     private ResultVoid writeProofs(String proofDir) {

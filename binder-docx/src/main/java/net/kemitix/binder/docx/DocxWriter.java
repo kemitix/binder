@@ -37,7 +37,9 @@ public class DocxWriter
         DocxFacade docx = new DocxFacade(metadata);
         return Result.ok(binderConfig.getDocxFile())
                 .map(File::getAbsolutePath)
-                .flatMap(this::writeDocxFile)
+                .peek(docxFile -> log.info("Writing: " + docxFile))
+                .thenWithV(f -> () -> docxManuscript.writeToFile(f, docx)
+                        .onSuccess(() -> log.info("Wrote: " + f)))
                 .onError(MarkdownConversionException.class, e -> {
                     log.severe(e.getMessage());
                     log.severe("Node: " + e.getNode());
@@ -47,12 +49,4 @@ public class DocxWriter
                 ;
     }
 
-    private Result<Void> writeDocxFile(String docxFile) {
-        return Result.ofVoid(() -> {
-            log.info("Writing: " + docxFile);
-            var docx = new DocxFacade(metadata);
-            docxManuscript.writeToFile(docxFile, docx);
-            log.info("Wrote: " + docxFile);
-        });
-    }
 }
