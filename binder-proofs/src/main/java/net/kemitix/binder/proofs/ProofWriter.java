@@ -5,12 +5,16 @@ import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
 import net.kemitix.binder.spi.Metadata;
+import net.kemitix.mon.reader.Reader;
 import net.kemitix.mon.result.Result;
 import net.kemitix.mon.result.ResultVoid;
+import net.kemitix.mon.result.VoidCallable;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.File;
+import java.util.function.Function;
+import java.util.logging.Logger;
 
 /**
  * Writes the proof files to disk
@@ -36,21 +40,46 @@ public class ProofWriter implements ManuscriptWriter {
 
     @Override
     public ResultVoid write() {
-        return Result.ok(binderConfig.getProofDir())
-                .map(File::getAbsolutePath)
-                .peek(proofDir -> log.info("Writing proofs to: " + proofDir))
-                .thenWithV(d -> () -> writeProofs(d)
-                        .onSuccess(() -> log.info("Wrote proofs")));
+        DocxFacade docx = new DocxFacade(metadata);
+        return doWrite().run(new WriteProofEnv(){
+            @Override
+            public Logger log() {
+                return log;
+            }
+
+            @Override
+            public String dir() {
+                return binderConfig.getProofDir().getAbsolutePath();
+            }
+
+            @Override
+            public Proofs proofs() {
+                return proofs;
+            }
+
+            @Override
+            public DocxFacade docx() {
+                return docx;
+            }
+        });
     }
 
-    private ResultVoid writeProofs(String proofDir) {
-        return Result.applyOver(
-                proofs.stream(),
-                proof -> {
-                    log.info("Creating proof: " + proof.getTitle());
-                    var docx = new DocxFacade(metadata);
-                    proof.writeToFile(proofDir, docx);
-                });
+    private Reader<WriteProofEnv, ResultVoid> doWrite() {
+        return env -> Result
+                .ofVoid(() -> env.log().info("Writing proofs to: " + env.dir()))
+                .recover(e -> Result.applyOver(
+                        env.proofs().stream(),
+                        proof -> {
+                            env.log().info("Creating proof: " + proof.getTitle());
+                            proof.writeToFile(env.dir(), env.docx());
+                        }));
+    }
+
+    interface WriteProofEnv {
+        Logger log();
+        String dir();
+        Proofs proofs();
+        DocxFacade docx();
     }
 
 }
