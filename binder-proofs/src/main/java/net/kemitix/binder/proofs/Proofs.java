@@ -10,6 +10,7 @@ import net.kemitix.binder.docx.DocxMdRenderer;
 import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.binder.spi.Section;
+import org.docx4j.wml.ObjectFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -49,11 +50,36 @@ public class Proofs {
                 });
     }
 
-    public Stream<Proof> stream() {
+    public Stream<Proof.ProofEnv> stream() {
+        var objectFactory = new ObjectFactory();
         return contents.values().stream()
                 .map((ManuscriptWithContents content) ->
-                        new Proof(content.content, metadata,
-                                content.manuscript, docxMdRenderer));
+                        new Proof.ProofEnv() {
+                            @Override
+                            public DocxContent docxContent() {
+                                return content.content;
+                            }
+
+                            @Override
+                            public Metadata metadata() {
+                                return metadata;
+                            }
+
+                            @Override
+                            public ObjectFactory factory() {
+                                return objectFactory;
+                            }
+
+                            @Override
+                            public MdManuscript mdManuscript() {
+                                return content.manuscript;
+                            }
+
+                            @Override
+                            public DocxMdRenderer docxMdRenderer() {
+                                return docxMdRenderer;
+                            }
+                        });
     }
 
     @With

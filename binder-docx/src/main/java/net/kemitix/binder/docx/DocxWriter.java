@@ -4,10 +4,12 @@ import lombok.extern.java.Log;
 import net.kemitix.binder.markdown.MarkdownConversionException;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.ManuscriptWriter;
+import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Metadata;
 import net.kemitix.mon.reader.Reader;
 import net.kemitix.mon.result.Result;
 import net.kemitix.mon.result.ResultVoid;
+import org.docx4j.wml.ObjectFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -19,18 +21,21 @@ public class DocxWriter
         implements ManuscriptWriter {
 
     private final BinderConfig binderConfig;
-    private final DocxManuscript docxManuscript;
     private final Metadata metadata;
+    private final MdManuscript mdManuscript;
+    private final DocxMdRenderer docxMdRenderer;
 
     @Inject
     public DocxWriter(
             BinderConfig binderConfig,
-            DocxManuscript docxManuscript,
-            Metadata metadata
+            Metadata metadata,
+            MdManuscript mdManuscript,
+            DocxMdRenderer docxMdRenderer
     ) {
         this.binderConfig = binderConfig;
-        this.docxManuscript = docxManuscript;
         this.metadata = metadata;
+        this.mdManuscript = mdManuscript;
+        this.docxMdRenderer = docxMdRenderer;
     }
 
     @Override
@@ -39,7 +44,7 @@ public class DocxWriter
         return doWrite().run(new WriteDocxEnv() {
             @Override
             public Logger log() {
-                return null;
+                return DocxWriter.log;
             }
 
             @Override
@@ -48,13 +53,28 @@ public class DocxWriter
             }
 
             @Override
-            public DocxManuscript manuscript() {
-                return docxManuscript;
+            public DocxFacade docx() {
+                return docx;
             }
 
             @Override
-            public DocxFacade docx() {
-                return docx;
+            public Metadata metadata() {
+                return metadata;
+            }
+
+            @Override
+            public MdManuscript mdManuscript() {
+                return mdManuscript;
+            }
+
+            @Override
+            public ObjectFactory factory() {
+                return docx.factory();
+            }
+
+            @Override
+            public DocxMdRenderer docxMdRenderer() {
+                return docxMdRenderer;
             }
         });
     }
@@ -62,7 +82,28 @@ public class DocxWriter
     private static Reader<WriteDocxEnv, ResultVoid> doWrite() {
         return env -> Result.ok(env.file())
                 .peek(docxFile -> env.log().info("Writing: " + docxFile))
-                .thenWithV(f -> () -> env.manuscript().writeToFile(f, env.docx())
+                .thenWithV(f -> () -> DocxManuscript.writeToFile(f, env.docx())
+                        .run(new DocxManuscript.DocxManuscriptEnv() {
+                            @Override
+                            public Metadata metadata() {
+                                return env.metadata();
+                            }
+
+                            @Override
+                            public ObjectFactory factory() {
+                                return env.factory();
+                            }
+
+                            @Override
+                            public MdManuscript mdManuscript() {
+                                return env.mdManuscript();
+                            }
+
+                            @Override
+                            public DocxMdRenderer docxMdRenderer() {
+                                return env.docxMdRenderer();
+                            }
+                        })
                         .onSuccess(() -> env.log().info("Wrote: " + f)))
                 .onError(MarkdownConversionException.class, e -> {
                     env.log().severe(e.getMessage());
@@ -75,7 +116,10 @@ public class DocxWriter
     interface WriteDocxEnv {
         Logger log();
         String file();
-        DocxManuscript manuscript();
         DocxFacade docx();
+        Metadata metadata();
+        MdManuscript mdManuscript();
+        ObjectFactory factory();
+        DocxMdRenderer docxMdRenderer();
     }
 }

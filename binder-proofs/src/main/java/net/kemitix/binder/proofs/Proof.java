@@ -1,13 +1,10 @@
 package net.kemitix.binder.proofs;
 
-import lombok.SneakyThrows;
 import net.kemitix.binder.docx.DocxContent;
 import net.kemitix.binder.docx.DocxFacade;
 import net.kemitix.binder.docx.DocxFactory;
 import net.kemitix.binder.docx.DocxManuscript;
-import net.kemitix.binder.docx.DocxMdRenderer;
-import net.kemitix.binder.spi.MdManuscript;
-import net.kemitix.binder.spi.Metadata;
+import net.kemitix.mon.reader.Reader;
 import net.kemitix.mon.result.Result;
 import net.kemitix.mon.result.ResultVoid;
 
@@ -18,31 +15,26 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class Proof
-        extends DocxManuscript {
+public class Proof {
 
-    private final DocxContent docxContent;
-
-    public Proof(
-            DocxContent docxContent,
-            Metadata metadata,
-            MdManuscript mdManuscript,
-            DocxMdRenderer docxMdRenderer
-    )  {
-        super(metadata, mdManuscript, docxMdRenderer);
-        this.docxContent = docxContent;
+    public static Reader<ProofEnv, String> getTitle() {
+        return e -> e.metadata().getTitle();
     }
 
-    @SneakyThrows
-    @Override
-    public ResultVoid writeToFile(String dirName, DocxFacade docx) {
-        var dirPath = getDirPath(dirName);
-        var filePath = getFilePath(dirPath);
-        super.writeToFile(filePath, docx);
-        return Result.ok();
+    public static Reader<ProofEnv, ResultVoid> writeToFile(
+            String dirName,
+            DocxFacade docx
+    ) {
+        return env ->
+                Result.of(() -> getDirPath(dirName))
+                        .map(Proof::getFilePath)
+                        .map(fp -> fp.run(env))
+                        .flatMapV(filePath ->
+                                DocxManuscript.writeToFile(filePath, docx)
+                                        .run(env));
     }
 
-    private Path getDirPath(String dirName) throws IOException {
+    private static Path getDirPath(String dirName) throws IOException {
         var dirPath = Paths.get(dirName);
         if (!dirPath.toFile().exists()) {
             Files.createDirectory(dirPath);
@@ -50,23 +42,29 @@ public class Proof
         return dirPath;
     }
 
-    private String getFilePath(Path dirPath) {
-        return dirPath
-                .resolve(getFileName())
+    private static Reader<ProofEnv, String> getFilePath(Path dirPath) {
+        return env -> dirPath
+                .resolve(getFileName().run(env))
                 .toFile()
                 .getAbsolutePath();
     }
 
-    private String getFileName() {
-        return "%s.docx".formatted(docxContent.getSectionName().getValue());
+    private static Reader<ProofEnv, String> getFileName() {
+        return env -> "%s.docx".formatted(
+                env.docxContent().getSectionName().getValue());
     }
 
-    @Override
-    protected Collection<?> getContents(DocxFacade docx) {
-        var contents = new DocxFactory()
-                .create(getMdManuscript(), getDocxMdRenderer(), () -> docx);
-        return contents.stream()
-                .flatMap(docxContent -> docxContent.getContents().stream())
-                .collect(Collectors.toList());
+    private Reader<ProofEnv, Collection<?>> getContents(DocxFacade docx) {
+        return env -> {
+            var contents = new DocxFactory()
+                    .create(env.mdManuscript(), env.docxMdRenderer(), () -> docx);
+            return contents.stream()
+                    .flatMap(docxContent -> docxContent.getContents().stream())
+                    .collect(Collectors.toList());
+        };
+    }
+
+    interface ProofEnv extends DocxManuscript.DocxManuscriptEnv {
+        DocxContent docxContent();
     }
 }

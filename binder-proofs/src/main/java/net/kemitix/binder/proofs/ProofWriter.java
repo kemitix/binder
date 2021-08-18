@@ -8,12 +8,9 @@ import net.kemitix.binder.spi.Metadata;
 import net.kemitix.mon.reader.Reader;
 import net.kemitix.mon.result.Result;
 import net.kemitix.mon.result.ResultVoid;
-import net.kemitix.mon.result.VoidCallable;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.io.File;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
@@ -67,11 +64,12 @@ public class ProofWriter implements ManuscriptWriter {
     private static Reader<WriteProofEnv, ResultVoid> doWrite() {
         return env -> Result
                 .ofVoid(() -> env.log().info("Writing proofs to: " + env.dir()))
-                .recover(e -> Result.applyOver(
+                .andThen(() -> Result.applyOver(
                         env.proofs().stream(),
-                        proof -> {
-                            env.log().info("Creating proof: " + proof.getTitle());
-                            proof.writeToFile(env.dir(), env.docx());
+                        proofEnv -> {
+                            final String title = Proof.getTitle().run(proofEnv);
+                            env.log().info("Creating proof: " + title);
+                            Proof.writeToFile(env.dir(), env.docx()).run(proofEnv);
                         }));
     }
 

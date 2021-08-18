@@ -1,13 +1,13 @@
 package net.kemitix.binder.docx;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Metadata;
+import net.kemitix.mon.reader.Reader;
 import net.kemitix.mon.result.Result;
 import net.kemitix.mon.result.ResultVoid;
+import net.kemitix.mon.result.VoidCallable;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
@@ -16,220 +16,242 @@ import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.openpackaging.parts.WordprocessingML.FontTablePart;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.docx4j.openpackaging.parts.WordprocessingML.NumberingDefinitionsPart;
-import org.docx4j.wml.*;
+import org.docx4j.wml.CTVerticalAlignRun;
+import org.docx4j.wml.Fonts;
+import org.docx4j.wml.HpsMeasure;
+import org.docx4j.wml.ObjectFactory;
+import org.docx4j.wml.PPr;
+import org.docx4j.wml.PPrBase;
+import org.docx4j.wml.RFonts;
+import org.docx4j.wml.RPr;
+import org.docx4j.wml.STVerticalAlignRun;
+import org.docx4j.wml.Style;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Log
-@ApplicationScoped
 public class DocxManuscript {
 
-    private final Metadata metadata;
-    @Getter(AccessLevel.PROTECTED)
-    private final MdManuscript mdManuscript;
-    @Getter(AccessLevel.PROTECTED)
-    private final DocxMdRenderer docxMdRenderer;
-    private final ObjectFactory factory = new ObjectFactory();
-
-    @Inject
-    public DocxManuscript(
-            Metadata metadata,
-            MdManuscript mdManuscript,
-            DocxMdRenderer docxMdRenderer
+    public static Reader<DocxManuscriptEnv, ResultVoid> writeToFile(
+            String fileName,
+            DocxFacade docx
     ) {
-        this.metadata = metadata;
-        this.mdManuscript = mdManuscript;
-        this.docxMdRenderer = docxMdRenderer;
-    }
-
-    public String getTitle() {
-        return metadata.getTitle();
-    }
-
-    public ResultVoid writeToFile(String fileName, DocxFacade docx) {
-        return Result.ok()
-                .andThen(this::configureFontMapping)
+        return env -> Result.ok()
+                .andThen(DocxManuscript::configureFontMapping)
                 .inject(() -> new File(fileName))
-                .peek(file -> log.info("Writing: " + file))
+                .peek(file -> env.log().info("Writing: " + file))
                 .thenWith(file -> () -> Files.deleteIfExists(file.toPath()))
-                .thenWith(file -> () -> createMainDocument(docx).save(file))
-                .peek(file -> log.info("Wrote: " + file))
+                .thenWith(file -> () -> createMainDocument(docx).run(env)
+                        .flatMapV(mlPackage -> Result.ofVoid(() ->
+                                mlPackage.save(file)))
+                )
+                .peek(file -> env.log().info("Wrote: " + file))
                 .toVoid();
     }
 
-    private void configureFontMapping() {
+    private static void configureFontMapping() {
         RFonts rfonts = Context.getWmlObjectFactory().createRFonts();
         rfonts.setAscii("Century Gothic");
         XHTMLImporterImpl.addFontMapping("Century Gothic", rfonts);
     }
 
-    private WordprocessingMLPackage createMainDocument(DocxFacade docx)
-            throws InvalidFormatException, JAXBException {
-        var wordMLPackage = docx.getMlPackage();
-        var mainDocument = wordMLPackage.getMainDocumentPart();
-        mainDocument.addTargetPart(numberingDefinitionPart());
-        fontDefinitionsPart(mainDocument);
-        styleDefinitionsPart(mainDocument, docx);
-        enabledEvenAndOddHeaders(mainDocument);
-        mainDocument.getContent().addAll(getContents(docx));
-        return wordMLPackage;
+    private static Reader<DocxManuscriptEnv, Result<WordprocessingMLPackage>> createMainDocument(
+            DocxFacade docx
+    ) {
+        return env -> Result.of(docx::getMlPackage)
+                .thenWith(wordMLPackage -> () -> {
+                    var mainDocument = wordMLPackage.getMainDocumentPart();
+                    mainDocument.addTargetPart(numberingDefinitionPart());
+                    fontDefinitionsPart(mainDocument);
+
+                    styleDefinitionsPart(mainDocument, docx).run(env);
+                    enabledEvenAndOddHeaders(mainDocument).run(env);
+
+                    mainDocument.getContent().addAll(getContents(docx).run(env));
+                });
     }
 
     // headers: add "<w:evenAndOddHeaders/>" to settings.xml
-    private void enabledEvenAndOddHeaders(MainDocumentPart mainDocument) {
-        mainDocument
+    private static Reader<DocxManuscriptEnv, ResultVoid> enabledEvenAndOddHeaders(
+            MainDocumentPart mainDocument
+    ) {
+        return env -> Result.ofVoid(() -> mainDocument
                 .getDocumentSettingsPart()
                 .getJaxbElement()
-                .setEvenAndOddHeaders(factory.createBooleanDefaultTrue());
+                .setEvenAndOddHeaders(env.factory().createBooleanDefaultTrue()));
+    }
+
+    private static ResultVoid fontDefinitionsPart(MainDocumentPart mainDocument) {
+        return Result.ofVoid(() -> {
+            FontTablePart part = new FontTablePart(new PartName("/word/fontTable.xml"));
+            mainDocument.addTargetPart(part);
+            Fonts defaultFonts = (Fonts) part.unmarshalDefaultFonts();
+            part.setJaxbElement(defaultFonts);
+        });
     }
 
     @SneakyThrows
-    private void fontDefinitionsPart(MainDocumentPart mainDocument) {
-        FontTablePart part = new FontTablePart(new PartName("/word/fontTable.xml"));
-        mainDocument.addTargetPart(part);
-        Fonts defaultFonts = (Fonts) part.unmarshalDefaultFonts();
-        part.setJaxbElement(defaultFonts);
-    }
+    private static Reader<DocxManuscriptEnv, ResultVoid> styleDefinitionsPart(
+            MainDocumentPart mainDocument,
+            DocxFacade docx
+    ) {
+        return env -> Result.ofVoid(() -> {
+            var part = mainDocument.getStyleDefinitionsPart(true);
 
-    @SneakyThrows
-    private void styleDefinitionsPart(MainDocumentPart mainDocument, DocxFacade docx) {
-        var part = mainDocument.getStyleDefinitionsPart(true);
+            List<Style> styles = part.getContents().getStyle();
 
-        List<Style> styles = part.getContents().getStyle();
-        styles.add(styleFootnote(docx));
-        styles.add(styleFootnoteAnchor());
-        styles.add(styleFootnoteCharacters(docx));
+            styles.add(styleFootnote(docx).run(env));
+            styles.add(styleFootnoteAnchor().run(env));
+            styles.add(styleFootnoteCharacters(docx).run(env));
 
-        RFonts rFonts = factory.createRFonts();
-        rFonts.setAscii("Cambria");
-        rFonts.setHAnsi("Cambria");
+            RFonts rFonts = env.factory().createRFonts();
+            rFonts.setAscii("Cambria");
+            rFonts.setHAnsi("Cambria");
 
-        RPr rpr = factory.createRPr();
-        rpr.setRFonts(rFonts);
+            RPr rpr = env.factory().createRPr();
+            rpr.setRFonts(rFonts);
 
-        String normalId = part.getIDForStyleName("Normal");
-        Style normal = part.getStyleById(normalId);
-        normal.setRPr(rpr);
+            String normalId = part.getIDForStyleName("Normal");
+            Style normal = part.getStyleById(normalId);
+            normal.setRPr(rpr);
+        });
     }
 
     // The character that appears in the body of the text indicating
     // that there is a footnote.
-    private Style styleFootnoteAnchor() {
-        Style style = factory.createStyle();
+    private static Reader<DocxManuscriptEnv, Style> styleFootnoteAnchor() {
+        return env -> {
+            Style style = env.factory().createStyle();
 
-        style.setType("character");
-        style.setStyleId("FootnoteAnchor");
+            style.setType("character");
+            style.setStyleId("FootnoteAnchor");
 
-        Style.Name name = new Style.Name();
-        name.setVal("Footnote Anchor");
-        style.setName(name);
+            Style.Name name = new Style.Name();
+            name.setVal("Footnote Anchor");
+            style.setName(name);
 
-        // Superscript
-        RPr rPr = factory.createRPr();
-        CTVerticalAlignRun ctVerticalAlignRun = factory.createCTVerticalAlignRun();
-        ctVerticalAlignRun.setVal(STVerticalAlignRun.SUPERSCRIPT);
-        rPr.setVertAlign(ctVerticalAlignRun);
-        style.setRPr(rPr);
+            // Superscript
+            RPr rPr = env.factory().createRPr();
+            CTVerticalAlignRun ctVerticalAlignRun = env.factory().createCTVerticalAlignRun();
+            ctVerticalAlignRun.setVal(STVerticalAlignRun.SUPERSCRIPT);
+            rPr.setVertAlign(ctVerticalAlignRun);
+            style.setRPr(rPr);
 
-        return style;
+            return style;
+        };
     }
 
     // The character within the footnote indicating the id of the
     // footnote. Matches the character that appears in the footnote
     // anchor.
-    private Style styleFootnoteCharacters(DocxFacadeStyleMixIn docx) {
-        Style style = factory.createStyle();
+    private static Reader<DocxManuscriptEnv, Style> styleFootnoteCharacters(DocxFacadeStyleMixIn docx) {
+        return env -> {
+            Style style = env.factory().createStyle();
 
-        style.setType("character");
-        style.setStyleId("FootnoteCharacters");
+            style.setType("character");
+            style.setStyleId("FootnoteCharacters");
 
-        Style.Name name = new Style.Name();
-        name.setVal("Footnote Characters");
-        style.setName(name);
+            Style.Name name = new Style.Name();
+            name.setVal("Footnote Characters");
+            style.setName(name);
 
-        // Font size 11pt (i.e. 22 /2)
-        RPr rPr = factory.createRPr();
-        HpsMeasure sz = docx.sz(metadata.getPaperbackFootnoteFontSize());
-        rPr.setSz(sz);
-        rPr.setSzCs(sz);
-        style.setRPr(rPr);
+            // Font size 11pt (i.e. 22 /2)
+            RPr rPr = env.factory().createRPr();
+            HpsMeasure sz = docx.sz(env.metadata().getPaperbackFootnoteFontSize());
+            rPr.setSz(sz);
+            rPr.setSzCs(sz);
+            style.setRPr(rPr);
 
-        // <w:qFormat/>
-        style.setQFormat(factory.createBooleanDefaultTrue());
+            // <w:qFormat/>
+            style.setQFormat(env.factory().createBooleanDefaultTrue());
 
-        return style;
+            return style;
+        };
     }
 
     // The body of the footnote text.
-    private Style styleFootnote(DocxFacade docx) {
-        Style style = factory.createStyle();
+    private static Reader<DocxManuscriptEnv, Style> styleFootnote(DocxFacade docx) {
+        return env -> {
+            Style style = env.factory().createStyle();
 
-        style.setType("paragraph");
-        style.setStyleId("Footnote");
+            style.setType("paragraph");
+            style.setStyleId("Footnote");
 
-        Style.BasedOn normal = new Style.BasedOn();
-        normal.setVal("Normal");
-        style.setBasedOn(normal);
+            Style.BasedOn normal = new Style.BasedOn();
+            normal.setVal("Normal");
+            style.setBasedOn(normal);
 
-        Style.Name name = new Style.Name();
-        name.setVal("Footnote Text");
-        style.setName(name);
+            Style.Name name = new Style.Name();
+            name.setVal("Footnote Text");
+            style.setName(name);
 
-        PPr pPr = factory.createPPr();
+            PPr pPr = env.factory().createPPr();
 
-        pPr.setSuppressLineNumbers(factory.createBooleanDefaultTrue());
+            pPr.setSuppressLineNumbers(env.factory().createBooleanDefaultTrue());
 
-        // fully justified
-        pPr.setJc(docx.jc(docx.alignmentBoth()));
+            // fully justified
+            pPr.setJc(docx.jc(docx.alignmentBoth()));
 
-        // indent margins
-        PPrBase.Ind ind = factory.createPPrBaseInd();
-        BigInteger margin = BigInteger.valueOf(400);
-        ind.setLeft(margin);
-        ind.setRight(margin);
-        ind.setHanging(margin);
-        pPr.setInd(ind);
+            // indent margins
+            PPrBase.Ind ind = env.factory().createPPrBaseInd();
+            BigInteger margin = BigInteger.valueOf(400);
+            ind.setLeft(margin);
+            ind.setRight(margin);
+            ind.setHanging(margin);
+            pPr.setInd(ind);
 
-        // do not put space between paragraphs of the same style
-        PPrBase.Spacing spacing = factory.createPPrBaseSpacing();
-        spacing.setBefore(BigInteger.ZERO);
-        spacing.setAfter(BigInteger.valueOf(75));
-        pPr.setSpacing(spacing);
+            // do not put space between paragraphs of the same style
+            PPrBase.Spacing spacing = env.factory().createPPrBaseSpacing();
+            spacing.setBefore(BigInteger.ZERO);
+            spacing.setAfter(BigInteger.valueOf(75));
+            pPr.setSpacing(spacing);
 //        pPr.setContextualSpacing(factory.createBooleanDefaultTrue());
 
-        style.setPPr(pPr);
+            style.setPPr(pPr);
 
-        // Font size 10pt (i.e. 20 /2)
-        RPr rPr = factory.createRPr();
-        HpsMeasure sz = docx.sz(metadata.getPaperbackFootnoteFontSize());
-        rPr.setSz(sz);
-        rPr.setSzCs(sz);
-        style.setRPr(rPr);
+            // Font size 10pt (i.e. 20 /2)
+            RPr rPr = env.factory().createRPr();
+            HpsMeasure sz = docx.sz(env.metadata().getPaperbackFootnoteFontSize());
+            rPr.setSz(sz);
+            rPr.setSzCs(sz);
+            style.setRPr(rPr);
 
-        return style;
+            return style;
+        };
     }
 
-    private NumberingDefinitionsPart numberingDefinitionPart()
+    private static NumberingDefinitionsPart numberingDefinitionPart()
             throws InvalidFormatException, JAXBException {
         var part = new NumberingDefinitionsPart();
         part.unmarshalDefaultNumbering();
         return part;
     }
 
-    protected Collection<?> getContents(DocxFacade docx) {
-        var contents = new DocxFactory()
-                .create(mdManuscript, docxMdRenderer, DocxRenderHolder.create(docx));
-        return contents.stream()
-                .flatMap(docxContent -> docxContent.getContents().stream())
-                .collect(Collectors.toList());
+    protected static Reader<DocxManuscriptEnv, Collection<?>> getContents(DocxFacade docx) {
+        return env -> {
+            var contents = new DocxFactory()
+                    .create(env.mdManuscript(), env.docxMdRenderer(), DocxRenderHolder.create(docx));
+            return contents.stream()
+                    .flatMap(docxContent -> docxContent.getContents().stream())
+                    .collect(Collectors.toList());
+        };
+    }
+
+    public interface DocxManuscriptEnv {
+        default Logger log() {
+            return DocxManuscript.log;
+        }
+        Metadata metadata();
+        ObjectFactory factory();
+        MdManuscript mdManuscript();
+        DocxMdRenderer docxMdRenderer();
     }
 
 }
