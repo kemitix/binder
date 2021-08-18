@@ -64,7 +64,7 @@ public class ProofWriter implements ManuscriptWriter {
         });
     }
 
-    private Reader<WriteProofEnv, ResultVoid> doWrite() {
+    private static Reader<WriteProofEnv, ResultVoid> doWrite() {
         return env -> Result
                 .ofVoid(() -> env.log().info("Writing proofs to: " + env.dir()))
                 .recover(e -> Result.applyOver(
