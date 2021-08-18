@@ -37,13 +37,13 @@
 
     <dependencyManagement>
         <dependencies>
-          <dependency>
-            <groupId>org.eclipse.microprofile</groupId>
-            <artifactId>microprofile</artifactId>
-            <version>${microprofile.version}</version>
-            <type>pom</type>
-            <scope>provided</scope>
-          </dependency>
+            <dependency>
+                <groupId>org.eclipse.microprofile</groupId>
+                <artifactId>microprofile</artifactId>
+                <version>${microprofile.version}</version>
+                <type>pom</type>
+                <scope>provided</scope>
+            </dependency>
             <dependency>
                 <groupId>net.kemitix.binder</groupId>
                 <artifactId>binder</artifactId>
