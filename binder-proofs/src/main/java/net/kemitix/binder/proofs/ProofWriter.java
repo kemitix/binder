@@ -37,7 +37,6 @@ public class ProofWriter implements ManuscriptWriter {
 
     @Override
     public ResultVoid write() {
-        DocxFacade docx = new DocxFacade(metadata);
         return doWrite().run(new WriteProofEnv(){
             @Override
             public Logger log() {
@@ -56,7 +55,7 @@ public class ProofWriter implements ManuscriptWriter {
 
             @Override
             public DocxFacade docx() {
-                return docx;
+                return new DocxFacade(metadata);
             }
         });
     }
