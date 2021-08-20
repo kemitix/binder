@@ -70,11 +70,11 @@ public class DocxManuscript {
                     var mainDocument = wordMLPackage.getMainDocumentPart();
                     mainDocument.addTargetPart(numberingDefinitionPart());
                     fontDefinitionsPart(mainDocument);
-
-                    styleDefinitionsPart(mainDocument, docx).run(env);
-                    enabledEvenAndOddHeaders(mainDocument).run(env);
-
-                    mainDocument.getContent().addAll(getContents(docx).run(env));
+                    styleDefinitionsPart(mainDocument, docx)
+                            .flatMap(v -> enabledEvenAndOddHeaders(mainDocument))
+                            .flatMap(v -> getContents(docx))
+                            .map(contents -> mainDocument.getContent().addAll(contents))
+                            .run(env);
                 });
     }
 
