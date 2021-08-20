@@ -7,7 +7,6 @@ import net.kemitix.binder.spi.Metadata;
 import net.kemitix.mon.reader.Reader;
 import net.kemitix.mon.result.Result;
 import net.kemitix.mon.result.ResultVoid;
-import net.kemitix.mon.result.VoidCallable;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.InvalidFormatException;
@@ -66,15 +65,16 @@ public class DocxManuscript {
             DocxFacade docx
     ) {
         return env -> Result.of(docx::getMlPackage)
-                .thenWith(wordMLPackage -> () -> {
-                    var mainDocument = wordMLPackage.getMainDocumentPart();
-                    mainDocument.addTargetPart(numberingDefinitionPart());
-                    fontDefinitionsPart(mainDocument);
-                    styleDefinitionsPart(mainDocument, docx)
-                            .flatMap(v -> enabledEvenAndOddHeaders(mainDocument))
-                            .flatMap(v -> getContents(docx))
-                            .map(contents -> mainDocument.getContent().addAll(contents))
-                            .run(env);
+                .onSuccess(mlPackage -> {
+                    var doc = mlPackage.getMainDocumentPart();
+                    Result.of(DocxManuscript::numberingDefinitionPart)
+                            .map(doc::addTargetPart).toVoid()
+                            .andThen(() -> fontDefinitionsPart(doc))
+                            .andThen(() -> styleDefinitionsPart(doc, docx)
+                                    .flatMap(v -> enabledEvenAndOddHeaders(doc))
+                                    .flatMap(v -> getContents(docx))
+                                    .map(contents -> doc.getContent().addAll(contents))
+                                    .run(env));
                 });
     }
 
