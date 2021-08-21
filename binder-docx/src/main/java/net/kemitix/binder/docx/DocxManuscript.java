@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Log
 public class DocxManuscript {
@@ -107,9 +108,11 @@ public class DocxManuscript {
 
             List<Style> styles = part.getContents().getStyle();
 
-            styles.add(styleFootnote(docx).run(env));
-            styles.add(styleFootnoteAnchor().run(env));
-            styles.add(styleFootnoteCharacters(docx).run(env));
+            Stream.of(styleFootnote(docx),
+                            styleFootnoteAnchor(),
+                            styleFootnoteCharacters(docx))
+                    .map(styleReader -> styleReader.run(env))
+                    .forEach(styles::add);
 
             RFonts rFonts = env.factory().createRFonts();
             rFonts.setAscii("Cambria");
