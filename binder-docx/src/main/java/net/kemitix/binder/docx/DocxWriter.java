@@ -40,8 +40,18 @@ public class DocxWriter
 
     @Override
     public ResultVoid write() {
-        DocxFacade docx = new DocxFacade(metadata);
-        return doWrite().run(new WriteDocxEnv() {
+        return doWrite()
+                .run(createWriteDocxEnv(binderConfig, metadata, mdManuscript, docxMdRenderer));
+    }
+
+    private static WriteDocxEnv createWriteDocxEnv(
+            final BinderConfig binderConfig,
+            final Metadata metadata,
+            final MdManuscript mdManuscript,
+            final DocxMdRenderer docxMdRenderer
+    ) {
+        DocxFacade docxFacade = new DocxFacade(metadata);
+        return new WriteDocxEnv() {
             @Override
             public Logger log() {
                 return DocxWriter.log;
@@ -54,7 +64,7 @@ public class DocxWriter
 
             @Override
             public DocxFacade docx() {
-                return docx;
+                return docxFacade;
             }
 
             @Override
@@ -69,48 +79,56 @@ public class DocxWriter
 
             @Override
             public ObjectFactory factory() {
-                return docx.factory();
+                return docxFacade.factory();
             }
 
             @Override
             public DocxMdRenderer docxMdRenderer() {
                 return docxMdRenderer;
             }
-        });
+        };
     }
 
     private static Reader<WriteDocxEnv, ResultVoid> doWrite() {
-        return env -> Result.ok(env.file())
-                .peek(docxFile -> env.log().info("Writing: " + docxFile))
-                .thenWithV(f -> () -> DocxManuscript.writeToFile(f, env.docx())
-                        .run(new DocxManuscript.DocxManuscriptEnv() {
-                            @Override
-                            public Metadata metadata() {
-                                return env.metadata();
-                            }
+        return env -> {
+            var log = env.log();
+            return Result.ok(env.file())
+                    .peek(docxFile -> log.info("Writing: " + docxFile))
+                    .thenWithV(docxFile -> () ->
+                            DocxManuscript.writeToFile(docxFile, env.docx())
+                                    .run(createDocxManuscriptEnv(env))
+                                    .onSuccess(() -> log.info("Wrote: " + docxFile)))
+                    .onError(MarkdownConversionException.class, e -> {
+                        log.severe(e.getMessage());
+                        log.severe("Node: " + e.getNode());
+                        log.severe("Context: " + e.getContext());
+                        log.severe("Content: " + e.getContent());
+                    });
+        };
+    }
 
-                            @Override
-                            public ObjectFactory factory() {
-                                return env.factory();
-                            }
+    private static DocxManuscript.DocxManuscriptEnv createDocxManuscriptEnv(WriteDocxEnv env) {
+        return new DocxManuscript.DocxManuscriptEnv() {
+            @Override
+            public Metadata metadata() {
+                return env.metadata();
+            }
 
-                            @Override
-                            public MdManuscript mdManuscript() {
-                                return env.mdManuscript();
-                            }
+            @Override
+            public ObjectFactory factory() {
+                return env.factory();
+            }
 
-                            @Override
-                            public DocxMdRenderer docxMdRenderer() {
-                                return env.docxMdRenderer();
-                            }
-                        })
-                        .onSuccess(() -> env.log().info("Wrote: " + f)))
-                .onError(MarkdownConversionException.class, e -> {
-                    env.log().severe(e.getMessage());
-                    env.log().severe("Node: " + e.getNode());
-                    env.log().severe("Context: " + e.getContext());
-                    env.log().severe("Content: " + e.getContent());
-                });
+            @Override
+            public MdManuscript mdManuscript() {
+                return env.mdManuscript();
+            }
+
+            @Override
+            public DocxMdRenderer docxMdRenderer() {
+                return env.docxMdRenderer();
+            }
+        };
     }
 
     interface WriteDocxEnv {
