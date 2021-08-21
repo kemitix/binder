@@ -2,6 +2,7 @@ package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.EpubBook;
 import lombok.extern.java.Log;
+import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.markdown.MarkdownConversionException;
 import net.kemitix.binder.markdown.MarkdownOutputException;
 import net.kemitix.binder.spi.BinderConfig;
@@ -35,7 +36,15 @@ public class EpubWriter implements ManuscriptWriter {
     }
 
     public ResultVoid write() {
-        return doWrite().run(new WriteEpubEnv() {
+        return doWrite()
+                .run(createWriteEpubEnv(binderConfig, epubBook));
+    }
+
+    private static WriteEpubEnv createWriteEpubEnv(
+            final BinderConfig binderConfig,
+            final EpubBook epubBook
+    ) {
+        return new WriteEpubEnv() {
             @Override
             public String file() {
                 return binderConfig.getEpubFile().getAbsolutePath();
@@ -48,32 +57,37 @@ public class EpubWriter implements ManuscriptWriter {
 
             @Override
             public Logger log() {
-                return log;
+                return EpubWriter.log;
             }
-        });
+        };
     }
 
     private static Reader<WriteEpubEnv , ResultVoid> doWrite() {
-        return env -> Result
-                .ofVoid(() -> env.log().info("Writing: " + env.file()))
-                .andThen(() -> env.book().writeToFile(env.file()))
-                .andThen(() -> env.log().info("Wrote: " + env.file()))
+        return env -> {
+            var log = env.log();
+            var file = env.file();
+            var book = env.book();
+            return Result
+                    .ofVoid(() -> log.info("Writing: " + file))
+                    .andThen(() -> book.writeToFile(file))
+                    .andThen(() -> log.info("Wrote: " + file))
 
-                .onError(ManuscriptFormatException.class, e ->
-                        new BinderException(String.format(
-                                "Error creating epub file %s", env.file()), e))
+                    .onError(ManuscriptFormatException.class, e ->
+                            new BinderException(String.format(
+                                    "Error creating epub file %s", file), e))
 
-                .onError(MarkdownOutputException.class, e ->
-                        new BinderException(String.format(
-                                "Error creating epub file %s: %s [%s]",
-                                env.file(), e.getMessage(), e.getOutput()), e))
+                    .onError(MarkdownOutputException.class, e ->
+                            new BinderException(String.format(
+                                    "Error creating epub file %s: %s [%s]",
+                                    file, e.getMessage(), e.getOutput()), e))
 
-                .onError(MarkdownConversionException.class, e -> {
-                    env.log().severe(e.getMessage());
-                    env.log().severe("Node: " + e.getNode());
-                    env.log().severe("Context: " + e.getContext());
-                    env.log().severe("Content: " + e.getContent());
-                });
+                    .onError(MarkdownConversionException.class, e -> {
+                        log.severe(e.getMessage());
+                        log.severe("Node: " + e.getNode());
+                        log.severe("Context: " + e.getContext());
+                        log.severe("Content: " + e.getContent());
+                    });
+        };
     }
 
     interface WriteEpubEnv {
