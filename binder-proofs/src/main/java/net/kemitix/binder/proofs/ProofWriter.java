@@ -37,7 +37,28 @@ public class ProofWriter implements ManuscriptWriter {
 
     @Override
     public ResultVoid write() {
-        return doWrite().run(new WriteProofEnv(){
+        return doWrite().run(createEnv(log, binderConfig, proofs, metadata));
+    }
+
+    private static Reader<WriteProofEnv, ResultVoid> doWrite() {
+        return env -> Result
+                .ofVoid(() -> env.log().info("Writing proofs to: " + env.dir()))
+                .andThen(() -> Result.applyOver(
+                        env.proofs().stream(),
+                        proofEnv -> {
+                            final String title = Proof.getTitle().run(proofEnv);
+                            env.log().info("Creating proof: " + title);
+                            Proof.writeToFile(env.dir(), env.docx()).run(proofEnv);
+                        }));
+    }
+
+    static WriteProofEnv createEnv(
+            Logger log,
+            BinderConfig binderConfig,
+            Proofs proofs,
+            Metadata metadata
+    ) {
+        return new WriteProofEnv() {
             @Override
             public Logger log() {
                 return log;
@@ -57,22 +78,11 @@ public class ProofWriter implements ManuscriptWriter {
             public DocxFacade docx() {
                 return new DocxFacade(metadata);
             }
-        });
-    }
-
-    private static Reader<WriteProofEnv, ResultVoid> doWrite() {
-        return env -> Result
-                .ofVoid(() -> env.log().info("Writing proofs to: " + env.dir()))
-                .andThen(() -> Result.applyOver(
-                        env.proofs().stream(),
-                        proofEnv -> {
-                            final String title = Proof.getTitle().run(proofEnv);
-                            env.log().info("Creating proof: " + title);
-                            Proof.writeToFile(env.dir(), env.docx()).run(proofEnv);
-                        }));
+        };
     }
 
     interface WriteProofEnv {
+
         Logger log();
         String dir();
         Proofs proofs();
