@@ -32,9 +32,9 @@ public interface DocxFacadeSectionMixIn
                 .collect(Collectors.toList());
         SectPr sectPrContent = sectPr(sectionPs);
         SectPr sectPrType =
-        context.startOnOddPage()
-                ? sectPrType("oddPage", sectPrContent)
-                : sectPrContent;
+                context.startOnOddPage()
+                        ? sectPrType("oddPage", sectPrContent)
+                        : sectPrContent;
         SectPr sectPr = sizePage(sectPrType);
         if (context.hasHeader()) {
             addDefaultPageHeader(sectPr, context.getName(), p());
