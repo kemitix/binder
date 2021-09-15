@@ -23,7 +23,7 @@
         <lombok.version>1.18.20</lombok.version>
         <assertj.version>3.20.2</assertj.version>
         <junit.version>5.8.0</junit.version>
-        <mockito-junit-jupiter.version>3.11.2</mockito-junit-jupiter.version>
+        <mockito-junit-jupiter.version>3.12.4</mockito-junit-jupiter.version>
         <snakeyaml.version>1.29</snakeyaml.version>
         <epub-creator.version>1.1.0</epub-creator.version>
         <docx4j-ImportXHTML.version>8.2.1</docx4j-ImportXHTML.version>
