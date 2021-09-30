@@ -32,9 +32,9 @@ public interface DocxFacadeSectionMixIn
                 .collect(Collectors.toList());
         SectPr sectPrContent = sectPr(sectionPs);
         SectPr sectPrType =
-        context.startOnOddPage()
-                ? sectPrType("oddPage", sectPrContent)
-                : sectPrContent;
+                context.startOnOddPage()
+                        ? sectPrType("oddPage", sectPrContent)
+                        : sectPrContent;
         SectPr sectPr = sizePage(sectPrType);
         if (context.hasHeader()) {
             addDefaultPageHeader(sectPr, context.getName(), p());
@@ -65,11 +65,9 @@ public interface DocxFacadeSectionMixIn
         String title = context.getTitle();
         if (context.hasHeader()) {
             addEvenPageHeader(sectPr, name, textParagraphCentered(title));
+            String oddPageHeadingText = metadata().getTitle();
             addDefaultPageHeader(sectPr, name,
-                    textParagraphCentered("%s Issue %s"
-                            .formatted(
-                                    metadata().getTitle(),
-                                    metadata().getIssue())));
+                    textParagraphCentered(oddPageHeadingText));
         } else {
             addBlankPageHeader(sectPr, context.getName());
         }
