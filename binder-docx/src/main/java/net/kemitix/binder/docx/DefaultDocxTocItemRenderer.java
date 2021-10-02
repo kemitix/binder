@@ -21,6 +21,6 @@ public class DefaultDocxTocItemRenderer
             Section source,
             Context<DocxRenderHolder> context) {
         var docx = context.getRendererHolder().getRenderer();
-        return Stream.of(docx.tocItem("", source.getTitle()));
+        return Stream.of(docx.tocItem("", source.getTitle(), source.getAuthor()));
     }
 }

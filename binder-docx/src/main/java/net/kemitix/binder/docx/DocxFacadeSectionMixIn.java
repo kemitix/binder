@@ -81,12 +81,13 @@ public interface DocxFacadeSectionMixIn
         return sectionPs;
     }
 
-    default P tocItem(String pageNumber, String title) {
+    default P tocItem(String pageNumber, String title, String author) {
         return tabDefinition(
                 tabs(new CTTabStop[]{
                         tabLeft(0),
                         tabRight(576),
-                        tabLeft(720)
+                        tabLeft(720),
+                        tabLeft(900)
                 }),
                 tabIndent(720, null, 720),
                 p(new Object[]{
@@ -95,7 +96,13 @@ public interface DocxFacadeSectionMixIn
                                 t(pageNumber),
                                 tab(),
                                 t(title)
-                        })
+                        }),
+                        r(new Object[]{
+                                br(),
+                                tab(),
+                                tab()
+                        }),
+                        italic(r(t(author)))
                 }));
     }
 

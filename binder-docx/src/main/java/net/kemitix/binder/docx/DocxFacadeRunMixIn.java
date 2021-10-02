@@ -82,6 +82,10 @@ public interface DocxFacadeRunMixIn
         return text;
     }
 
+    default Br br() {
+        return factory().createBr();
+    }
+
     default R italic(R r) {
         rPr(r).setI(defaultTrue());
         return r;
