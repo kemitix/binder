@@ -27,6 +27,8 @@ public class Section {
     @Getter
     private boolean toc = true; // show in table of contents
     @Getter
+    private boolean original = false; // show in toc-originals
+    @Getter
     private boolean template = false; // should expand template variables
     @Getter
     private boolean epub = true; // include in epub output
@@ -86,6 +88,7 @@ public class Section {
         plate,
         title,
         toc,
+        tocoriginals,
         markdown,
         story,
         ;

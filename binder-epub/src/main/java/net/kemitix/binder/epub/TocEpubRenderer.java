@@ -14,6 +14,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,7 +42,7 @@ public class TocEpubRenderer
 
     @Override
     public boolean canHandle(Section section) {
-        return section.isType(Section.Type.toc);
+        return section.isType(Section.Type.toc) || section.isType(Section.Type.tocoriginals);
     }
 
     @Override
@@ -54,6 +55,7 @@ public class TocEpubRenderer
         htmlManuscript.sections()
                 .filter(HtmlSection::isEpub)
                 .filter(HtmlSection::isToc)
+                .filter(isTocOrTocOriginals(htmlSection))
                 .flatMap(section ->
                         findRenderer(section, tocItemRenderers)
                                 .render(section, epubRenderHolder))
@@ -68,6 +70,12 @@ public class TocEpubRenderer
                 .collect(Collectors.joining());
         return Stream.of(
                 new Content(href, html.getBytes(StandardCharsets.UTF_8))
+        );
+    }
+
+    private Predicate<? super HtmlSection> isTocOrTocOriginals(Section section) {
+        return thisSection -> section.isType(Section.Type.toc) || (
+                section.isType(Section.Type.tocoriginals) && thisSection.isOriginal()
         );
     }
 

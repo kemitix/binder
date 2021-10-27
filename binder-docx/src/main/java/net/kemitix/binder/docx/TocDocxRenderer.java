@@ -5,6 +5,7 @@ import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlManuscript;
+import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -12,6 +13,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @Log
@@ -37,7 +39,7 @@ public class TocDocxRenderer
 
     @Override
     public boolean canHandle(Section section) {
-        return section.isType(Section.Type.toc);
+        return section.isType(Section.Type.toc) || section.isType(Section.Type.tocoriginals);
     }
 
     @Override
@@ -49,12 +51,13 @@ public class TocDocxRenderer
         contents.add(
                 docx.drawings(
                         docxImage.textImages(
-                                "Contents",
+                                section.getTitle(),
                                 FontSize.of(240), docx)));
         contents.add(docx.textParagraph(""));
         htmlManuscript.sections()
                 .filter(Section::isDocx)
                 .filter(Section::isToc)
+                .filter(isTocOrTocOriginals(section))
                 .flatMap(s ->
                         findRenderer(s, tocItemRenderers)
                                 .render(s, context))
@@ -63,6 +66,12 @@ public class TocDocxRenderer
                 new DocxContent(
                         section.getName(),
                         docx.finaliseTitlePage(context, contents))
+        );
+    }
+
+    private Predicate<? super HtmlSection> isTocOrTocOriginals(Section section) {
+        return thisSection -> section.isType(Section.Type.toc) || (
+                section.isType(Section.Type.tocoriginals) && thisSection.isOriginal()
         );
     }
 
