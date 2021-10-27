@@ -66,6 +66,7 @@ public class Section {
     @Getter
     private boolean last; // internal flag to mark last section in document
     private boolean startOnOddPage = true; // start each new section on an odd numbered page
+    private Genre genre;
 
     public boolean isType(Type type) {
         return this.type.equals(type);
@@ -81,6 +82,10 @@ public class Section {
 
     public boolean startOnOddPage() {
         return startOnOddPage;
+    }
+
+    public boolean isGenre(Genre genre) {
+        return this.genre == genre;
     }
 
     public enum Type {
@@ -133,6 +138,12 @@ public class Section {
         LandmarkType(String type) {
             this.value = type;
         }
+    }
+
+    public enum Genre {
+        ScienceFiction,
+        Fantasy,
+        ScienceFantasy,
     }
 
     public static class Name extends TypeAlias<String> {

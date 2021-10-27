@@ -9,6 +9,8 @@ import org.docx4j.wml.CTDocGrid;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
+import org.docx4j.wml.R;
+import org.docx4j.wml.STBrType;
 import org.docx4j.wml.SectPr;
 
 import java.math.BigInteger;
@@ -169,4 +171,10 @@ public interface DocxFacadeSectionMixIn
         return sectPr;
     }
 
+    default P pageBreak() {
+        //      <w:r>
+        //        <w:br w:type="page"/>
+        //      </w:r>
+        return p(r(br(STBrType.PAGE)));
+    }
 }
