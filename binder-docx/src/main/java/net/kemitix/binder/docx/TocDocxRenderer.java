@@ -67,14 +67,11 @@ public class TocDocxRenderer
                                 FontSize.of(240), docx)));
         contents.add(docx.textParagraph(""));
 
-        log.info("Originals: " + originals.size());
-        log.info("Reprints : " + reprints.size());
-
         if (originals.size() > 0 && reprints.size() == 0) {
-            singleIssueToc(docxTocStream(), renderSection, docx)
+            singleIssueToc(renderSection, docx)
                     .forEachOrdered(contents::add);
         } else if (reprints.size() > 0) {
-            yearsCollectionToc(docxTocStream(), renderSection, docx)
+            yearsCollectionToc(renderSection, docx)
                     .forEachOrdered(contents::add);
         }
 
@@ -86,7 +83,6 @@ public class TocDocxRenderer
     }
 
     private Stream<Object> singleIssueToc(
-            Stream<HtmlSection> sections,
             Function<HtmlSection, Stream<?>> renderSection,
             DocxFacade docx
     ) {
@@ -106,11 +102,10 @@ public class TocDocxRenderer
     }
 
     private Stream<Object> yearsCollectionToc(
-            Stream<HtmlSection> sections,
             Function<HtmlSection, Stream<?>> renderSection,
             DocxFacade docx
     ) {
-        log.info("YearsCollectionToc");
+        var year = htmlManuscript.getMetadata().getIssue();
         var stream = Stream.builder();
 
         Predicate<HtmlSection> isOriginal = HtmlSection::isOriginal;
@@ -119,7 +114,8 @@ public class TocDocxRenderer
         // Years Collection
         stream.add(
                 docx.drawings(
-                        docxImage.textImages("Year's Collection", FontSize.of(180), docx)));
+                        docxImage.textImages("The " + year + " Collection",
+                                FontSize.of(180), docx)));
 
         var scienceFiction = docxTocStream().filter(isGenre(Section.Genre.ScienceFiction)).filter(isReprint).collect(Collectors.toList());
         var fantasy = docxTocStream().filter(isGenre(Section.Genre.Fantasy)).filter(isReprint).collect(Collectors.toList());
@@ -137,7 +133,7 @@ public class TocDocxRenderer
         stream.add(docx.pageBreak());
         stream.add(
                 docx.drawings(
-                        docxImage.textImages("Bonus Original", FontSize.of(180), docx)));
+                        docxImage.textImages("The Bonus Collection", FontSize.of(180), docx)));
 
         var originalScienceFiction = docxTocStream().filter(isGenre(Section.Genre.ScienceFiction)).filter(isOriginal).collect(Collectors.toList());
         var originalFantasy = docxTocStream().filter(isGenre(Section.Genre.Fantasy)).filter(isOriginal).collect(Collectors.toList());
