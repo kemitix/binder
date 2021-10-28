@@ -7,6 +7,7 @@ import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
+import net.kemitix.binder.spi.TocSections;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 @Log
 @ApplicationScoped
 public class TocDocxRenderer
-        implements DocxRenderer,
+        implements DocxRenderer, TocSections,
         AggregateRenderer<DocxTocItemRenderer, Section, Object, DocxRenderHolder> {
 
     private final HtmlManuscript htmlManuscript;
@@ -53,10 +54,9 @@ public class TocDocxRenderer
 
         Predicate<HtmlSection> isOriginal = HtmlSection::isOriginal;
         Predicate<HtmlSection> isReprint = isOriginal.negate();
-        Predicate<HtmlSection> isStory = htmlSection -> htmlSection.isType(Section.Type.story);
 
-        var originals = docxTocStream().filter(isStory).filter(isOriginal).collect(Collectors.toList());
-        var reprints = docxTocStream().filter(isStory).filter(isReprint).collect(Collectors.toList());
+        var originals = stories(htmlManuscript, isOriginal);
+        var reprints = stories(htmlManuscript, isReprint);
 
         List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
@@ -88,9 +88,9 @@ public class TocDocxRenderer
     ) {
         var stream = Stream.builder();
 
-        var scienceFiction = docxTocStream().filter(isGenre(Section.Genre.ScienceFiction)).collect(Collectors.toList());
-        var fantasy = docxTocStream().filter(isGenre(Section.Genre.Fantasy)).collect(Collectors.toList());
-        var scienceFantasy = docxTocStream().filter(isGenre(Section.Genre.ScienceFantasy)).collect(Collectors.toList());
+        var scienceFiction = stories(htmlManuscript, Section.Genre.ScienceFiction);
+        var fantasy = stories(htmlManuscript, Section.Genre.Fantasy);
+        var scienceFantasy = stories(htmlManuscript, Section.Genre.ScienceFantasy);
 
         genreToc("Science Fiction", scienceFiction, renderSection, docx, stream);
         if (scienceFiction.size() > 0 && fantasy.size() > 0) stream.add(docx.pageBreak());
@@ -117,9 +117,9 @@ public class TocDocxRenderer
                         docxImage.textImages("The " + year + " Collection",
                                 FontSize.of(180), docx)));
 
-        var scienceFiction = docxTocStream().filter(isGenre(Section.Genre.ScienceFiction)).filter(isReprint).collect(Collectors.toList());
-        var fantasy = docxTocStream().filter(isGenre(Section.Genre.Fantasy)).filter(isReprint).collect(Collectors.toList());
-        var scienceFantasy = docxTocStream().filter(isGenre(Section.Genre.ScienceFantasy)).filter(isReprint).collect(Collectors.toList());
+        var scienceFiction = stories(htmlManuscript, isReprint, Section.Genre.ScienceFiction);
+        var fantasy = stories(htmlManuscript, isReprint, Section.Genre.Fantasy);
+        var scienceFantasy = stories(htmlManuscript, isReprint, Section.Genre.ScienceFantasy);
 
         genreToc("Science Fiction", scienceFiction, renderSection, docx, stream);
         if (scienceFiction.size() > 0 && fantasy.size() > 0) stream.add(docx.pageBreak());
@@ -135,15 +135,21 @@ public class TocDocxRenderer
                 docx.drawings(
                         docxImage.textImages("The Bonus Collection", FontSize.of(180), docx)));
 
-        var originalScienceFiction = docxTocStream().filter(isGenre(Section.Genre.ScienceFiction)).filter(isOriginal).collect(Collectors.toList());
-        var originalFantasy = docxTocStream().filter(isGenre(Section.Genre.Fantasy)).filter(isOriginal).collect(Collectors.toList());
-        var originalScienceFantasy = docxTocStream().filter(isGenre(Section.Genre.ScienceFantasy)).filter(isOriginal).collect(Collectors.toList());
+        var originalScienceFiction = stories(htmlManuscript, isOriginal, Section.Genre.ScienceFiction);
+        var originalFantasy = stories(htmlManuscript, isOriginal, Section.Genre.Fantasy);
+        var originalScienceFantasy = stories(htmlManuscript, isOriginal, Section.Genre.ScienceFantasy);
 
         genreToc("Science Fiction", originalScienceFiction, renderSection, docx, stream);
         genreToc("Fantasy", originalFantasy, renderSection, docx, stream);
         genreToc("Science Fantasy", originalScienceFantasy, renderSection, docx, stream);
 
         return stream.build();
+    }
+
+    @Override
+    public Stream<HtmlSection> stories(HtmlManuscript htmlManuscript) {
+        return tocSections(htmlManuscript, HtmlSection::isDocx)
+                .filter(HtmlSection::isStory);
     }
 
     private void genreToc(
@@ -164,14 +170,6 @@ public class TocDocxRenderer
         sections.stream()
                 .flatMap(renderSection)
                 .forEach(outputStream::add);
-    }
-
-    private Predicate<HtmlSection> isGenre(Section.Genre genre) {
-        return htmlSection -> htmlSection.isGenre(genre);
-    }
-
-    private Stream<HtmlSection> docxTocStream() {
-        return htmlManuscript.sections().filter(Section::isDocx).filter(Section::isToc);
     }
 
 }

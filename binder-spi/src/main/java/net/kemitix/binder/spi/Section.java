@@ -88,6 +88,10 @@ public class Section {
         return this.genre == genre;
     }
 
+    public boolean isStory() {
+        return this.isType(Type.story);
+    }
+
     public enum Type {
 
         plate,
