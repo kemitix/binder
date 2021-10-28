@@ -40,6 +40,7 @@ public class FontSpec {
         } else {
             parts.add("nkern");
         }
+        parts.add("" + size.value());
         return String.join("-", parts);
     }
 }
