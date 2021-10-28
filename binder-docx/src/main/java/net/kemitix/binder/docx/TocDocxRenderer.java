@@ -55,8 +55,8 @@ public class TocDocxRenderer
         Predicate<HtmlSection> isOriginal = HtmlSection::isOriginal;
         Predicate<HtmlSection> isReprint = isOriginal.negate();
 
-        var originals = stories(htmlManuscript, isOriginal);
-        var reprints = stories(htmlManuscript, isReprint);
+        var originals = stories(htmlManuscript, isOriginal).size();
+        var reprints = stories(htmlManuscript, isReprint).size();
 
         List<Object> contents = new ArrayList<>();
         contents.add(docx.textParagraph(""));
@@ -67,12 +67,14 @@ public class TocDocxRenderer
                                 FontSize.of(240), docx)));
         contents.add(docx.textParagraph(""));
 
-        if (originals.size() > 0 && reprints.size() == 0) {
+        if (originals > 0 && reprints == 0) {
             singleIssueToc(renderSection, docx)
                     .forEachOrdered(contents::add);
-        } else if (reprints.size() > 0) {
+        } else if (reprints > 0) {
             yearsCollectionToc(renderSection, docx)
                     .forEachOrdered(contents::add);
+        } else {
+            throw new RuntimeException("No stories Found");
         }
 
         return Stream.of(
