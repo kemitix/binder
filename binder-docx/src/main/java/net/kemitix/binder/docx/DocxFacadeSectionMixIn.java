@@ -39,7 +39,8 @@ public interface DocxFacadeSectionMixIn
                         : sectPrContent;
         SectPr sectPr = sizePage(sectPrType);
         if (context.hasHeader()) {
-            addDefaultPageHeader(sectPr, context.getName(), p());
+            System.out.println("Context has header: " + context.getTitle());
+            addEvenPageHeader(sectPr, context.getName(), textParagraphCentered(context.getTitle()));
         } else {
             addBlankPageHeader(sectPr, context.getName());
         }
@@ -67,9 +68,7 @@ public interface DocxFacadeSectionMixIn
         String title = context.getTitle();
         if (context.hasHeader()) {
             addEvenPageHeader(sectPr, name, textParagraphCentered(title));
-            String oddPageHeadingText = metadata().getTitle();
-            addDefaultPageHeader(sectPr, name,
-                    textParagraphCentered(oddPageHeadingText));
+            addDefaultPageHeader(sectPr, name, textParagraphCentered(metadata().getTitle()));
         } else {
             addBlankPageHeader(sectPr, context.getName());
         }

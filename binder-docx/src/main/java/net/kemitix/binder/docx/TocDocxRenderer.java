@@ -112,28 +112,30 @@ public class TocDocxRenderer
         Predicate<HtmlSection> isReprint = isOriginal.negate();
 
         // Years Collection
-        stream.add(
-                docx.drawings(
-                        docxImage.textImages("The " + year + " Collection",
-                                FontSize.of(180), docx)));
 
-        var lastCount = new AtomicInteger(0);
+        var first = true;
         for (Section.Genre genre : Section.Genre.values()) {
             var stories = stories(htmlManuscript, isReprint, genre);
-            if (lastCount.get() > 0 && stories.size() > 0) stream.add(docx.pageBreak());
+            if (stories.isEmpty()) continue;
+            if (!first) stream.add(docx.pageBreak());
+            stream.add(
+                    docx.drawings(
+                            docxImage.textImages("The " + year + " Collection",
+                                    FontSize.of(180), docx)));
             genreToc(genre, stories, renderSection, docx, stream);
-            lastCount.set(stories.size());
+            first = false;
         }
 
         // Bonus Original
         stream.add(docx.pageBreak());
+        stream.add(docx.textParagraph(""));
         stream.add(
                 docx.drawings(
                         docxImage.textImages("The Bonus Collection",
                                 FontSize.of(180), docx)));
 
         for (Section.Genre genre : Section.Genre.values()) {
-            //FIXME: not filtering out the reprints
+            stream.add(docx.textParagraph(""));
             var stories = stories(htmlManuscript, isOriginal, genre);
             genreToc(genre, stories, renderSection, docx, stream);
         }
@@ -160,7 +162,8 @@ public class TocDocxRenderer
         // header
         outputStream.add(
                 docx.drawings(
-                        docxImage.textImages(genre.toString(), FontSize.of(120), docx)));
+                        docxImage.textImages(genre.toString(),
+                                FontSize.of(120), docx)));
         // items
         sections.stream()
                 .flatMap(renderSection)
