@@ -144,10 +144,19 @@ public class Section {
         }
     }
 
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public enum Genre {
-        ScienceFiction,
-        Fantasy,
-        ScienceFantasy,
+        ScienceFiction("Science Fiction"),
+        Fantasy("Fantasy"),
+        ScienceFantasy("Science Fantasy"),
+        ;
+
+        private final String value;
+
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 
     public static class Name extends TypeAlias<String> {

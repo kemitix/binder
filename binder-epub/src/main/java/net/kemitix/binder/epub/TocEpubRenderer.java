@@ -9,6 +9,7 @@ import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
+import net.kemitix.binder.spi.TocSections;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
 @Epub
 @ApplicationScoped
 public class TocEpubRenderer
-        implements EpubRenderer,
+        implements EpubRenderer, TocSections,
         AggregateRenderer<EpubTocItemRenderer, HtmlSection, String, EpubRenderHolder> {
 
     private final HtmlManuscript htmlManuscript;
@@ -77,6 +78,12 @@ public class TocEpubRenderer
         return thisSection -> section.isType(Section.Type.toc) || (
                 section.isType(Section.Type.tocoriginals) && thisSection.isOriginal()
         );
+    }
+
+    @Override
+    public Stream<HtmlSection> stories(HtmlManuscript htmlManuscript) {
+        return tocSections(htmlManuscript, HtmlSection::isEpub)
+                .filter(HtmlSection::isStory);
     }
 
 }

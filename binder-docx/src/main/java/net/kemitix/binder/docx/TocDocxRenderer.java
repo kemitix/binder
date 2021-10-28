@@ -14,9 +14,9 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Log
@@ -90,15 +90,13 @@ public class TocDocxRenderer
     ) {
         var stream = Stream.builder();
 
-        var scienceFiction = stories(htmlManuscript, Section.Genre.ScienceFiction);
-        var fantasy = stories(htmlManuscript, Section.Genre.Fantasy);
-        var scienceFantasy = stories(htmlManuscript, Section.Genre.ScienceFantasy);
-
-        genreToc("Science Fiction", scienceFiction, renderSection, docx, stream);
-        if (scienceFiction.size() > 0 && fantasy.size() > 0) stream.add(docx.pageBreak());
-        genreToc("Fantasy", fantasy, renderSection, docx, stream);
-        if (fantasy.size() > 0 && scienceFantasy.size() > 0) stream.add(docx.pageBreak());
-        genreToc("Science Fantasy", scienceFantasy, renderSection, docx, stream);
+        var lastCount = new AtomicInteger(0);
+        for (Section.Genre genre : Section.Genre.values()) {
+            var stories = stories(htmlManuscript, genre);
+            if (lastCount.get() > 0 && stories.size() > 0) stream.add(docx.pageBreak());
+            genreToc(genre, stories, renderSection, docx, stream);
+            lastCount.set(stories.size());
+        }
 
         return stream.build();
     }
@@ -119,31 +117,26 @@ public class TocDocxRenderer
                         docxImage.textImages("The " + year + " Collection",
                                 FontSize.of(180), docx)));
 
-        var scienceFiction = stories(htmlManuscript, isReprint, Section.Genre.ScienceFiction);
-        var fantasy = stories(htmlManuscript, isReprint, Section.Genre.Fantasy);
-        var scienceFantasy = stories(htmlManuscript, isReprint, Section.Genre.ScienceFantasy);
-
-        genreToc("Science Fiction", scienceFiction, renderSection, docx, stream);
-        if (scienceFiction.size() > 0 && fantasy.size() > 0) stream.add(docx.pageBreak());
-        genreToc("Fantasy", fantasy, renderSection, docx, stream);
-        if (fantasy.size() > 0 && scienceFantasy.size() > 0) stream.add(docx.pageBreak());
-        genreToc("Science Fantasy", scienceFantasy, renderSection, docx, stream);
-
-        //stream.add(docx.pageBreak());
+        var lastCount = new AtomicInteger(0);
+        for (Section.Genre genre : Section.Genre.values()) {
+            var stories = stories(htmlManuscript, isReprint, genre);
+            if (lastCount.get() > 0 && stories.size() > 0) stream.add(docx.pageBreak());
+            genreToc(genre, stories, renderSection, docx, stream);
+            lastCount.set(stories.size());
+        }
 
         // Bonus Original
         stream.add(docx.pageBreak());
         stream.add(
                 docx.drawings(
-                        docxImage.textImages("The Bonus Collection", FontSize.of(180), docx)));
+                        docxImage.textImages("The Bonus Collection",
+                                FontSize.of(180), docx)));
 
-        var originalScienceFiction = stories(htmlManuscript, isOriginal, Section.Genre.ScienceFiction);
-        var originalFantasy = stories(htmlManuscript, isOriginal, Section.Genre.Fantasy);
-        var originalScienceFantasy = stories(htmlManuscript, isOriginal, Section.Genre.ScienceFantasy);
-
-        genreToc("Science Fiction", originalScienceFiction, renderSection, docx, stream);
-        genreToc("Fantasy", originalFantasy, renderSection, docx, stream);
-        genreToc("Science Fantasy", originalScienceFantasy, renderSection, docx, stream);
+        for (Section.Genre genre : Section.Genre.values()) {
+            //FIXME: not filtering out the reprints
+            var stories = stories(htmlManuscript, isOriginal, genre);
+            genreToc(genre, stories, renderSection, docx, stream);
+        }
 
         return stream.build();
     }
@@ -155,7 +148,7 @@ public class TocDocxRenderer
     }
 
     private void genreToc(
-            String title,
+            Section.Genre genre,
             List<HtmlSection> sections,
             Function<HtmlSection, Stream<?>> renderSection,
             DocxFacade docx,
@@ -167,7 +160,7 @@ public class TocDocxRenderer
         // header
         outputStream.add(
                 docx.drawings(
-                        docxImage.textImages(title, FontSize.of(120), docx)));
+                        docxImage.textImages(genre.toString(), FontSize.of(120), docx)));
         // items
         sections.stream()
                 .flatMap(renderSection)
