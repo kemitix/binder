@@ -120,7 +120,7 @@ public class TocDocxRenderer
             if (!first) stream.add(docx.pageBreak());
             stream.add(
                     docx.drawings(
-                            docxImage.textImages("The " + year + " Collection",
+                            docxImage.textImages("The " + year + " Stories",
                                     FontSize.of(180), docx)));
             genreToc(genre, stories, renderSection, docx, stream);
             first = false;
@@ -130,7 +130,7 @@ public class TocDocxRenderer
         stream.add(docx.pageBreak());
         stream.add(
                 docx.drawings(
-                        docxImage.textImages("The Bonus Collection",
+                        docxImage.textImages("The Bonus Stories",
                                 FontSize.of(180), docx)));
 
         for (Section.Genre genre : Section.Genre.values()) {

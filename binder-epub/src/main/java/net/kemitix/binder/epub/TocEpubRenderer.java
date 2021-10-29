@@ -88,7 +88,10 @@ public class TocEpubRenderer
 
         for (Section.Genre genre: Section.Genre.values()) {
             var stories = stories(htmlManuscript, genre);
-            genreToc(genre, stories, epubRenderHolder)
+            stream.add("""
+            <h2 style="text-align: center">%s</h2>
+            """.formatted(genre.toString()));
+            genreToc(stories, epubRenderHolder)
                     .forEach(stream::add);
         }
 
@@ -106,8 +109,12 @@ public class TocEpubRenderer
         for (Section.Genre genre : Section.Genre.values()) {
             var stories = stories(htmlManuscript, isReprint, genre);
             if (stories.isEmpty()) continue;
-            stream.add("The " + year + " Collection / ");//TODO style/font size
-            genreToc(genre, stories, epubRenderHolder)
+            stream.add("""
+            <h2 style="text-align: center">
+            The %s Stories / %s
+            </h2>
+            """.formatted(year, genre.toString()));
+            genreToc(stories, epubRenderHolder)
                     .forEach(stream::add);
         }
 
@@ -115,8 +122,12 @@ public class TocEpubRenderer
         for (Section.Genre genre : Section.Genre.values()) {
             var stories = stories(htmlManuscript, isOriginal, genre);
             if (stories.isEmpty()) continue;
-            stream.add("The Bonus Collection / ");//TODO style/font size
-            genreToc(genre, stories, epubRenderHolder)
+            stream.add("""
+            <h2 style="text-align: center">
+            The Bonus Stories / %s
+            </h2>
+            """.formatted(genre.toString()));
+            genreToc(stories, epubRenderHolder)
                     .forEach(stream::add);
         }
 
@@ -124,15 +135,12 @@ public class TocEpubRenderer
     }
 
     private Stream<String> genreToc(
-            Section.Genre genre,
             List<HtmlSection> stories,
             Context<EpubRenderHolder> epubRenderHolder
     ) {
         if (stories.isEmpty()) return Stream.empty();
 
         var stream = Stream.<String>builder();
-
-        stream.add(genre.toString());//TODO style/font size
 
         stream.add("<ul>");
         stories.stream()
