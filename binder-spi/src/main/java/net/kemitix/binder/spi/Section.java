@@ -27,6 +27,8 @@ public class Section {
     @Getter
     private boolean toc = true; // show in table of contents
     @Getter
+    private boolean original = false; // show in toc-originals
+    @Getter
     private boolean template = false; // should expand template variables
     @Getter
     private boolean epub = true; // include in epub output
@@ -64,6 +66,7 @@ public class Section {
     @Getter
     private boolean last; // internal flag to mark last section in document
     private boolean startOnOddPage = true; // start each new section on an odd numbered page
+    private Genre genre;
 
     public boolean isType(Type type) {
         return this.type.equals(type);
@@ -81,11 +84,20 @@ public class Section {
         return startOnOddPage;
     }
 
+    public boolean isGenre(Genre genre) {
+        return this.genre == genre;
+    }
+
+    public boolean isStory() {
+        return this.isType(Type.story);
+    }
+
     public enum Type {
 
         plate,
         title,
         toc,
+        tocoriginals,
         markdown,
         story,
         ;
@@ -129,6 +141,21 @@ public class Section {
 
         LandmarkType(String type) {
             this.value = type;
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public enum Genre {
+        ScienceFiction("Science Fiction"),
+        Fantasy("Fantasy"),
+        ScienceFantasy("Science Fantasy"),
+        ;
+
+        private final String value;
+
+        @Override
+        public String toString() {
+            return value;
         }
     }
 

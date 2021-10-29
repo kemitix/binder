@@ -7,7 +7,6 @@ import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.RenderHolder;
 import net.kemitix.mon.maybe.Maybe;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 

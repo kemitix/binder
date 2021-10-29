@@ -9,6 +9,8 @@ import org.docx4j.wml.CTDocGrid;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
+import org.docx4j.wml.R;
+import org.docx4j.wml.STBrType;
 import org.docx4j.wml.SectPr;
 
 import java.math.BigInteger;
@@ -37,7 +39,7 @@ public interface DocxFacadeSectionMixIn
                         : sectPrContent;
         SectPr sectPr = sizePage(sectPrType);
         if (context.hasHeader()) {
-            addDefaultPageHeader(sectPr, context.getName(), p());
+            addEvenPageHeader(sectPr, context.getName(), textParagraphCentered(context.getTitle()));
         } else {
             addBlankPageHeader(sectPr, context.getName());
         }
@@ -65,9 +67,7 @@ public interface DocxFacadeSectionMixIn
         String title = context.getTitle();
         if (context.hasHeader()) {
             addEvenPageHeader(sectPr, name, textParagraphCentered(title));
-            String oddPageHeadingText = metadata().getTitle();
-            addDefaultPageHeader(sectPr, name,
-                    textParagraphCentered(oddPageHeadingText));
+            addDefaultPageHeader(sectPr, name, textParagraphCentered(metadata().getTitle()));
         } else {
             addBlankPageHeader(sectPr, context.getName());
         }
@@ -86,8 +86,7 @@ public interface DocxFacadeSectionMixIn
                 tabs(new CTTabStop[]{
                         tabLeft(0),
                         tabRight(576),
-                        tabLeft(720),
-                        tabLeft(900)
+                        tabLeft(720)
                 }),
                 tabIndent(720, null, 720),
                 p(new Object[]{
@@ -99,8 +98,7 @@ public interface DocxFacadeSectionMixIn
                         }),
                         r(new Object[]{
                                 br(),
-                                tab(),
-                                tab()
+                                t("by ")
                         }),
                         italic(r(t(author)))
                 }));
@@ -169,4 +167,10 @@ public interface DocxFacadeSectionMixIn
         return sectPr;
     }
 
+    default P pageBreak() {
+        //      <w:r>
+        //        <w:br w:type="page"/>
+        //      </w:r>
+        return p(r(br(STBrType.PAGE)));
+    }
 }

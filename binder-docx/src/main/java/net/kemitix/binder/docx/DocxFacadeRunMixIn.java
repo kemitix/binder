@@ -5,6 +5,7 @@ import org.docx4j.wml.FldChar;
 import org.docx4j.wml.R;
 import org.docx4j.wml.RPr;
 import org.docx4j.wml.RStyle;
+import org.docx4j.wml.STBrType;
 import org.docx4j.wml.STFldCharType;
 import org.docx4j.wml.Text;
 
@@ -84,6 +85,12 @@ public interface DocxFacadeRunMixIn
 
     default Br br() {
         return factory().createBr();
+    }
+
+    default Br br(STBrType brType) {
+        Br br = br();
+        br.setType(brType);
+        return br;
     }
 
     default R italic(R r) {
