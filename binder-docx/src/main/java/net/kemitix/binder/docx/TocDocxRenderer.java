@@ -128,7 +128,6 @@ public class TocDocxRenderer
 
         // Bonus Original
         stream.add(docx.pageBreak());
-        stream.add(docx.textParagraph(""));
         stream.add(
                 docx.drawings(
                         docxImage.textImages("The Bonus Collection",
