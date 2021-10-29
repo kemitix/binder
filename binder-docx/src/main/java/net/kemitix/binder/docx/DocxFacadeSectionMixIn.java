@@ -39,7 +39,6 @@ public interface DocxFacadeSectionMixIn
                         : sectPrContent;
         SectPr sectPr = sizePage(sectPrType);
         if (context.hasHeader()) {
-            System.out.println("Context has header: " + context.getTitle());
             addEvenPageHeader(sectPr, context.getName(), textParagraphCentered(context.getTitle()));
         } else {
             addBlankPageHeader(sectPr, context.getName());
@@ -87,8 +86,7 @@ public interface DocxFacadeSectionMixIn
                 tabs(new CTTabStop[]{
                         tabLeft(0),
                         tabRight(576),
-                        tabLeft(720),
-                        tabLeft(900)
+                        tabLeft(720)
                 }),
                 tabIndent(720, null, 720),
                 p(new Object[]{
@@ -100,8 +98,7 @@ public interface DocxFacadeSectionMixIn
                         }),
                         r(new Object[]{
                                 br(),
-                                tab(),
-                                tab()
+                                t("by ")
                         }),
                         italic(r(t(author)))
                 }));
