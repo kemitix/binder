@@ -155,7 +155,6 @@ public class TocDocxRenderer
             DocxFacade docx,
             Stream.Builder<Object> outputStream
     ) {
-        log.info("Genre ToC - Sections: " + sections.size());
         if (sections.isEmpty()) return;
 
         // header
