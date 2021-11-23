@@ -40,6 +40,8 @@ public class Section {
     @Getter
     private String author;
     @Getter
+    private int words;
+    @Getter
     private String bio = "TODO"; // the author bio
     @Getter
     private float fontSize = 11;
@@ -66,6 +68,7 @@ public class Section {
     @Getter
     private boolean last; // internal flag to mark last section in document
     private boolean startOnOddPage = true; // start each new section on an odd numbered page
+    @Getter
     private Genre genre;
 
     public boolean isType(Type type) {
