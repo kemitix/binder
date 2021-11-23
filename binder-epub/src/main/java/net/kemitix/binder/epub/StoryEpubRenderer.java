@@ -48,6 +48,8 @@ public class StoryEpubRenderer
         return  """
                         
                         > *© %4d %s*
+                        
+                        > %s - %d words
 
                         ---
 
@@ -60,6 +62,8 @@ public class StoryEpubRenderer
                 .formatted(
                         section.getCopyright(),
                         section.getAuthor(),
+                        section.getGenre(),
+                        section.getWords(),
                         section.getBio()
                 );
     }

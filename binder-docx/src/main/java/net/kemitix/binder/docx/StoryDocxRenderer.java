@@ -79,6 +79,10 @@ public class StoryDocxRenderer
                         "© %4d %s".formatted(
                                 section.getCopyright(), section.getAuthor()
                         ))),
+                docx.keepWithNext(docx.textParagraphCentered(
+                        "%s - %d words".formatted(
+                                section.getGenre(), section.getWords()
+                        ))),
                 docx.keepWithNext(docx.p()),
                 // TODO: history - if present
                 docx.keepWithNext(docx.textParagraphCentered("About the Author")),
