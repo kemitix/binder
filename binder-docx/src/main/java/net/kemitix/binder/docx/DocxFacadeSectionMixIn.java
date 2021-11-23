@@ -9,7 +9,6 @@ import org.docx4j.wml.CTDocGrid;
 import org.docx4j.wml.CTTabStop;
 import org.docx4j.wml.P;
 import org.docx4j.wml.PPr;
-import org.docx4j.wml.R;
 import org.docx4j.wml.STBrType;
 import org.docx4j.wml.SectPr;
 
@@ -79,6 +78,41 @@ public interface DocxFacadeSectionMixIn
             addBlankPageFooter(sectPr, context.getName());
         }
         return sectionPs;
+    }
+
+
+    default P tocItem(
+            String pageNumber,
+            String title,
+            String author,
+            Section.Genre genre,
+            int words
+    ) {
+        return tabDefinition(
+                tabs(new CTTabStop[]{
+                        tabLeft(0),
+                        tabRight(576),
+                        tabLeft(720)
+                }),
+                tabIndent(720, null, 720),
+                p(new Object[]{
+                        r(new Object[]{
+                                tab(),
+                                t(pageNumber),
+                                tab(),
+                                t(title)
+                        }),
+                        r(new Object[]{
+                                br()
+                        }),
+                        italic(r(t(author))),
+                        r(new Object[]{
+                                br(),
+                                t("%s - %d words".formatted(
+                                        genre.toString(),
+                                        words))
+                        })
+                }));
     }
 
     default P tocItem(String pageNumber, String title, String author) {

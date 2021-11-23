@@ -22,6 +22,8 @@ public class StoryDocxTocItemRenderer
                 docx.tocItem(
                         Integer.toString(source.getPage()),
                         source.getTitle(),
-                        source.getAuthor()));
+                        source.getAuthor(),
+                        source.getGenre(),
+                        source.getWords()));
     }
 }

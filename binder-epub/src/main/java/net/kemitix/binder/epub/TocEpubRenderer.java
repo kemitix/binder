@@ -6,7 +6,6 @@ import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.markdown.DocumentNodeHandler;
 import net.kemitix.binder.spi.AggregateRenderer;
 import net.kemitix.binder.spi.Context;
-import net.kemitix.binder.spi.FontSize;
 import net.kemitix.binder.spi.HtmlManuscript;
 import net.kemitix.binder.spi.HtmlSection;
 import net.kemitix.binder.spi.Section;
@@ -86,14 +85,9 @@ public class TocEpubRenderer
     private Stream<String> singleIssueToc(Context<EpubRenderHolder> epubRenderHolder) {
         var stream = Stream.<String>builder();
 
-        for (Section.Genre genre: Section.Genre.values()) {
-            var stories = stories(htmlManuscript, genre);
-            stream.add("""
-            <h2 style="text-align: center">%s</h2>
-            """.formatted(genre.toString()));
-            genreToc(stories, epubRenderHolder)
-                    .forEach(stream::add);
-        }
+        var stories = stories(htmlManuscript).collect(Collectors.toList());
+        genreToc(stories, epubRenderHolder)
+                .forEach(stream::add);
 
         return stream.build();
     }

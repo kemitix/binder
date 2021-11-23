@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Log
@@ -91,12 +92,10 @@ public class TocDocxRenderer
         var stream = Stream.builder();
 
         var lastCount = new AtomicInteger(0);
-        for (Section.Genre genre : Section.Genre.values()) {
-            var stories = stories(htmlManuscript, genre);
-            if (lastCount.get() > 0 && stories.size() > 0) stream.add(docx.pageBreak());
-            genreToc(genre, stories, renderSection, docx, stream);
-            lastCount.set(stories.size());
-        }
+        var stories = stories(htmlManuscript).collect(Collectors.toList());
+        if (lastCount.get() > 0 && stories.size() > 0) stream.add(docx.pageBreak());
+        genreToc(stories, renderSection, stream);
+        lastCount.set(stories.size());
 
         return stream.build();
     }
@@ -146,6 +145,16 @@ public class TocDocxRenderer
     public Stream<HtmlSection> stories(HtmlManuscript htmlManuscript) {
         return tocSections(htmlManuscript, HtmlSection::isDocx)
                 .filter(HtmlSection::isStory);
+    }
+
+    private void genreToc(
+            List<HtmlSection> sections,
+            Function<HtmlSection, Stream<?>> renderSection,
+            Stream.Builder<Object> outputStream
+    ) {
+        sections.stream()
+                .flatMap(renderSection)
+                .forEach(outputStream::add);
     }
 
     private void genreToc(
