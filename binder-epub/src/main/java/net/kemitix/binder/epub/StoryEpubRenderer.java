@@ -49,6 +49,8 @@ public class StoryEpubRenderer
                         
                         > *© %4d %s*
                         
+                        <p style="text-align: center;">%s</p>
+
                         > %s - %d words
 
                         ---
@@ -60,12 +62,29 @@ public class StoryEpubRenderer
                         %s
                         """
                 .formatted(
-                        section.getCopyright(),
-                        section.getAuthor(),
+                        requireNonZero(section.getCopyright(),
+                                "Copyright missing for " + section.getTitle()),
+                        requireNonBlank(section.getAuthor(),
+                                "Author missing for " + section.getTitle()),
+                        section.getAuthorNotes(),
                         section.getGenre(),
-                        section.getWords(),
-                        section.getBio()
+                        requireNonZero(section.getWords(),
+                                "Word count missing for " + section.getTitle()),
+                        requireNonBlank(section.getBio(),
+                                "Author Bio missing for " + section.getTitle())
                 );
+    }
+
+    private String requireNonBlank(String value, String message) {
+        requireNonZero(value.length(), message);
+        return value;
+    }
+
+    private int requireNonZero(int number, String message) {
+        if (number == 0) {
+            throw new IllegalArgumentException(message);
+        }
+        return number;
     }
 
 }
