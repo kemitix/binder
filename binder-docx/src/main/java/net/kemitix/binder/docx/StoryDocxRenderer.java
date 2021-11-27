@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,21 +74,25 @@ public class StoryDocxRenderer
         }
         P authorBio = (P) convert[0];
         var docx = context.getRendererHolder().getRenderer();
-        return Arrays.asList(
-                docx.keepWithNext(docx.p()),
-                docx.keepWithNext(docx.textParagraphCentered(
-                        "© %4d %s".formatted(
-                                section.getCopyright(), section.getAuthor()
-                        ))),
-                docx.keepWithNext(docx.textParagraphCentered(
-                        "%s - %d words".formatted(
-                                section.getGenre(), section.getWords()
-                        ))),
-                docx.keepWithNext(docx.p()),
-                // TODO: history - if present
-                docx.keepWithNext(docx.textParagraphCentered("About the Author")),
-                docx.keepTogether(authorBio)
-        );
+        final ArrayList<Object> list = new ArrayList<>();
+        list.add(docx.keepWithNext(docx.p()));
+        list.add(docx.keepWithNext(docx.textParagraphCentered(
+                "© %4d %s".formatted(
+                        section.getCopyright(), section.getAuthor()
+                ))));
+        Optional.ofNullable(section.getAuthorNotes())
+                .ifPresent(authorNotes ->
+                        list.add(docx.keepWithNext(
+                                docx.textParagraphCentered(authorNotes))));
+        list.add(docx.keepWithNext(docx.textParagraphCentered(
+                "%s - %d words".formatted(
+                        section.getGenre(), section.getWords()
+                ))));
+        list.add(docx.keepWithNext(docx.p()));
+        // TODO: history - if present
+        list.add(docx.keepWithNext(docx.textParagraphCentered("About the Author")));
+        list.add(docx.keepTogether(authorBio));
+        return list;
     }
 
     private List<Object> title(

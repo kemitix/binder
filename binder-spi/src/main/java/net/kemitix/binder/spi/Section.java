@@ -44,6 +44,8 @@ public class Section {
     @Getter
     private String bio = "TODO"; // the author bio
     @Getter
+    private String authorNotes; // acknowledgements, etc.
+    @Getter
     private float fontSize = 11;
     @Getter
     private boolean header = true; // should there be a header

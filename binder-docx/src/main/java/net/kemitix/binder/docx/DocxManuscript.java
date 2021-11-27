@@ -58,7 +58,6 @@ public class DocxManuscript {
         configureFontMapping();
         try {
             File file = new File(fileName);
-            log.info("Writing: " + file);
             Files.deleteIfExists(file.toPath());
             createMainDocument(docx).save(file);
             log.info("Wrote: " + file);

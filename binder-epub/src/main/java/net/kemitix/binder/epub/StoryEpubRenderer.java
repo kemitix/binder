@@ -12,6 +12,8 @@ import net.kemitix.binder.spi.Section;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Epub
@@ -45,27 +47,47 @@ public class StoryEpubRenderer
     }
 
     private String aboutAuthor(Section section) {
-        return  """
-                        
-                        > *© %4d %s*
-                        
-                        > %s - %d words
+        final ArrayList<String> list = new ArrayList<>();
+        list.add("");
+        // copyright
+        list.add("> *© %4d %s*".formatted(
+                requireNonZero(section.getCopyright(),
+                        "Copyright missing for " + section.getTitle()),
+                requireNonBlank(section.getAuthor(),
+                        "Author missing for " + section.getTitle())));
+        list.add("");
+        // author notes and acknowledgements
+        Optional.ofNullable(section.getAuthorNotes())
+                .ifPresent(authorNotes ->
+                        list.add("<p style=\"text-align: center;\">%s</p>".formatted(
+                                authorNotes)));
+        list.add("");
+        // genre and word count
+        list.add("> %s - %d words".formatted(
+                section.getGenre(),
+                requireNonZero(section.getWords(),
+                        "Word count missing for " + section.getTitle())));
+        list.add("");
+        list.add("---");
+        list.add("");
+        list.add("<p style=\"text-align: center;\">About the Author</p>");
+        list.add("");
+        // author bio
+        list.add(requireNonBlank(section.getBio(),
+                "Author Bio missing for " + section.getTitle()));
+        return  String.join("\n", list);
+    }
 
-                        ---
+    private String requireNonBlank(String value, String message) {
+        requireNonZero(value.length(), message);
+        return value;
+    }
 
-                        <p style="text-align: center;">
-                          About the Author
-                        </p>
-                        
-                        %s
-                        """
-                .formatted(
-                        section.getCopyright(),
-                        section.getAuthor(),
-                        section.getGenre(),
-                        section.getWords(),
-                        section.getBio()
-                );
+    private int requireNonZero(int number, String message) {
+        if (number == 0) {
+            throw new IllegalArgumentException(message);
+        }
+        return number;
     }
 
 }
