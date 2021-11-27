@@ -58,10 +58,8 @@ public class DocxManuscript {
         configureFontMapping();
         try {
             File file = new File(fileName);
-            log.info("Writing: " + file);
             Files.deleteIfExists(file.toPath());
             createMainDocument(docx).save(file);
-            log.info("Wrote: " + file);
         } catch (Docx4JException | JAXBException | IOException e) {
             throw new RuntimeException(
                     "Error saving file: %s".formatted(fileName), e);
