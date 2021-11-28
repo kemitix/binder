@@ -64,7 +64,7 @@ public class StoryEpubRenderer
         list.add("");
         // genre and word count
         list.add("> %s - %d words".formatted(
-                section.getGenre(),
+                requireGenre(section.getGenre(), "Genre missing for " + section.getTitle()),
                 requireNonZero(section.getWords(),
                         "Word count missing for " + section.getTitle())));
         list.add("");
@@ -76,6 +76,13 @@ public class StoryEpubRenderer
         list.add(requireNonBlank(section.getBio(),
                 "Author Bio missing for " + section.getTitle()));
         return  String.join("\n", list);
+    }
+
+    private String requireGenre(Section.Genre value, String message) {
+        if (value == null) {
+            throw new IllegalArgumentException(message);
+        }
+        return value.toString();
     }
 
     private String requireNonBlank(String value, String message) {
