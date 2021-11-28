@@ -27,7 +27,7 @@ public class Section {
     @Getter
     private boolean toc = true; // show in table of contents
     @Getter
-    private boolean original = false; // show in toc-originals
+    private boolean original = true; // show in toc-originals
     @Getter
     private boolean template = false; // should expand template variables
     @Getter
