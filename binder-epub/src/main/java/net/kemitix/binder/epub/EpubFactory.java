@@ -138,10 +138,12 @@ public class EpubFactory {
         EpubBook epubBook = new EpubBook(language, id, title, editor);
         MetadataItem.Builder mib = MetadataItem.builder();
         var meta = mib.name("meta");
+        var dateTime = metadata.getDate() + "T00:00:00+00:00";
         var metadataItems = Arrays.asList(
+                mib.name("meta").property("dcterms:modified").value(dateTime),
                 mib.name("dc:description").value(metadata.getDescription()),
                 mib.name("dc:contributor").id("editor-id").value(metadata.getEditor()),
-                mib.name("dc:date").value(metadata.getDate()+"T00:00:00+00:00"),
+                mib.name("dc:date").value(dateTime),
                 mib.name("dc:publisher").value(editor),
                 meta.property("role").refines("#editor-id").value("Editor"),
                 meta.id("collection-id").property("belongs-to-collection").value(metadata.getTitle()),
