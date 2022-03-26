@@ -13,7 +13,7 @@
     <artifactId>binder-markdown</artifactId>
 
     <properties>
-        <flexmark.version>0.62.2</flexmark.version>
+        <flexmark.version>0.64.0</flexmark.version>
     </properties>
 
     <dependencies>
