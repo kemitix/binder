@@ -130,18 +130,21 @@ public class EpubFactory {
             Metadata metadata,
             Stream<HtmlSection> sections
     ) {
-        String language = metadata.getLanguage();
-        String id = Objects.requireNonNull(metadata.getId(), "metadata id");
-        String title = "%s Issue %d".formatted(
+        var language = metadata.getLanguage();
+        var id = Objects.requireNonNull(metadata.getId(), "metadata id");
+        var title = "%s Issue %d".formatted(
                 metadata.getTitle(), metadata.getIssue());
-        String editor = metadata.getEditor();
-        EpubBook epubBook = new EpubBook(language, id, title, editor);
-        MetadataItem.Builder mib = MetadataItem.builder();
+        var editor = metadata.getEditor();
+        var epubBook = new EpubBook(language, id, title, editor);
+        var mib = MetadataItem.builder();
         var meta = mib.name("meta");
+        var date = Objects.requireNonNull(metadata.getDate(), "metadata date");
+        var modified = Objects.requireNonNull(metadata.getModified(), "metadata modified");
         var metadataItems = Arrays.asList(
+                mib.name("meta").property("dcterms:modified").value(modified + "T00:00:00+00:00"),
                 mib.name("dc:description").value(metadata.getDescription()),
                 mib.name("dc:contributor").id("editor-id").value(metadata.getEditor()),
-                mib.name("dc:date").value(metadata.getDate()+"T00:00:00+00:00"),
+                mib.name("dc:date").value(date + "T00:00:00+00:00"),
                 mib.name("dc:publisher").value(editor),
                 meta.property("role").refines("#editor-id").value("Editor"),
                 meta.id("collection-id").property("belongs-to-collection").value(metadata.getTitle()),
@@ -152,8 +155,9 @@ public class EpubFactory {
         var dcCreator = mib.name("dc:creator");
         sections.map(Section::getAuthor)
                 .filter(Objects::nonNull)
-                .map(dcCreator::value)
-                .forEach(epubBook::addMetadata);
+                .findFirst()
+                .map(mib.name("dc:creator")::value)
+                .ifPresent(epubBook::addMetadata);
         return epubBook;
     }
 }

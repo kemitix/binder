@@ -16,6 +16,7 @@ public class Metadata {
     private String id;
     private int issue;
     private String date;
+    private String modified;
     private String copyright;
     private String language;
     private String title;
