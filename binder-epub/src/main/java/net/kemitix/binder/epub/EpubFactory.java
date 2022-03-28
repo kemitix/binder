@@ -5,6 +5,7 @@ import coza.opencollab.epub.creator.model.Content;
 import coza.opencollab.epub.creator.model.EpubBook;
 import coza.opencollab.epub.creator.model.Landmark;
 import coza.opencollab.epub.creator.model.TocLink;
+import lombok.extern.java.Log;
 import net.kemitix.binder.spi.BinderConfig;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.spi.HtmlManuscript;
@@ -23,8 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
+@Log
 @ApplicationScoped
 public class EpubFactory {
 
@@ -139,7 +142,10 @@ public class EpubFactory {
         var mib = MetadataItem.builder();
         var meta = mib.name("meta");
         var date = Objects.requireNonNull(metadata.getDate(), "metadata date");
-        var modified = Objects.requireNonNull(metadata.getModified(), "metadata modified");
+        var modified = Optional.ofNullable(metadata.getModified()).orElseGet(() -> {
+            log.warning("Modified date not specified, defaulting to publication date");
+            return date;
+        });
         var metadataItems = Arrays.asList(
                 mib.name("meta").property("dcterms:modified").value(modified + "T00:00:00+00:00"),
                 mib.name("dc:description").value(metadata.getDescription()),
@@ -152,12 +158,10 @@ public class EpubFactory {
                 meta.property("group-position").refines("#collection-id").value(Integer.toString(metadata.getIssue()))
         );
         metadataItems.forEach(epubBook::addMetadata);
-        var dcCreator = mib.name("dc:creator");
         sections.map(Section::getAuthor)
                 .filter(Objects::nonNull)
-                .findFirst()
                 .map(mib.name("dc:creator")::value)
-                .ifPresent(epubBook::addMetadata);
+                .forEach(epubBook::addMetadata);
         return epubBook;
     }
 }
