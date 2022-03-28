@@ -9,7 +9,7 @@ import org.docx4j.wml.STBrType;
 import org.docx4j.wml.STFldCharType;
 import org.docx4j.wml.Text;
 
-import jakarta.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBElement;
 import java.util.Arrays;
 
 public interface DocxFacadeRunMixIn

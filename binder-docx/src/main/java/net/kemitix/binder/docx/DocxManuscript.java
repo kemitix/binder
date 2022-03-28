@@ -19,7 +19,7 @@ import org.docx4j.wml.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import jakarta.xml.bind.JAXBException;
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
