@@ -158,12 +158,10 @@ public class EpubFactory {
                 meta.property("group-position").refines("#collection-id").value(Integer.toString(metadata.getIssue()))
         );
         metadataItems.forEach(epubBook::addMetadata);
-        var dcCreator = mib.name("dc:creator");
         sections.map(Section::getAuthor)
                 .filter(Objects::nonNull)
-                .findFirst()
                 .map(mib.name("dc:creator")::value)
-                .ifPresent(epubBook::addMetadata);
+                .forEach(epubBook::addMetadata);
         return epubBook;
     }
 }
