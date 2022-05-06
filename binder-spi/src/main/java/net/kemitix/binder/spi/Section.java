@@ -72,6 +72,7 @@ public class Section {
     private boolean startOnOddPage = true; // start each new section on an odd numbered page
     @Getter
     private Genre genre;
+    private String notes;
 
     public boolean isType(Type type) {
         return this.type.equals(type);
