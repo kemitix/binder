@@ -1,13 +1,6 @@
 package net.kemitix.binder.docx;
 
-import org.docx4j.wml.Br;
-import org.docx4j.wml.FldChar;
-import org.docx4j.wml.R;
-import org.docx4j.wml.RPr;
-import org.docx4j.wml.RStyle;
-import org.docx4j.wml.STBrType;
-import org.docx4j.wml.STFldCharType;
-import org.docx4j.wml.Text;
+import org.docx4j.wml.*;
 
 import javax.xml.bind.JAXBElement;
 import java.util.Arrays;
@@ -105,6 +98,19 @@ public interface DocxFacadeRunMixIn
 
     default R strikethrough(R r) {
         rPr(r).setStrike(defaultTrue());
+        return r;
+    }
+
+    // <w:r>
+    //   <w:rPr>
+    //     <w:vertAlign w:val="superscript"/>
+    //   </w:rPr>
+    //   <w:t>Text</w:t>
+    // </w:r>
+    default R superscript(R r) {
+        var ctVerticalAlignRun = factory().createCTVerticalAlignRun();
+        ctVerticalAlignRun.setVal(STVerticalAlignRun.SUPERSCRIPT);
+        rPr(r).setVertAlign(ctVerticalAlignRun);
         return r;
     }
 
