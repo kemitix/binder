@@ -39,7 +39,7 @@ public class TemplateEngine {
         velocityContext.put("s", section);
         velocityContext.put("m", mdManuscript.getMetadata());
         velocityContext.put("c", mdManuscript.getContents());
-        velocityContext.put("copyrights", encode(copyrights(mdManuscript)));
+        velocityContext.put("copyrights", copyrights(mdManuscript));
         velocityContext.put("toc", toc(mdManuscript));
         Writer writer = new StringWriter();
         // Double hashes are comments in velocity, but at the start of a line
@@ -47,7 +47,7 @@ public class TemplateEngine {
         // This style of comment is not supported, and are broken
         velocityEngine.evaluate(velocityContext, writer, "",
                 templateBody.replaceAll(DOUBLE_HASH, NOT_A_COMMENT));
-        return writer.toString()
+        return encode(writer.toString())
                 .replaceAll(NOT_A_COMMENT, DOUBLE_HASH);
     }
 
