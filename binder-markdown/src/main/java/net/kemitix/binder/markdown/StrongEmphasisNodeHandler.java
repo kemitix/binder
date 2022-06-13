@@ -19,12 +19,7 @@ public interface StrongEmphasisNodeHandler<T, R extends RenderHolder<?>>
 
     @Override
     default Stream<T> body(Node node, Stream<T> content, Context<R> context) {
-        List<T> collect = content.collect(Collectors.toList());
-        if (collect.size() != 1) {
-            throw new RuntimeException("Not passed a single content item: %d sent"
-                    .formatted(collect.size()));
-        }
-        return strongEmphasisBody(collect.get(0), context);
+        return content.flatMap(item -> strongEmphasisBody(item, context));
     }
 
     Stream<T> strongEmphasisBody(T content, Context<R> context);
