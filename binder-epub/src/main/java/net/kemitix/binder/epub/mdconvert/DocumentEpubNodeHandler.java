@@ -2,6 +2,7 @@ package net.kemitix.binder.epub.mdconvert;
 
 import net.kemitix.binder.epub.EpubRenderHolder;
 import net.kemitix.binder.markdown.DocumentNodeHandler;
+import org.apache.commons.text.StringEscapeUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -74,7 +75,7 @@ public class DocumentEpubNodeHandler
                         </html>
                         """.formatted(
                         stylesheetHref,
-                        Objects.requireNonNull(title, "Story title"),
+                        StringEscapeUtils.escapeXml11(Objects.requireNonNull(title, "Story title")),
                         Objects.requireNonNull(author, "Story author"),
                         collect(content)));
     }
