@@ -2,6 +2,7 @@ package net.kemitix.binder.app;
 
 import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Section;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 
@@ -38,7 +39,7 @@ public class TemplateEngine {
         velocityContext.put("s", section);
         velocityContext.put("m", mdManuscript.getMetadata());
         velocityContext.put("c", mdManuscript.getContents());
-        velocityContext.put("copyrights", copyrights(mdManuscript));
+        velocityContext.put("copyrights", encode(copyrights(mdManuscript)));
         velocityContext.put("toc", toc(mdManuscript));
         Writer writer = new StringWriter();
         // Double hashes are comments in velocity, but at the start of a line
@@ -81,6 +82,10 @@ public class TemplateEngine {
                         unBreakable(section.getAuthor())
                 ))
                 .collect(Collectors.joining("  \n"));
+    }
+
+    String encode(String in) {
+        return StringEscapeUtils.escapeXml11(in);
     }
 
     private String unBreakable(String s) {
