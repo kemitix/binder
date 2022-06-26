@@ -26,7 +26,7 @@ public class HeadingEpubNodeHandler
     public Stream<String> blankBreak(Context<EpubRenderHolder> context) {
         return Stream.of(
                 """
-                <p style="text-align: center">———</p>
+                <p style="text-align: center">&mdash;&mdash;&mdash;</p>
                 """
         );
     }
@@ -40,7 +40,7 @@ public class HeadingEpubNodeHandler
                 """
                 <p>\s</p>
                 <p style="text-align: center; page-break-after: avoid;">
-                  —\s%s\s—
+                  &mdash;&nbsp;%s&nbsp;&mdash;
                 </p>
                 """.formatted(name)
         );
