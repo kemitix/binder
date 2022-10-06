@@ -24,7 +24,7 @@
         <assertj.version>3.23.1</assertj.version>
         <junit.version>5.9.1</junit.version>
         <mockito-junit-jupiter.version>4.8.0</mockito-junit-jupiter.version>
-        <snakeyaml.version>1.31</snakeyaml.version>
+        <snakeyaml.version>1.33</snakeyaml.version>
         <epub-creator.version>1.2.0</epub-creator.version>
         <docx4j-ImportXHTML.version>8.3.2</docx4j-ImportXHTML.version>
         <docx4j-JAXB-ReferenceImpl.version>11.3.2</docx4j-JAXB-ReferenceImpl.version>
