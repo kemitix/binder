@@ -17,7 +17,7 @@
 
     <properties>
         <microprofile.version>4.1</microprofile.version>
-        <tiles-maven-plugin.version>2.27</tiles-maven-plugin.version>
+        <tiles-maven-plugin.version>2.30</tiles-maven-plugin.version>
         <kemitix-tiles.version>3.0.1</kemitix-tiles.version>
 
         <lombok.version>1.18.24</lombok.version>
