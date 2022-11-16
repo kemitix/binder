@@ -19,7 +19,14 @@ public interface BlockQuoteNodeHandler<T, R extends RenderHolder<?>>
 
     @Override
     default Stream<T> body(Node node, Stream<T> content, Context<R> context) {
-        return content.flatMap(item -> blockQuoteBody(item, context));
+        List<T> collect = content.collect(Collectors.toList());
+        if (collect.size() != 1) {
+            //noinspection unchecked
+            throw new MarkdownConversionException(
+                    "Not passed a single content item: %d sent".formatted(collect.size()),
+                    node, (List<Object>) collect, context);
+        }
+        return blockQuoteBody(collect.get(0), context);
     }
 
     Stream<T> blockQuoteBody(T content, Context<R> context);

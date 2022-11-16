@@ -19,7 +19,14 @@ public interface SuperscriptNodeHandler<T, R extends RenderHolder<?>>
 
     @Override
     default Stream<T> body(Node node, Stream<T> content, Context<R> context) {
-        return content.flatMap(item -> superscriptBody(item, context));
+        List<T> collect = content.collect(Collectors.toList());
+        if (collect.size() != 1) {
+            //noinspection unchecked
+            throw new MarkdownConversionException(
+                    "Not passed a single content item: %d sent".formatted(collect.size()),
+                    node, (List<Object>) collect, context);
+        }
+        return superscriptBody(collect.get(0), context);
     }
 
     Stream<T> superscriptBody(T content, Context<R> context);
