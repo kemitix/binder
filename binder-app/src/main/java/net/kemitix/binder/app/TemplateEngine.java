@@ -2,7 +2,6 @@ package net.kemitix.binder.app;
 
 import net.kemitix.binder.spi.MdManuscript;
 import net.kemitix.binder.spi.Section;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 
@@ -47,7 +46,7 @@ public class TemplateEngine {
         // This style of comment is not supported, and are broken
         velocityEngine.evaluate(velocityContext, writer, "",
                 templateBody.replaceAll(DOUBLE_HASH, NOT_A_COMMENT));
-        return encode(writer.toString())
+        return writer.toString()
                 .replaceAll(NOT_A_COMMENT, DOUBLE_HASH);
     }
 
@@ -82,10 +81,6 @@ public class TemplateEngine {
                         unBreakable(section.getAuthor())
                 ))
                 .collect(Collectors.joining("  \n"));
-    }
-
-    String encode(String in) {
-        return StringEscapeUtils.escapeXml11(in);
     }
 
     private String unBreakable(String s) {

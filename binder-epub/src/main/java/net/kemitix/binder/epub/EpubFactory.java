@@ -147,7 +147,7 @@ public class EpubFactory {
             return date;
         });
         var metadataItems = Arrays.asList(
-                mib.name("meta").property("dcterms:modified").value(modified + "T00:00:00Z"),
+                mib.name("meta").property("dcterms:modified").value(modified + "T00:00:00+00:00"),
                 mib.name("dc:description").value(metadata.getDescription()),
                 mib.name("dc:contributor").id("editor-id").value(metadata.getEditor()),
                 mib.name("dc:date").value(date + "T00:00:00+00:00"),
