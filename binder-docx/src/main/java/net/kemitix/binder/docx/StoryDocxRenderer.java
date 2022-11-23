@@ -50,8 +50,9 @@ public class StoryDocxRenderer
         contents.add(docx.textParagraphCentered(section.getAuthor()));
         contents.add(docx.textParagraph(""));
         contents.add(docx.textParagraph(""));
-        contents.addAll(converter.convert(context, section.getMarkdown())
-                .collect(Collectors.toList()));
+        contents.addAll(
+                converter.convert(context, section.getMarkdown())
+                        .collect(Collectors.toList()));
         contents.addAll(aboutAuthor(section, context));
         docx.addStyle(docx.paraStyle(context));
         return Stream.of(

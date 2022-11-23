@@ -38,6 +38,8 @@ public interface HeadingNodeHandler<T, R extends RenderHolder<?>>
     Stream<T> hierarchicalHeader(int level, String text, Context<R> context);
 
     default Stream<T> breakHeader(String text, Context<R> context) {
+        if ("_BINDER_CUT_ START".equals(text)) return Stream.empty();
+        if ("_BINDER_CUT_ END".equals(text)) return Stream.empty();
         if (text.isBlank()) return blankBreak(context);
         return namedBreak(text, context);
     }
