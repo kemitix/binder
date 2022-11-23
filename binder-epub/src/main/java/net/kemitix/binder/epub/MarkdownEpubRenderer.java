@@ -4,7 +4,6 @@ import coza.opencollab.epub.creator.model.Content;
 import lombok.NoArgsConstructor;
 import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.footnote.FootnoteAsideGenerator;
-import net.kemitix.binder.epub.mdconvert.footnote.FootnoteHtmlContentGenerator;
 import net.kemitix.binder.spi.Context;
 import net.kemitix.binder.markdown.MarkdownConverter;
 import net.kemitix.binder.spi.HtmlSection;
@@ -24,17 +23,14 @@ public class MarkdownEpubRenderer
         implements EpubRenderer {
 
     private MarkdownConverter<String, EpubRenderHolder> converter;
-    private FootnoteHtmlContentGenerator footnoteHtmlContentGenerator;
     private FootnoteAsideGenerator footnoteAsideGenerator;
 
     @Inject
     public MarkdownEpubRenderer(
             @Epub MarkdownConverter<String, EpubRenderHolder> converter,
-            FootnoteHtmlContentGenerator footnoteHtmlContentGenerator,
             FootnoteAsideGenerator footnoteAsideGenerator
     ) {
         this.converter = converter;
-        this.footnoteHtmlContentGenerator = footnoteHtmlContentGenerator;
         this.footnoteAsideGenerator = footnoteAsideGenerator;
     }
 
@@ -62,11 +58,13 @@ public class MarkdownEpubRenderer
                         Context.create(section, epubRenderHolder),
                         markdown
                 ).collect(joining());
-        String contentsWithAsides = contents.substring(0, contents.length() - 16)
-                + footnoteAsideGenerator.createFootnotes(section)
-                + contents.substring(contents.length() - 16);
+        int bodyHtmlLength = "</body>\n</html>\n".length();
+        String head = contents.substring(0, contents.length() - bodyHtmlLength);
+        String asides = footnoteAsideGenerator.createFootnotes(section);
+        String bodyHtml = contents.substring(contents.length() - bodyHtmlLength);
+        String contentsWithAsides = head + asides + bodyHtml;
         byte[] content = contentsWithAsides.getBytes(StandardCharsets.UTF_8);
-        Stream<Content> supplemental = Stream.empty();//footnoteHtmlContentGenerator.createFootnotes(section);
+        Stream<Content> supplemental = Stream.empty();
         return Stream.concat(
                 createContent(section, content),
                 supplemental
