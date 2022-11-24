@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <microprofile.version>4.1</microprofile.version>
+        <microprofile.version>5.0</microprofile.version>
         <tiles-maven-plugin.version>2.32</tiles-maven-plugin.version>
         <kemitix-tiles.version>3.0.1</kemitix-tiles.version>
 
