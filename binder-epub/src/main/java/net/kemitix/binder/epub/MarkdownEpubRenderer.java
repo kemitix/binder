@@ -2,6 +2,7 @@ package net.kemitix.binder.epub;
 
 import coza.opencollab.epub.creator.model.Content;
 import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
 import net.kemitix.binder.epub.mdconvert.Epub;
 import net.kemitix.binder.epub.mdconvert.footnote.FootnoteAsideGenerator;
 import net.kemitix.binder.spi.Context;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
+@Log
 @Epub
 @ApplicationScoped
 @NoArgsConstructor
@@ -91,25 +93,18 @@ public class MarkdownEpubRenderer
      * @return the markdown without any cut sections
      */
     private String binderCut(String content) {
-        if (!content.contains("_BINDER_CUT_")) {
+        if (!content.contains("—BINDER_CUT—")) {//FIXME: this isn't seeing the directive
             return content;
         }
-        String[] lines = content.split("\n");
+        String[] lines = content.split(">\n*<");
         boolean cut = false;
-        boolean cutEnding = false;
         List<String> output = new ArrayList<>();
         for (String line : lines) {
-            if (!cut && line.contains("_BINDER_CUT_ START")) {
+            if (!cut && line.contains("—BINDER_CUT— START")) {
                 cut = true;
-                output.remove(output.size() - 1);// remove previous line
                 continue;
             }
-            if (cut && line.contains("_BINDER_CUT_ END")) {
-                cutEnding = true;
-                continue;
-            }
-            if (cutEnding) {
-                cutEnding = false;
+            if (cut && line.contains("—BINDER_CUT— END")) {
                 cut = false;
                 continue;
             }
@@ -117,7 +112,7 @@ public class MarkdownEpubRenderer
                 output.add(line);
             }
         }
-        return String.join("\n", output);
+        return String.join(">\n<", output);
     }
 
     private Stream<Content> createContent(HtmlSection source, byte[] content) {
