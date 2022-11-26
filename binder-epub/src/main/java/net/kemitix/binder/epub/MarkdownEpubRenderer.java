@@ -67,7 +67,10 @@ public class MarkdownEpubRenderer
         String head = contents.substring(0, contents.length() - bodyHtmlLength);
         String asides = footnoteAsideGenerator.createFootnotes(section);
         String bodyHtml = contents.substring(contents.length() - bodyHtmlLength);
-        String contentsWithAsides = head + asides + bodyHtml;
+        String asidesPrefix = asides.length() > 0
+                ? "\n<h3>Footnotes</h3>\n"
+                : "";
+        String contentsWithAsides = head + asidesPrefix + asides + bodyHtml;
         byte[] content = contentsWithAsides.getBytes(StandardCharsets.UTF_8);
         Stream<Content> supplemental = Stream.empty();
         return Stream.concat(
