@@ -18,7 +18,11 @@ public class HtmlEntityDocxNodeHandler
         implements HtmlEntityNodeHandler<Object, DocxRenderHolder> {
 
     private final Map<String, String> allowedEntities = Map.of(
-            "&amp;", "&"
+            "&amp;", "&",
+            "&apos;", "'",
+            "&gt;", ">",
+            "&lt;", "<",
+            "&quot;", "\""
     );
 
     @Override

@@ -18,7 +18,11 @@ public class HtmlEntityEpubNodeHandler
         EpubNodeHandler {
 
     private final List<String> allowedEntities = List.of(
-            "&amp;"
+            "&amp;",
+            "&apos;",
+            "&gt;",
+            "&lt;",
+            "&quot;"
     );
 
     @Override
