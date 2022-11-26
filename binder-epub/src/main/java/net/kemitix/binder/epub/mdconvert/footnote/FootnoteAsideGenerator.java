@@ -44,6 +44,7 @@ public class FootnoteAsideGenerator {
 
     private BiFunction<Footnote.Ordinal, String, String> footnoteBody() {
         return """
+                %1$s
                 <aside id="note_%1$s" epub:type="footnote">
                     %2$s
                 </aside>
