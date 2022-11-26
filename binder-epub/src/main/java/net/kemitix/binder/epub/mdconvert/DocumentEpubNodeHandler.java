@@ -2,6 +2,7 @@ package net.kemitix.binder.epub.mdconvert;
 
 import net.kemitix.binder.epub.EpubRenderHolder;
 import net.kemitix.binder.markdown.DocumentNodeHandler;
+import org.apache.commons.text.StringEscapeUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ public class DocumentEpubNodeHandler
             String title,
             Stream<String> content
     ) {
+        final String storyTitle = Objects.requireNonNullElse(title, "");
         return Stream.of(
                 """
                         <?xml version='1.0' encoding='utf-8'?>
@@ -37,6 +39,7 @@ public class DocumentEpubNodeHandler
                          xmlns="http://www.w3.org/1999/xhtml"
                          xmlns:epub="http://www.idpf.org/2007/ops">
                         <head>
+                        <title>%s</title>
                         <link rel="stylesheet" href="%s" type="text/css" media="all"/>
                         </head>
                         <body>
@@ -45,8 +48,9 @@ public class DocumentEpubNodeHandler
                         </body>
                         </html>
                         """.formatted(
+                        storyTitle,
                         stylesheetHref,
-                        Objects.requireNonNullElse(title, ""),
+                        storyTitle,
                         collect(content)));
     }
 
@@ -56,6 +60,7 @@ public class DocumentEpubNodeHandler
             String author,
             Stream<String> content
     ) {
+        final String storyTitle = StringEscapeUtils.escapeXml11(Objects.requireNonNull(title, "Story title"));
         return Stream.of(
                 """
                         <?xml version='1.0' encoding='utf-8'?>
@@ -64,6 +69,7 @@ public class DocumentEpubNodeHandler
                          xmlns="http://www.w3.org/1999/xhtml"
                          xmlns:epub="http://www.idpf.org/2007/ops">
                         <head>
+                        <title>%s</title>
                         <link rel="stylesheet" href="%s" type="text/css" media="all"/>
                         </head>
                         <body>
@@ -73,8 +79,9 @@ public class DocumentEpubNodeHandler
                         </body>
                         </html>
                         """.formatted(
+                        storyTitle,
                         stylesheetHref,
-                        Objects.requireNonNull(title, "Story title"),
+                        storyTitle,
                         Objects.requireNonNull(author, "Story author"),
                         collect(content)));
     }
